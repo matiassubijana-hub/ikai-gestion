@@ -172,6 +172,42 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:var(--dark);}
 ::-webkit-scrollbar-thumb{background:var(--bord);}
+
+/* ── SUB-NAV de sección (Karate / Kiaiken) ── */
+.subnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.subnav .btn{padding:8px 16px;font-size:13px;}
+.section-hero{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.section-hero h1{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--orange);}
+
+/* ── EDITOR DE BLOQUES (Kiaiken) ── */
+.bloque-item{border:1px solid var(--bord);background:var(--surf);padding:12px 14px;margin-bottom:10px;}
+.bloque-item-hdr{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.bloque-item-hdr .tag{font-size:11px;letter-spacing:2px;color:var(--orange);text-transform:uppercase;}
+.bloque-ord{display:flex;gap:4px;}
+.bloque-ord button{background:transparent;border:1px solid var(--bord);color:var(--muted);cursor:pointer;padding:2px 9px;font-size:14px;}
+.bloque-ord button:hover{color:var(--text);border-color:var(--muted);}
+.ejer-check-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-top:6px;max-height:180px;overflow-y:auto;padding:8px;border:1px solid var(--bord);}
+@media(max-width:700px){.ejer-check-list{grid-template-columns:1fr;}}
+.ejer-check-list label{font-size:13px;display:flex;gap:6px;align-items:center;color:var(--text);}
+.plantilla-card{border:1px solid var(--bord);background:var(--surf);padding:14px 16px;margin-bottom:10px;cursor:pointer;}
+.plantilla-card:hover{border-color:var(--orange);}
+.plantilla-card .pc-nombre{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--text);}
+.plantilla-card .pc-meta{font-size:12px;color:var(--muted);letter-spacing:1px;margin-top:4px;}
+
+/* ── TIMER EN VIVO (Kiaiken) ── */
+.timer-wrap{text-align:center;padding:16px;}
+.timer-blockname{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;}
+.timer-phase{font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+.timer-big{font-family:'Share Tech Mono',monospace;font-size:74px;line-height:1;margin:14px 0;color:var(--text);transition:color .2s;}
+.timer-big.fase-trabajo{color:var(--green);}
+.timer-big.fase-descanso{color:var(--blue);}
+.timer-big.fase-final{color:var(--red);}
+.timer-meta{font-size:14px;color:var(--muted);letter-spacing:1px;margin-bottom:14px;}
+.timer-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+.timer-blocklist{display:flex;flex-direction:column;gap:6px;margin-top:20px;text-align:left;}
+.timer-blocklist .tb-row{display:flex;justify-content:space-between;padding:8px 12px;border:1px solid var(--bord);cursor:pointer;font-size:13px;}
+.timer-blocklist .tb-row.tb-active{border-color:var(--orange);color:var(--orange);}
+.timer-blocklist .tb-row.tb-done{color:var(--dim);}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -234,15 +270,19 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M18 15l2 2 3-3" stroke-width="1.8"/></svg>
       Asistencia
     </button>
-    <button class="nav-btn" data-page="tecnicas" onclick="showPage('tecnicas',this)">
+    <button class="nav-btn" data-page="karate" onclick="showPage('karate',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="5" r="2.4"/><path d="M12 7.4v6M12 13.4l-4.5 6M12 13.4l4.5 6M8 10l4 1 4-1"/></svg>
+      Karate
+    </button>
+    <button class="nav-btn" data-page="kiaiken" onclick="showPage('kiaiken',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>
-      Técnicas
+      Kiaiken
     </button>
     <button class="nav-btn" data-page="config" onclick="showPage('config',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
       Config
     </button>
-    <div class="sidebar-foot mono">ETAPA 1-2/5 · ALUMNOS+CUOTAS+ASISTENCIA+TÉCNICAS</div>
+    <div class="sidebar-foot mono">ETAPA 1-2/5 · ALUMNOS+CUOTAS+ASISTENCIA+KARATE+KIAIKEN</div>
   </nav>
 
   <main>
@@ -422,8 +462,186 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       </div>
     </div>
 
+    <!-- KARATE (sección propia — lista para sumar planificación de clases tradicional) -->
+    <div class="page" id="page-karate">
+      <div class="section-hero"><h1>Karate</h1></div>
+      <div class="subnav">
+        <button class="btn btn-sm btn-fill" data-katab="planificacion">Planificación de clases</button>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Planificación de clases de Karate</span></div>
+        <div class="card-body">
+          <div class="empty-state">Sección propia de Karate, separada de Kiaiken. Todavía no tiene contenido cargado — queda lista para sumar acá la planificación de clases tradicionales (kata, kihon, kumite) en una próxima etapa, con su propia estructura y herramientas, sin mezclarse con Kiaiken.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KIAIKEN (sección propia — calistenia + circuitos + técnica + sombra + kumite) -->
+    <div class="page" id="page-kiaiken">
+      <div class="section-hero"><h1>Kiaiken</h1></div>
+      <div class="subnav">
+        <button class="btn btn-sm btn-fill" data-kktab="plantillas" onclick="kkShowTab('plantillas')">Plantillas de clase</button>
+        <button class="btn btn-sm btn-ghost" data-kktab="clase" onclick="kkShowTab('clase')">Clase en vivo</button>
+        <button class="btn btn-sm btn-ghost" data-kktab="ejercicios" onclick="kkShowTab('ejercicios')">Ejercicios</button>
+        <button class="btn btn-sm btn-ghost" data-kktab="tecnicas" onclick="kkShowTab('tecnicas')">Técnicas y Combinaciones</button>
+        <button class="btn btn-sm btn-ghost" data-kktab="historial" onclick="kkShowTab('historial')">Historial</button>
+      </div>
+
+      <!-- TAB: PLANTILLAS (lista) -->
+      <div class="kk-tab" id="kk-tab-plantillas">
+        <div id="kk-plantillas-list">
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-hdr-t">Plantillas de clase</span>
+              <button class="btn btn-fill btn-sm" onclick="kkNuevaPlantilla()">+ Nueva Plantilla</button>
+            </div>
+            <div class="card-body" id="kk-plantillas-body"></div>
+          </div>
+        </div>
+        <div id="kk-plantillas-editor" style="display:none;">
+          <div class="detail-back" onclick="kkCerrarEditorPlantilla()">← Volver a Plantillas</div>
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-hdr-t">Editar Plantilla</span>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-item"><label>Nombre</label><input id="kkp-nombre" type="text"></div>
+                <div class="form-item"><label>Nivel</label>
+                  <select id="kkp-nivel"><option>Básico</option><option>Instructor</option><option>Élite</option></select>
+                </div>
+                <div class="form-item full"><label>Observaciones</label><textarea id="kkp-observaciones" rows="2"></textarea></div>
+              </div>
+              <div class="salud-box-hdr" style="color:var(--orange);margin:16px 0 10px;">Bloques de la clase — duración total bloques 2-8: <span id="kkp-total-2-8" class="mono"></span></div>
+              <div id="kkp-bloques"></div>
+              <button class="btn btn-ghost btn-sm" onclick="kkAgregarBloque()">+ Agregar bloque</button>
+              <div class="form-actions">
+                <button class="btn btn-fill" onclick="kkGuardarPlantilla()">Guardar</button>
+                <button class="btn btn-ghost" onclick="kkDuplicarPlantillaComoNueva()">Guardar como nueva (duplicar)</button>
+                <button class="btn btn-danger" onclick="kkEliminarPlantilla()">🗑 Eliminar plantilla</button>
+              </div>
+              <span class="mono" id="kkp-status" style="font-size:12px;color:var(--muted);"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: EJERCICIOS (biblioteca) -->
+      <div class="kk-tab" id="kk-tab-ejercicios" style="display:none;">
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-hdr-t">Biblioteca de Ejercicios</span>
+            <button class="btn btn-fill btn-sm" onclick="kkAbrirFormEjercicio()">+ Nuevo Ejercicio</button>
+          </div>
+          <div class="card-body" style="padding:12px 18px;">
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;" id="kk-ejer-filtro">
+              <button class="btn btn-sm btn-fill" data-nivel="todos" onclick="kkFiltrarEjercicios('todos')">Todos</button>
+              <button class="btn btn-sm btn-ghost" data-nivel="Básico" onclick="kkFiltrarEjercicios('Básico')">Básico</button>
+              <button class="btn btn-sm btn-ghost" data-nivel="Instructor" onclick="kkFiltrarEjercicios('Instructor')">Instructor</button>
+              <button class="btn btn-sm btn-ghost" data-nivel="Élite" onclick="kkFiltrarEjercicios('Élite')">Élite</button>
+            </div>
+            <table class="tbl"><thead><tr><th>Nombre</th><th>Nivel</th><th>Categoría</th><th>Grupo</th><th>Estado</th></tr></thead>
+              <tbody id="tbl-kk-ejercicios"></tbody></table>
+          </div>
+        </div>
+        <div class="card" id="kk-ejer-form-card" style="display:none;margin-top:14px;">
+          <div class="card-hdr"><span class="card-hdr-t" id="kke-form-title">Nuevo Ejercicio</span></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-item full"><label>Nombre</label><input id="kke-nombre" type="text"></div>
+              <div class="form-item"><label>Nivel</label>
+                <select id="kke-nivel"><option value="">Todos</option><option>Básico</option><option>Instructor</option><option>Élite</option></select>
+              </div>
+              <div class="form-item"><label>Categoría</label><input id="kke-categoria" type="text" placeholder="Ej: Calistenia"></div>
+              <div class="form-item"><label>Grupo muscular / objetivo</label><input id="kke-grupo" type="text"></div>
+              <div class="form-item full"><label>Progresión sugerida</label><input id="kke-progresion" type="text"></div>
+              <div class="form-item full"><label>Justificación</label><textarea id="kke-justificacion" rows="2"></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-fill" onclick="kkGuardarEjercicio()">Guardar</button>
+              <button class="btn btn-ghost" onclick="kkCerrarFormEjercicio()">Cancelar</button>
+              <button class="btn btn-danger" id="kke-btn-desactivar" style="display:none;" onclick="kkToggleActivoEjercicio()">Desactivar / Reactivar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: TECNICAS (reusa la pantalla ya existente de combos_tecnicos) -->
+      <div class="kk-tab" id="kk-tab-tecnicas" style="display:none;">
+        <div class="card">
+          <div class="card-hdr"><span class="card-hdr-t">Técnicas y Combinaciones</span></div>
+          <div class="card-body">
+            <div class="empty-state" style="padding:20px;">Los 6 combos técnicos del dojo (Kizami-zuki, Mawashi Geri, etc.) viven en su propia pantalla, con alta/edición/detalle completo.<br><br>
+              <button class="btn btn-fill" onclick="showPage('tecnicas')">Abrir Técnicas y Combinaciones →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CLASE EN VIVO (timers) -->
+      <div class="kk-tab" id="kk-tab-clase" style="display:none;">
+        <div class="card" id="kk-clase-setup">
+          <div class="card-hdr"><span class="card-hdr-t">Iniciar clase</span></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-item"><label>Nivel</label>
+                <select id="kkc-nivel" onchange="kkCargarPlantillasParaNivel()">
+                  <option value="Básico">Básico</option><option value="Instructor">Instructor</option><option value="Élite">Élite</option>
+                </select>
+              </div>
+              <div class="form-item"><label>Plantilla</label><select id="kkc-plantilla"></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-fill" onclick="kkIniciarClase()">Cargar clase</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="kk-clase-runner" style="display:none;">
+          <div class="card">
+            <div class="card-body timer-wrap">
+              <div class="timer-blockname" id="kkt-blockname">—</div>
+              <div class="timer-phase" id="kkt-phase">—</div>
+              <div class="timer-big" id="kkt-display">00:00</div>
+              <div class="timer-meta" id="kkt-meta"></div>
+              <div class="timer-controls">
+                <button class="btn btn-ghost" onclick="kkTimerSaltoAtras()">⏮ Bloque anterior</button>
+                <button class="btn btn-fill" id="kkt-btn-playpause" onclick="kkTimerPlayPause()">▶ Iniciar</button>
+                <button class="btn btn-ghost" onclick="kkTimerReiniciar()">⟲ Reiniciar bloque</button>
+                <button class="btn btn-ghost" onclick="kkTimerSaltoAdelante()">Bloque siguiente ⏭</button>
+              </div>
+              <div class="timer-blocklist" id="kkt-blocklist"></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="card-hdr"><span class="card-hdr-t">Cerrar clase</span></div>
+            <div class="card-body">
+              <div class="form-item full"><label>Observaciones de la clase</label><textarea id="kkc-observaciones" rows="3"></textarea></div>
+              <div class="form-actions">
+                <button class="btn btn-fill" onclick="kkGuardarClaseEnHistorial()">Guardar en historial</button>
+                <button class="btn btn-ghost" onclick="kkCerrarClase()">Cerrar sin guardar</button>
+                <span class="mono" id="kkc-status" style="font-size:12px;color:var(--muted);margin-left:8px;"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: HISTORIAL -->
+      <div class="kk-tab" id="kk-tab-historial" style="display:none;">
+        <div class="card">
+          <div class="card-hdr"><span class="card-hdr-t">Historial de Clases Kiaiken</span></div>
+          <div class="card-body" style="padding:12px 18px;">
+            <table class="tbl"><thead><tr><th>Fecha</th><th>Nivel</th><th>Nombre</th><th>Observaciones</th></tr></thead>
+              <tbody id="tbl-kk-historial"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- TECNICAS -->
     <div class="page" id="page-tecnicas">
+      <div class="detail-back" onclick="showPage('kiaiken')">← Volver a Kiaiken</div>
       <div class="card">
         <div class="card-hdr">
           <span class="card-hdr-t">Técnicas y Combinaciones</span>
@@ -614,9 +832,10 @@ function diasEntre(f1,f2){ return Math.round((new Date(f2)-new Date(f1))/8640000
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
 let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[] };
+let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
-  const [discR, arR, cfgR, alR, saludR, pagR, comboR] = await Promise.all([
+  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR] = await Promise.all([
     supa.from('disciplinas').select('id,nombre'),
     supa.from('aranceles').select('disciplina_id,monto').is('vigencia_hasta', null),
     supa.from('configuracion').select('clave,valor'),
@@ -624,8 +843,23 @@ async function cargarDatos(){
     supa.from('alumnos_salud').select('*'),
     supa.from('pagos').select('*').order('fecha', { ascending:false }),
     supa.from('combos_tecnicos').select('*').order('id'),
+    supa.from('kiaiken_ejercicios').select('*').order('id'),
+    supa.from('kiaiken_plantillas').select('*').order('id'),
+    supa.from('kiaiken_clases').select('*').order('fecha', { ascending:false }),
   ]);
-  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR]) if(r.error) throw r.error;
+  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR]) if(r.error) throw r.error;
+
+  DBK.ejercicios = (kkejR.data||[]).map(e=>({
+    id:e.id, nombre:e.nombre, categoria:e.categoria||'', nivel:e.nivel||'', grupo:e.grupo_muscular||'',
+    progresion:e.progresion||'', justificacion:e.justificacion||'', activo:e.activo!==false,
+  }));
+  DBK.plantillas = (kkplR.data||[]).map(p=>({
+    id:p.id, nombre:p.nombre, nivel:p.nivel, bloques:p.bloques_json||[], observaciones:p.observaciones||'', activo:p.activo!==false,
+  }));
+  DBK.clases = (kkclR.data||[]).map(c=>({
+    id:c.id, fecha:c.fecha, nombre:c.nombre||'', nivel:c.nivel, plantillaId:c.plantilla_id,
+    bloques:c.bloques_json||[], observaciones:c.observaciones||'',
+  }));
 
   discIdPorNombre = {}; discNombrePorId = {};
   (discR.data||[]).forEach(d=>{ discIdPorNombre[d.nombre]=d.id; discNombrePorId[d.id]=d.nombre; });
@@ -679,7 +913,8 @@ function showPage(id, btn){
   if(btn) btn.classList.add('active');
   else{
     const navMap = {alumnos:'alumnos', cuotas:'cuotas', home:'home', config:'config',
-      asistencia:'asistencia', tecnicas:'tecnicas', 'tecnica-detail':'tecnicas', 'tecnica-form':'tecnicas'};
+      asistencia:'asistencia', karate:'karate', kiaiken:'kiaiken',
+      tecnicas:'kiaiken', 'tecnica-detail':'kiaiken', 'tecnica-form':'kiaiken'};
     const nb = document.querySelector(`.nav-btn[data-page="${navMap[id]||id}"]`);
     if(nb) nb.classList.add('active');
   }
@@ -689,6 +924,7 @@ function showPage(id, btn){
   if(id==='config') loadConfigForm();
   if(id==='asistencia') cargarAsistenciaDelDia();
   if(id==='tecnicas') renderTecnicasList();
+  if(id==='kiaiken') kkShowTab(kkTabActual||'plantillas');
 }
 
 // ═══════════════════════════════════════
@@ -1285,6 +1521,506 @@ async function saveConfig(){
 
 function refreshAll(){
   renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm();
+}
+
+// ═══════════════════════════════════════
+// KIAIKEN — plantillas, ejercicios, clase en vivo (timers), historial
+// ═══════════════════════════════════════
+let kkTabActual = 'plantillas';
+let kkEditingPlantillaId = null;
+let kkBloquesEnEdicion = [];
+let kkFiltroEjercicioNivel = 'todos';
+let kkEditingEjercicioId = null;
+
+const KK_TIPOS = [
+  {v:'calentamiento', t:'Entrada en calor'}, {v:'activacion', t:'Activación física'},
+  {v:'fuerza', t:'Fuerza y potencia'}, {v:'tabata', t:'Tabata / circuito'},
+  {v:'resistencia', t:'Resistencia específica'}, {v:'tecnicas', t:'Técnicas de combate'},
+  {v:'sombra', t:'Trabajo de sombra'}, {v:'kumite', t:'Kumite / aplicación'},
+  {v:'vuelta_calma', t:'Vuelta a la calma'}, {v:'libre', t:'Bloque libre'},
+];
+
+function kkShowTab(tab){
+  kkTabActual = tab;
+  document.querySelectorAll('.kk-tab').forEach(el=>el.style.display='none');
+  document.getElementById('kk-tab-'+tab).style.display='';
+  document.querySelectorAll('#page-kiaiken .subnav .btn').forEach(b=>{
+    b.classList.toggle('btn-fill', b.dataset.kktab===tab);
+    b.classList.toggle('btn-ghost', b.dataset.kktab!==tab);
+  });
+  if(tab==='plantillas') kkRenderPlantillasList();
+  if(tab==='ejercicios') kkFiltrarEjercicios(kkFiltroEjercicioNivel);
+  if(tab==='clase' && document.getElementById('kk-clase-runner').style.display==='none') kkCargarPlantillasParaNivel();
+  if(tab==='historial') kkRenderHistorial();
+}
+
+// ── PLANTILLAS: lista ──
+function kkFmtMinSeg(seg){
+  seg = seg||0;
+  const m = Math.floor(seg/60), s = seg%60;
+  return m+':'+String(s).padStart(2,'0');
+}
+function kkTotalBloques2a8(bloques){
+  return (bloques||[]).filter(b=>b.tipo!=='calentamiento' && b.tipo!=='vuelta_calma')
+    .reduce((acc,b)=>acc+(Number(b.duracion_seg)||0), 0);
+}
+function kkRenderPlantillasList(){
+  const cont = document.getElementById('kk-plantillas-body');
+  if(!DBK.plantillas.length){
+    cont.innerHTML = '<div class="empty-state">No hay plantillas todavía. Creá la primera con "+ Nueva Plantilla".</div>';
+    return;
+  }
+  const niveles = ['Básico','Instructor','Élite'];
+  let html = '';
+  niveles.forEach(niv=>{
+    const del = DBK.plantillas.filter(p=>p.nivel===niv);
+    if(!del.length) return;
+    html += `<div class="card-hdr-s" style="margin:14px 0 8px;">${niv}</div>`;
+    del.forEach(p=>{
+      const tot = kkTotalBloques2a8(p.bloques);
+      html += `<div class="plantilla-card" onclick="kkAbrirEditorPlantilla(${p.id})">
+        <div class="pc-nombre">${p.nombre}</div>
+        <div class="pc-meta">${(p.bloques||[]).length} bloques · bloques 2-8: ${kkFmtMinSeg(tot)} min ${tot!==2700?'⚠ distinto de 45:00':''}</div>
+      </div>`;
+    });
+  });
+  cont.innerHTML = html;
+}
+
+function kkPlantillaSkeletonVacio(){
+  return KK_TIPOS.filter(t=>t.v!=='libre').map((t,i)=>({
+    id:'b'+(i+1), tipo:t.v, nombre:t.t, duracion_seg: (t.v==='calentamiento'||t.v==='vuelta_calma') ? 300 : 0,
+    formato:{modo:'libre', trabajo_seg:0, descanso_seg:0, rondas:0, series:1},
+    ejercicios:[], notas:'',
+  }));
+}
+
+function kkNuevaPlantilla(){
+  kkEditingPlantillaId = null;
+  kkBloquesEnEdicion = kkPlantillaSkeletonVacio();
+  document.getElementById('kkp-nombre').value = '';
+  document.getElementById('kkp-nivel').value = 'Básico';
+  document.getElementById('kkp-observaciones').value = '';
+  kkRenderBloques();
+  document.getElementById('kk-plantillas-list').style.display='none';
+  document.getElementById('kk-plantillas-editor').style.display='';
+  document.getElementById('kkp-status').textContent='';
+}
+
+function kkAbrirEditorPlantilla(id){
+  const p = DBK.plantillas.find(x=>x.id===id);
+  if(!p) return;
+  kkEditingPlantillaId = id;
+  kkBloquesEnEdicion = JSON.parse(JSON.stringify(p.bloques||[]));
+  document.getElementById('kkp-nombre').value = p.nombre;
+  document.getElementById('kkp-nivel').value = p.nivel;
+  document.getElementById('kkp-observaciones').value = p.observaciones||'';
+  kkRenderBloques();
+  document.getElementById('kk-plantillas-list').style.display='none';
+  document.getElementById('kk-plantillas-editor').style.display='';
+  document.getElementById('kkp-status').textContent='';
+}
+
+function kkCerrarEditorPlantilla(){
+  document.getElementById('kk-plantillas-editor').style.display='none';
+  document.getElementById('kk-plantillas-list').style.display='';
+  kkRenderPlantillasList();
+}
+
+function kkActualizarTotal2a8(){
+  const tot = kkTotalBloques2a8(kkBloquesEnEdicion);
+  const el = document.getElementById('kkp-total-2-8');
+  if(el) el.textContent = kkFmtMinSeg(tot)+' min'+(tot!==2700?' ⚠ (recomendado: 45:00)':'');
+}
+
+function kkRenderBloques(){
+  const cont = document.getElementById('kkp-bloques');
+  const ejerciciosActivos = DBK.ejercicios.filter(e=>e.activo);
+  cont.innerHTML = kkBloquesEnEdicion.map((b,idx)=>{
+    const tipoOpts = KK_TIPOS.map(t=>`<option value="${t.v}" ${b.tipo===t.v?'selected':''}>${t.t}</option>`).join('');
+    const f = b.formato||{modo:'libre',trabajo_seg:0,descanso_seg:0,rondas:0,series:1};
+    const modoOpts = ['libre','circuito','rounds','tabata'].map(m=>`<option value="${m}" ${f.modo===m?'selected':''}>${m}</option>`).join('');
+    const ejerIds = new Set((b.ejercicios||[]).map(e=>e.ejercicio_id));
+    const checklist = ejerciciosActivos.map(e=>`
+      <label><input type="checkbox" ${ejerIds.has(e.id)?'checked':''} onchange="kkBloqueToggleEjercicio(${idx},${e.id},'${e.nombre.replace(/'/g,"\\'")}',this.checked)"> ${e.nombre} <span class="mono" style="color:var(--dim);">(${e.nivel||'todos'})</span></label>`).join('');
+    return `<div class="bloque-item">
+      <div class="bloque-item-hdr">
+        <span class="tag">Bloque ${idx+1}</span>
+        <div class="bloque-ord">
+          <button onclick="kkMoverBloque(${idx},-1)" title="Subir">↑</button>
+          <button onclick="kkMoverBloque(${idx},1)" title="Bajar">↓</button>
+          <button onclick="kkEliminarBloque(${idx})" title="Eliminar" style="color:var(--red);">🗑</button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-item"><label>Nombre</label><input type="text" value="${(b.nombre||'').replace(/"/g,'&quot;')}" oninput="kkBloqueSetField(${idx},'nombre',this.value)"></div>
+        <div class="form-item"><label>Tipo</label><select onchange="kkBloqueSetField(${idx},'tipo',this.value)">${tipoOpts}</select></div>
+        <div class="form-item"><label>Duración (min, apoya .5)</label><input type="number" step="0.5" min="0" value="${((b.duracion_seg||0)/60).toFixed(1)}" oninput="kkBloqueSetField(${idx},'duracion_min',this.value)"></div>
+        <div class="form-item"><label>Formato</label><select onchange="kkBloqueSetField(${idx},'formato.modo',this.value)">${modoOpts}</select></div>
+        <div class="form-item"><label>Trabajo (seg)</label><input type="number" min="0" value="${f.trabajo_seg||0}" oninput="kkBloqueSetField(${idx},'formato.trabajo_seg',this.value)"></div>
+        <div class="form-item"><label>Descanso (seg)</label><input type="number" min="0" value="${f.descanso_seg||0}" oninput="kkBloqueSetField(${idx},'formato.descanso_seg',this.value)"></div>
+        <div class="form-item"><label>Rondas (0 = sin límite)</label><input type="number" min="0" value="${f.rondas||0}" oninput="kkBloqueSetField(${idx},'formato.rondas',this.value)"></div>
+        <div class="form-item"><label>Series</label><input type="number" min="1" value="${f.series||1}" oninput="kkBloqueSetField(${idx},'formato.series',this.value)"></div>
+        <div class="form-item full"><label>Notas / contenido de combate</label><textarea rows="2" oninput="kkBloqueSetField(${idx},'notas',this.value)">${b.notas||''}</textarea></div>
+        <div class="form-item full"><label>Ejercicios del bloque</label><div class="ejer-check-list">${checklist||'<span class="mono" style="color:var(--dim);">No hay ejercicios cargados en la biblioteca todavía.</span>'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+  kkActualizarTotal2a8();
+}
+
+function kkBloqueSetField(idx, field, value){
+  const b = kkBloquesEnEdicion[idx];
+  if(!b) return;
+  if(field==='duracion_min'){ b.duracion_seg = Math.round(Number(value||0)*60); }
+  else if(field.startsWith('formato.')){
+    const sub = field.split('.')[1];
+    if(!b.formato) b.formato = {modo:'libre',trabajo_seg:0,descanso_seg:0,rondas:0,series:1};
+    b.formato[sub] = (sub==='modo') ? value : Number(value||0);
+  } else { b[field] = value; }
+  kkActualizarTotal2a8();
+}
+
+function kkBloqueToggleEjercicio(idx, ejercicioId, nombre, checked){
+  const b = kkBloquesEnEdicion[idx];
+  if(!b) return;
+  if(!b.ejercicios) b.ejercicios=[];
+  if(checked){ if(!b.ejercicios.some(e=>e.ejercicio_id===ejercicioId)) b.ejercicios.push({ejercicio_id:ejercicioId, nombre}); }
+  else { b.ejercicios = b.ejercicios.filter(e=>e.ejercicio_id!==ejercicioId); }
+}
+
+function kkAgregarBloque(){
+  kkBloquesEnEdicion.push({
+    id:'b'+Date.now(), tipo:'libre', nombre:'Nuevo bloque', duracion_seg:60,
+    formato:{modo:'libre',trabajo_seg:0,descanso_seg:0,rondas:0,series:1}, ejercicios:[], notas:'',
+  });
+  kkRenderBloques();
+}
+function kkEliminarBloque(idx){
+  if(!confirm('¿Eliminar este bloque de la plantilla?')) return;
+  kkBloquesEnEdicion.splice(idx,1);
+  kkRenderBloques();
+}
+function kkMoverBloque(idx, dir){
+  const j = idx+dir;
+  if(j<0 || j>=kkBloquesEnEdicion.length) return;
+  [kkBloquesEnEdicion[idx], kkBloquesEnEdicion[j]] = [kkBloquesEnEdicion[j], kkBloquesEnEdicion[idx]];
+  kkRenderBloques();
+}
+
+async function kkGuardarPlantilla(){
+  const nombre = document.getElementById('kkp-nombre').value.trim();
+  const nivel = document.getElementById('kkp-nivel').value;
+  const observaciones = document.getElementById('kkp-observaciones').value.trim();
+  if(!nombre){ alert('Poné un nombre para la plantilla.'); return; }
+  const payload = { nombre, nivel, observaciones, bloques_json: kkBloquesEnEdicion };
+  try{
+    if(kkEditingPlantillaId){
+      const { error } = await supa.from('kiaiken_plantillas').update(payload).eq('id', kkEditingPlantillaId);
+      if(error) throw error;
+      const p = DBK.plantillas.find(x=>x.id===kkEditingPlantillaId);
+      Object.assign(p, {nombre, nivel, observaciones, bloques:kkBloquesEnEdicion});
+    } else {
+      const { data, error } = await supa.from('kiaiken_plantillas').insert(payload).select().single();
+      if(error) throw error;
+      DBK.plantillas.push({id:data.id, nombre, nivel, observaciones, bloques:kkBloquesEnEdicion, activo:true});
+      kkEditingPlantillaId = data.id;
+    }
+    document.getElementById('kkp-status').textContent = 'Guardado ✓';
+  }catch(e){
+    alert('No se pudo guardar la plantilla:\n'+e.message);
+  }
+}
+
+async function kkDuplicarPlantillaComoNueva(){
+  const base = document.getElementById('kkp-nombre').value.trim() || 'Plantilla';
+  const nombre = prompt('Nombre para la nueva plantilla (copia):', base+' (copia)');
+  if(!nombre) return;
+  const nivel = document.getElementById('kkp-nivel').value;
+  const observaciones = document.getElementById('kkp-observaciones').value.trim();
+  const payload = { nombre, nivel, observaciones, bloques_json: JSON.parse(JSON.stringify(kkBloquesEnEdicion)) };
+  try{
+    const { data, error } = await supa.from('kiaiken_plantillas').insert(payload).select().single();
+    if(error) throw error;
+    DBK.plantillas.push({id:data.id, nombre, nivel, observaciones, bloques:payload.bloques_json, activo:true});
+    kkAbrirEditorPlantilla(data.id);
+    document.getElementById('kkp-status').textContent = 'Duplicada ✓';
+  }catch(e){
+    alert('No se pudo duplicar la plantilla:\n'+e.message);
+  }
+}
+
+async function kkEliminarPlantilla(){
+  if(!kkEditingPlantillaId) return;
+  if(!confirm('¿Eliminar esta plantilla definitivamente? No afecta a las clases que ya se dictaron con ella.')) return;
+  try{
+    const { error } = await supa.from('kiaiken_plantillas').delete().eq('id', kkEditingPlantillaId);
+    if(error) throw error;
+    DBK.plantillas = DBK.plantillas.filter(p=>p.id!==kkEditingPlantillaId);
+    kkCerrarEditorPlantilla();
+  }catch(e){
+    alert('No se pudo eliminar la plantilla:\n'+e.message);
+  }
+}
+
+// ── EJERCICIOS (biblioteca) ──
+function kkFiltrarEjercicios(nivel){
+  kkFiltroEjercicioNivel = nivel;
+  document.querySelectorAll('#kk-ejer-filtro button').forEach(b=>{
+    b.classList.toggle('btn-fill', b.dataset.nivel===nivel);
+    b.classList.toggle('btn-ghost', b.dataset.nivel!==nivel);
+  });
+  const rows = DBK.ejercicios.filter(e=> nivel==='todos' || e.nivel===nivel || !e.nivel);
+  const tbody = document.getElementById('tbl-kk-ejercicios');
+  if(!rows.length){ tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No hay ejercicios para este filtro.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(e=>`<tr onclick="kkAbrirFormEjercicio(${e.id})">
+    <td>${e.nombre}</td><td>${e.nivel||'Todos'}</td><td>${e.categoria||''}</td><td>${e.grupo||''}</td>
+    <td>${e.activo?'<span class="pill pill-ok">Activo</span>':'<span class="pill pill-bad">Inactivo</span>'}</td>
+  </tr>`).join('');
+}
+
+function kkAbrirFormEjercicio(id){
+  kkEditingEjercicioId = id||null;
+  const e = id ? DBK.ejercicios.find(x=>x.id===id) : null;
+  document.getElementById('kke-form-title').textContent = e ? 'Editar Ejercicio' : 'Nuevo Ejercicio';
+  document.getElementById('kke-nombre').value = e ? e.nombre : '';
+  document.getElementById('kke-nivel').value = e ? (e.nivel||'') : '';
+  document.getElementById('kke-categoria').value = e ? e.categoria : '';
+  document.getElementById('kke-grupo').value = e ? e.grupo : '';
+  document.getElementById('kke-progresion').value = e ? e.progresion : '';
+  document.getElementById('kke-justificacion').value = e ? e.justificacion : '';
+  document.getElementById('kke-btn-desactivar').style.display = e ? '' : 'none';
+  document.getElementById('kke-btn-desactivar').textContent = (e && e.activo) ? 'Desactivar' : 'Reactivar';
+  document.getElementById('kk-ejer-form-card').style.display = '';
+}
+function kkCerrarFormEjercicio(){
+  document.getElementById('kk-ejer-form-card').style.display = 'none';
+}
+async function kkGuardarEjercicio(){
+  const nombre = document.getElementById('kke-nombre').value.trim();
+  if(!nombre){ alert('Poné un nombre para el ejercicio.'); return; }
+  const payload = {
+    nombre,
+    nivel: document.getElementById('kke-nivel').value || null,
+    categoria: document.getElementById('kke-categoria').value.trim(),
+    grupo_muscular: document.getElementById('kke-grupo').value.trim(),
+    progresion: document.getElementById('kke-progresion').value.trim(),
+    justificacion: document.getElementById('kke-justificacion').value.trim(),
+  };
+  try{
+    if(kkEditingEjercicioId){
+      const { error } = await supa.from('kiaiken_ejercicios').update(payload).eq('id', kkEditingEjercicioId);
+      if(error) throw error;
+      const e = DBK.ejercicios.find(x=>x.id===kkEditingEjercicioId);
+      Object.assign(e, {nombre, nivel:payload.nivel||'', categoria:payload.categoria, grupo:payload.grupo_muscular, progresion:payload.progresion, justificacion:payload.justificacion});
+    } else {
+      const { data, error } = await supa.from('kiaiken_ejercicios').insert({...payload, activo:true}).select().single();
+      if(error) throw error;
+      DBK.ejercicios.push({id:data.id, nombre, nivel:payload.nivel||'', categoria:payload.categoria, grupo:payload.grupo_muscular, progresion:payload.progresion, justificacion:payload.justificacion, activo:true});
+    }
+    kkCerrarFormEjercicio();
+    kkFiltrarEjercicios(kkFiltroEjercicioNivel);
+  }catch(e){
+    alert('No se pudo guardar el ejercicio:\n'+e.message);
+  }
+}
+async function kkToggleActivoEjercicio(){
+  if(!kkEditingEjercicioId) return;
+  const e = DBK.ejercicios.find(x=>x.id===kkEditingEjercicioId);
+  if(!e) return;
+  const nuevoActivo = !e.activo;
+  try{
+    const { error } = await supa.from('kiaiken_ejercicios').update({activo:nuevoActivo}).eq('id', e.id);
+    if(error) throw error;
+    e.activo = nuevoActivo;
+    kkCerrarFormEjercicio();
+    kkFiltrarEjercicios(kkFiltroEjercicioNivel);
+  }catch(err){
+    alert('No se pudo actualizar el ejercicio:\n'+err.message);
+  }
+}
+
+// ── CLASE EN VIVO (timers) ──
+let kkTimer = { bloques:[], idx:0, fase:'libre', rondaActual:1, remaining:0, running:false, intervalId:null, claseId:null };
+let kkAudioCtx = null;
+
+function kkCargarPlantillasParaNivel(){
+  const nivel = document.getElementById('kkc-nivel').value;
+  const sel = document.getElementById('kkc-plantilla');
+  const opciones = DBK.plantillas.filter(p=>p.nivel===nivel);
+  sel.innerHTML = opciones.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('') || '<option value="">(sin plantillas para este nivel)</option>';
+}
+
+async function kkIniciarClase(){
+  const nivel = document.getElementById('kkc-nivel').value;
+  const plantillaId = Number(document.getElementById('kkc-plantilla').value);
+  const plantilla = DBK.plantillas.find(p=>p.id===plantillaId);
+  if(!plantilla){ alert('Elegí una plantilla para este nivel (o creá una en la pestaña Plantillas).'); return; }
+  const bloques = JSON.parse(JSON.stringify(plantilla.bloques));
+  try{
+    const { data, error } = await supa.from('kiaiken_clases').insert({
+      fecha: new Date().toISOString().slice(0,10), nombre: plantilla.nombre, nivel,
+      plantilla_id: plantillaId, bloques_json: bloques, observaciones: '',
+    }).select().single();
+    if(error) throw error;
+    kkTimer.claseId = data.id;
+  }catch(e){
+    alert('No se pudo iniciar la clase:\n'+e.message); return;
+  }
+  kkTimer.bloques = bloques;
+  document.getElementById('kk-clase-setup').style.display='none';
+  document.getElementById('kk-clase-runner').style.display='';
+  document.getElementById('kkc-observaciones').value='';
+  kkTimerCargarBloque(0);
+  kkTimerRenderBlockList();
+}
+
+function kkBeep(tipo){
+  try{
+    if(!kkAudioCtx) kkAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const freqs = {trabajo:880, cambio:660, fin:440, tick:520};
+    const dur = tipo==='fin' ? 0.35 : 0.12;
+    const o = kkAudioCtx.createOscillator(), g = kkAudioCtx.createGain();
+    o.type='sine'; o.frequency.value = freqs[tipo]||600;
+    g.gain.setValueAtTime(0.18, kkAudioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, kkAudioCtx.currentTime+dur);
+    o.connect(g); g.connect(kkAudioCtx.destination);
+    o.start(); o.stop(kkAudioCtx.currentTime+dur);
+    if(tipo==='fin'){
+      setTimeout(()=>{ try{
+        const o2=kkAudioCtx.createOscillator(), g2=kkAudioCtx.createGain();
+        o2.type='sine'; o2.frequency.value=440;
+        g2.gain.setValueAtTime(0.18, kkAudioCtx.currentTime);
+        g2.gain.exponentialRampToValueAtTime(0.001, kkAudioCtx.currentTime+0.3);
+        o2.connect(g2); g2.connect(kkAudioCtx.destination);
+        o2.start(); o2.stop(kkAudioCtx.currentTime+0.3);
+      }catch(e){} }, 220);
+    }
+  }catch(e){ /* audio no disponible — el timer sigue funcionando solo con el aviso visual */ }
+}
+
+function kkTimerRenderBlockList(){
+  const cont = document.getElementById('kkt-blocklist');
+  cont.innerHTML = kkTimer.bloques.map((b,i)=>`<div class="tb-row ${i===kkTimer.idx?'tb-active':(i<kkTimer.idx?'tb-done':'')}" onclick="kkTimerCargarBloque(${i})">
+    <span>${i+1}. ${b.nombre}</span><span class="mono">${kkFmtMinSeg(b.duracion_seg)}</span>
+  </div>`).join('');
+}
+
+function kkTimerCargarBloque(idx){
+  clearInterval(kkTimer.intervalId);
+  kkTimer.running = false;
+  if(idx<0) idx=0;
+  if(idx>=kkTimer.bloques.length){
+    document.getElementById('kkt-blockname').textContent = 'Clase terminada';
+    document.getElementById('kkt-phase').textContent = '¡Buen trabajo!';
+    document.getElementById('kkt-display').textContent = '00:00';
+    document.getElementById('kkt-meta').textContent = '';
+    document.getElementById('kkt-btn-playpause').textContent = '▶ Iniciar';
+    kkTimerRenderBlockList();
+    return;
+  }
+  kkTimer.idx = idx;
+  const b = kkTimer.bloques[idx];
+  const f = b.formato || {modo:'libre'};
+  kkTimer.rondaActual = 1;
+  if((f.modo==='rounds'||f.modo==='tabata'||f.modo==='circuito') && f.trabajo_seg>0){
+    kkTimer.fase = 'trabajo';
+    kkTimer.remaining = f.trabajo_seg;
+  } else {
+    kkTimer.fase = 'libre';
+    kkTimer.remaining = b.duracion_seg;
+  }
+  kkTimerRender();
+  kkTimerRenderBlockList();
+}
+
+function kkTimerRender(){
+  const b = kkTimer.bloques[kkTimer.idx];
+  if(!b) return;
+  const f = b.formato||{};
+  document.getElementById('kkt-blockname').textContent = b.nombre;
+  const faseTxt = kkTimer.fase==='trabajo' ? 'Trabajo' : (kkTimer.fase==='descanso' ? 'Descanso' : 'En curso');
+  document.getElementById('kkt-phase').textContent = faseTxt;
+  document.getElementById('kkt-display').textContent = kkFmtMinSeg(kkTimer.remaining);
+  const disp = document.getElementById('kkt-display');
+  disp.className = 'timer-big ' + (kkTimer.remaining<=3 ? 'fase-final' : (kkTimer.fase==='trabajo' ? 'fase-trabajo' : (kkTimer.fase==='descanso' ? 'fase-descanso' : '')));
+  let meta = `Bloque ${kkTimer.idx+1} de ${kkTimer.bloques.length}`;
+  if(f.rondas) meta += ` · Ronda ${kkTimer.rondaActual}/${f.rondas}`;
+  if(b.notas) meta += ` · ${b.notas}`;
+  document.getElementById('kkt-meta').textContent = meta;
+  document.getElementById('kkt-btn-playpause').textContent = kkTimer.running ? '⏸ Pausar' : '▶ Iniciar';
+}
+
+function kkTimerTick(){
+  kkTimer.remaining--;
+  if(kkTimer.remaining>=0 && kkTimer.remaining<=2) kkBeep('tick');
+  if(kkTimer.remaining<=0){
+    const b = kkTimer.bloques[kkTimer.idx];
+    const f = b.formato||{modo:'libre'};
+    if(kkTimer.fase==='libre'){
+      kkBeep('fin');
+      kkTimerCargarBloque(kkTimer.idx+1);
+      return;
+    }
+    if(kkTimer.fase==='trabajo'){
+      const rondas = f.rondas||0;
+      if(rondas && kkTimer.rondaActual>=rondas){ kkBeep('fin'); kkTimerCargarBloque(kkTimer.idx+1); return; }
+      if(f.descanso_seg>0){ kkTimer.fase='descanso'; kkTimer.remaining=f.descanso_seg; kkBeep('cambio'); }
+      else { kkTimer.rondaActual++; kkTimer.fase='trabajo'; kkTimer.remaining=f.trabajo_seg; kkBeep('trabajo'); }
+    } else if(kkTimer.fase==='descanso'){
+      kkTimer.rondaActual++;
+      const rondas = f.rondas||0;
+      if(rondas && kkTimer.rondaActual>rondas){ kkBeep('fin'); kkTimerCargarBloque(kkTimer.idx+1); return; }
+      kkTimer.fase='trabajo'; kkTimer.remaining=f.trabajo_seg; kkBeep('trabajo');
+    }
+  }
+  kkTimerRender();
+}
+
+function kkTimerPlayPause(){
+  kkTimer.running = !kkTimer.running;
+  if(kkTimer.running){
+    kkTimer.intervalId = setInterval(kkTimerTick, 1000);
+  } else {
+    clearInterval(kkTimer.intervalId);
+  }
+  kkTimerRender();
+}
+function kkTimerReiniciar(){ kkTimerCargarBloque(kkTimer.idx); }
+function kkTimerSaltoAdelante(){ kkTimerCargarBloque(kkTimer.idx+1); }
+function kkTimerSaltoAtras(){ kkTimerCargarBloque(Math.max(0,kkTimer.idx-1)); }
+
+async function kkGuardarClaseEnHistorial(){
+  if(!kkTimer.claseId) return;
+  const observaciones = document.getElementById('kkc-observaciones').value.trim();
+  try{
+    const { error } = await supa.from('kiaiken_clases').update({observaciones}).eq('id', kkTimer.claseId);
+    if(error) throw error;
+    const c = DBK.clases.find(x=>x.id===kkTimer.claseId);
+    if(c) c.observaciones = observaciones;
+    else DBK.clases.unshift({id:kkTimer.claseId, fecha:new Date().toISOString().slice(0,10), nombre:kkTimer.bloques.length?document.getElementById('kkt-blockname').textContent:'', nivel:document.getElementById('kkc-nivel').value, bloques:kkTimer.bloques, observaciones});
+    document.getElementById('kkc-status').textContent = 'Guardado en el historial ✓';
+    setTimeout(kkCerrarClase, 900);
+  }catch(e){
+    alert('No se pudo guardar la clase en el historial:\n'+e.message);
+  }
+}
+function kkCerrarClase(){
+  clearInterval(kkTimer.intervalId);
+  kkTimer = { bloques:[], idx:0, fase:'libre', rondaActual:1, remaining:0, running:false, intervalId:null, claseId:null };
+  document.getElementById('kk-clase-runner').style.display='none';
+  document.getElementById('kk-clase-setup').style.display='';
+  kkCargarPlantillasParaNivel();
+  kkRenderHistorial();
+}
+
+// ── HISTORIAL ──
+function kkRenderHistorial(){
+  const tbody = document.getElementById('tbl-kk-historial');
+  if(!DBK.clases.length){ tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Todavía no se registró ninguna clase de Kiaiken.</td></tr>'; return; }
+  tbody.innerHTML = DBK.clases.map(c=>`<tr>
+    <td>${c.fecha}</td><td>${c.nivel}</td><td>${c.nombre||''}</td><td>${c.observaciones||''}</td>
+  </tr>`).join('');
 }
 
 // INIT
