@@ -257,9 +257,6 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
   .hdr-badge{display:none;}
 }
 </style>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 
@@ -328,11 +325,15 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>
       Kiaiken
     </button>
+    <button class="nav-btn" data-page="profesores" onclick="showPage('profesores',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="3"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M2 21v-1a3 3 0 0 1 3-3M22 21v-1a3 3 0 0 0-3-3"/></svg>
+      Profesores Externos
+    </button>
     <button class="nav-btn" data-page="config" onclick="showPage('config',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
       Config
     </button>
-    <div class="sidebar-foot mono">ETAPA 1-2/5 · ALUMNOS+CUOTAS+ASISTENCIA+KARATE+KIAIKEN</div>
+    <div class="sidebar-foot mono">ETAPA 1-2/5 · ALUMNOS+CUOTAS+ASISTENCIA+KARATE+KIAIKEN+PROFESORES</div>
   </nav>
 
   <main>
@@ -415,6 +416,8 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
             <div class="form-item"><label>Nombre</label><input id="f-nombre" type="text"></div>
             <div class="form-item"><label>Apellido</label><input id="f-apellido" type="text"></div>
             <div class="form-item"><label>DNI</label><input id="f-dni" type="text" placeholder="Sin puntos"></div>
+            <div class="form-item"><label>Teléfono</label><input id="f-telefono" type="text" placeholder="Ej: 3546..."></div>
+            <div class="form-item"><label>Email</label><input id="f-email" type="email" placeholder="opcional"></div>
             <div class="form-item"><label>Fecha de Nacimiento</label><input id="f-fnac" type="date"></div>
             <div class="form-item"><label>Categoría</label>
               <select id="f-categoria"><option>Infantil</option><option>Cadetes</option><option>Juveniles</option><option>Adultos</option></select>
@@ -754,6 +757,114 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       </div>
     </div>
 
+    <!-- PROFESORES EXTERNOS -->
+    <div class="page" id="page-profesores">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t">Profesores Externos</span>
+          <button class="btn btn-fill btn-sm" onclick="openProfesorForm()">+ Nuevo Profesor</button>
+        </div>
+        <div class="card-body" style="padding:12px 18px;">
+          <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">
+            Profesionales independientes que alquilan el espacio para dictar su propia
+            disciplina — no son personal del dojo, solo usan las instalaciones.
+          </p>
+          <div id="profesor-filtro-estado" style="display:flex;gap:8px;margin-bottom:12px;">
+            <button class="btn btn-sm btn-fill" data-filtro="Activo" onclick="setFiltroProfesores('Activo')">Activos</button>
+            <button class="btn btn-sm btn-ghost" data-filtro="Inactivo" onclick="setFiltroProfesores('Inactivo')">Inactivos</button>
+            <button class="btn btn-sm btn-ghost" data-filtro="Todos" onclick="setFiltroProfesores('Todos')">Todos</button>
+          </div>
+          <table class="tbl"><thead><tr><th>Nombre</th><th>Disciplina</th><th>Días/Horarios</th><th>Acuerdo</th><th>Estado</th></tr></thead>
+            <tbody id="tbl-profesores"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFESOR FORM -->
+    <div class="page" id="page-profesor-form">
+      <div class="detail-back" onclick="showPage('profesores')">← Cancelar</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t" id="pf-title">Nuevo Profesor</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item"><label>Nombre y Apellido</label><input id="pf-nombre" type="text"></div>
+            <div class="form-item"><label>DNI</label><input id="pf-dni" type="text" placeholder="Sin puntos"></div>
+            <div class="form-item"><label>Teléfono</label><input id="pf-telefono" type="text"></div>
+            <div class="form-item"><label>Email</label><input id="pf-email" type="email"></div>
+            <div class="form-item"><label>Disciplina que dicta</label><input id="pf-disciplina" type="text" placeholder="Ej: Gimnasia, Yoga"></div>
+            <div class="form-item"><label>Días y Horarios</label><input id="pf-dias-horarios" type="text" placeholder="Ej: Lun/Mié/Vie 8 a 9"></div>
+            <div class="form-item"><label>Tipo de Acuerdo</label>
+              <select id="pf-tipo-acuerdo">
+                <option value="Alquiler fijo mensual">Alquiler fijo mensual</option>
+                <option value="Porcentaje">Porcentaje de lo recaudado</option>
+                <option value="Por clase">Importe por clase/hora</option>
+                <option value="Otro">Otro / en especie</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Valor del Acuerdo</label><input id="pf-valor-acuerdo" type="number" placeholder="Monto o % según el tipo"></div>
+            <div class="form-item"><label>Estado</label>
+              <select id="pf-estado"><option>Activo</option><option>Inactivo</option></select>
+            </div>
+            <div class="form-item full"><label>Observaciones</label><textarea id="pf-observaciones" rows="2" placeholder="Ej: paga con limpieza en vez de efectivo"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-fill" onclick="saveProfesor()">Guardar</button>
+            <button class="btn btn-ghost" onclick="showPage('profesores')">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFESOR DETAIL -->
+    <div class="page" id="page-profesor-detail">
+      <div class="detail-back" onclick="showPage('profesores')">← Volver a Profesores</div>
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t" id="pd-name">—</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="editProfesor()">✏ Editar</button>
+            <button class="btn btn-ghost btn-sm" id="pd-btn-estado" onclick="toggleEstadoProfesor()">⏸ Marcar Inactivo</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarProfesorDefinitivo()">🗑 Eliminar</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="detail-grid" id="pd-fields"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Saldo</span></div>
+        <div class="card-body">
+          <div class="hud-row" id="pd-saldo-stats"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Registrar Pago</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item"><label>Fecha</label><input id="pp-fecha" type="date"></div>
+            <div class="form-item"><label>Concepto</label><input id="pp-concepto" type="text" placeholder="Ej: Alquiler septiembre"></div>
+            <div class="form-item"><label>Monto</label><input id="pp-monto" type="number"></div>
+            <div class="form-item"><label>Método de Pago</label>
+              <select id="pp-metodo"><option>Efectivo</option><option>Transferencia</option><option>En especie</option><option>Otro</option></select>
+            </div>
+            <div class="form-item"><label>Vencimiento</label><input id="pp-vencimiento" type="date"></div>
+            <div class="form-item"><label>Estado</label>
+              <select id="pp-estado"><option>Pagado</option><option>Pendiente</option><option>Parcial</option></select>
+            </div>
+            <div class="form-item full"><label>Observaciones</label><input id="pp-observaciones" type="text"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-fill" onclick="registrarPagoProfesor()">Registrar Pago</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Historial de Pagos</span></div>
+        <div class="card-body" style="padding:0;">
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Método</th><th>Vencimiento</th><th>Estado</th></tr></thead>
+            <tbody id="pd-pagos"></tbody></table>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIG -->
     <div class="page" id="page-config">
       <div class="card">
@@ -881,11 +992,11 @@ function diasEntre(f1,f2){ return Math.round((new Date(f2)-new Date(f1))/8640000
 // ═══════════════════════════════════════
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
-let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[] };
+let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[] };
 let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
-  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR] = await Promise.all([
+  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR] = await Promise.all([
     supa.from('disciplinas').select('id,nombre'),
     supa.from('aranceles').select('disciplina_id,monto').is('vigencia_hasta', null),
     supa.from('configuracion').select('clave,valor'),
@@ -896,8 +1007,23 @@ async function cargarDatos(){
     supa.from('kiaiken_ejercicios').select('*').order('id'),
     supa.from('kiaiken_plantillas').select('*').order('id'),
     supa.from('kiaiken_clases').select('*').order('fecha', { ascending:false }),
+    supa.from('profesores').select('*').order('nombre'),
+    supa.from('pagos_profesores').select('*').order('fecha', { ascending:false }),
   ]);
-  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR]) if(r.error) throw r.error;
+  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR]) if(r.error) throw r.error;
+
+  DB.profesores = (profR.data||[]).map(p=>({
+    id:p.id, nombre:p.nombre, dni:p.dni||'', telefono:p.telefono||'', email:p.email||'',
+    disciplina:p.disciplina||'', diasHorarios:p.dias_horarios||'',
+    tipoAcuerdo:p.tipo_acuerdo||'', valorAcuerdo:p.valor_acuerdo||0,
+    observaciones:p.observaciones||'', estado:p.estado||'Activo',
+  }));
+  DB.pagosProfesores = (pagProfR.data||[]).map(p=>({
+    id:p.id, profesorId:p.profesor_id, fecha:p.fecha, concepto:p.concepto||'',
+    monto:p.monto, metodo:p.metodo_pago||'', vencimiento:p.vencimiento||'',
+    estadoPago:p.estado_pago||'Pagado', saldoPendiente:p.saldo_pendiente||0,
+    observaciones:p.observaciones||'',
+  }));
 
   DBK.ejercicios = (kkejR.data||[]).map(e=>({
     id:e.id, nombre:e.nombre, categoria:e.categoria||'', nivel:e.nivel||'', grupo:e.grupo_muscular||'',
@@ -931,7 +1057,7 @@ async function cargarDatos(){
   DB.alumnos = (alR.data||[]).map(a=>{
     const s = saludPorAlumno[a.id] || {};
     return {
-      id:a.id, nombre:a.nombre, apellido:a.apellido, dni:a.dni||'', fnac:a.fecha_nacimiento||'',
+      id:a.id, nombre:a.nombre, apellido:a.apellido, dni:a.dni||'', telefono:a.telefono||'', email:a.email||'', fnac:a.fecha_nacimiento||'',
       categoria:a.categoria||'', disciplina:discNombrePorId[a.disciplina_id]||'',
       turno:a.turno||'', estado:a.estado||'Activo', domicilio:a.domicilio||'',
       condicion:s.condicion_medica||'No', sangre:s.grupo_sanguineo||'', detalleSalud:s.detalle||'',
@@ -974,7 +1100,8 @@ function showPage(id, btn){
   else{
     const navMap = {alumnos:'alumnos', cuotas:'cuotas', home:'home', config:'config',
       asistencia:'asistencia', karate:'karate', kiaiken:'kiaiken',
-      tecnicas:'kiaiken', 'tecnica-detail':'kiaiken', 'tecnica-form':'kiaiken'};
+      tecnicas:'kiaiken', 'tecnica-detail':'kiaiken', 'tecnica-form':'kiaiken',
+      profesores:'profesores', 'profesor-form':'profesores', 'profesor-detail':'profesores'};
     const nb = document.querySelector(`.nav-btn[data-page="${navMap[id]||id}"]`);
     if(nb) nb.classList.add('active');
   }
@@ -985,6 +1112,7 @@ function showPage(id, btn){
   if(id==='asistencia') cargarAsistenciaDelDia();
   if(id==='tecnicas') renderTecnicasList();
   if(id==='kiaiken') kkShowTab(kkTabActual||'plantillas');
+  if(id==='profesores') renderProfesoresList();
 }
 
 // ═══════════════════════════════════════
@@ -1111,7 +1239,7 @@ let editingAlumnoId = null;
 function openAlumnoForm(){
   editingAlumnoId = null;
   document.getElementById('af-title').textContent = 'Nuevo Alumno';
-  ['f-nombre','f-apellido','f-dni','f-fnac','f-turno','f-domicilio','f-sangre','f-detalle-salud'].forEach(id=>document.getElementById(id).value='');
+  ['f-nombre','f-apellido','f-dni','f-telefono','f-email','f-fnac','f-turno','f-domicilio','f-sangre','f-detalle-salud'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-categoria').value='Infantil';
   document.getElementById('f-disciplina').value='Karate';
   document.getElementById('f-estado').value='Activo';
@@ -1126,6 +1254,8 @@ function editAlumno(){
   document.getElementById('f-nombre').value=a.nombre;
   document.getElementById('f-apellido').value=a.apellido;
   document.getElementById('f-dni').value=a.dni||'';
+  document.getElementById('f-telefono').value=a.telefono||'';
+  document.getElementById('f-email').value=a.email||'';
   document.getElementById('f-fnac').value=a.fnac;
   document.getElementById('f-categoria').value=a.categoria;
   document.getElementById('f-disciplina').value=a.disciplina;
@@ -1143,6 +1273,8 @@ async function saveAlumno(){
     nombre: document.getElementById('f-nombre').value.trim(),
     apellido: document.getElementById('f-apellido').value.trim(),
     dni: document.getElementById('f-dni').value.trim(),
+    telefono: document.getElementById('f-telefono').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
     fnac: document.getElementById('f-fnac').value,
     categoria: document.getElementById('f-categoria').value,
     disciplina: document.getElementById('f-disciplina').value,
@@ -1177,6 +1309,13 @@ async function saveAlumno(){
   if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
   if(error){ alert('No se pudo guardar el alumno:\n'+error.message); return; }
 
+  // Teléfono y email viven directo en "alumnos" (no forman parte de
+  // guardar_alumno_completo todavía) — se guardan con un update aparte.
+  const { error: errContacto } = await supa.from('alumnos')
+    .update({ telefono: data.telefono || null, email: data.email || null })
+    .eq('id', nuevoId);
+  if(errContacto){ alert('El alumno se guardó, pero no se pudo guardar el contacto:\n'+errContacto.message); }
+
   data.id = nuevoId;
   if(editingAlumnoId){
     const idx = DB.alumnos.findIndex(x=>x.id===editingAlumnoId);
@@ -1195,6 +1334,8 @@ function viewAlumno(id){
   document.getElementById('ad-name').textContent = a.nombre+' '+a.apellido;
   document.getElementById('ad-fields').innerHTML = `
     <div class="detail-item"><label>DNI</label><span>${a.dni||'—'}</span></div>
+    <div class="detail-item"><label>Teléfono</label><span>${a.telefono||'—'}</span></div>
+    <div class="detail-item"><label>Email</label><span>${a.email||'—'}</span></div>
     <div class="detail-item"><label>Categoría</label><span>${a.categoria}</span></div>
     <div class="detail-item"><label>Disciplina</label><span>${a.disciplina}</span></div>
     <div class="detail-item"><label>Turno</label><span>${a.turno||'—'}</span></div>
@@ -1580,7 +1721,227 @@ async function saveConfig(){
 }
 
 function refreshAll(){
-  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm();
+  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList();
+}
+
+// ═══════════════════════════════════════
+// PROFESORES EXTERNOS
+// ═══════════════════════════════════════
+let filtroProfesoresEstado = 'Activo';
+function setFiltroProfesores(v){
+  filtroProfesoresEstado = v;
+  document.querySelectorAll('#profesor-filtro-estado button').forEach(b=>{
+    const activo = b.dataset.filtro===v;
+    b.className = 'btn btn-sm ' + (activo?'btn-fill':'btn-ghost');
+  });
+  renderProfesoresList();
+}
+
+function renderProfesoresList(){
+  const tbody = document.getElementById('tbl-profesores');
+  if(!tbody) return;
+  const lista = DB.profesores.filter(p=>filtroProfesoresEstado==='Todos' || p.estado===filtroProfesoresEstado);
+  tbody.innerHTML = lista.length ? lista.map(p=>`
+    <tr onclick="viewProfesor(${p.id})">
+      <td>${p.nombre}</td>
+      <td>${p.disciplina||'—'}</td>
+      <td>${p.diasHorarios||'—'}</td>
+      <td>${p.tipoAcuerdo||'—'}${p.valorAcuerdo?' · '+(p.tipoAcuerdo==='Porcentaje'?p.valorAcuerdo+'%':'$'+Number(p.valorAcuerdo).toLocaleString('es-AR')):''}</td>
+      <td><span class="pill ${p.estado==='Activo'?'pill-ok':'pill-warn'}">${p.estado}</span></td>
+    </tr>`).join('') : '<tr><td colspan="5" class="empty-state">Sin profesores registrados</td></tr>';
+}
+
+let editingProfesorId = null;
+
+function openProfesorForm(){
+  editingProfesorId = null;
+  document.getElementById('pf-title').textContent = 'Nuevo Profesor';
+  ['pf-nombre','pf-dni','pf-telefono','pf-email','pf-disciplina','pf-dias-horarios','pf-valor-acuerdo','pf-observaciones']
+    .forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pf-tipo-acuerdo').value='Alquiler fijo mensual';
+  document.getElementById('pf-estado').value='Activo';
+  showPage('profesor-form');
+}
+
+function editProfesor(){
+  const p = DB.profesores.find(x=>x.id===editingProfesorId);
+  if(!p) return;
+  document.getElementById('pf-title').textContent = 'Editar Profesor';
+  document.getElementById('pf-nombre').value=p.nombre;
+  document.getElementById('pf-dni').value=p.dni||'';
+  document.getElementById('pf-telefono').value=p.telefono||'';
+  document.getElementById('pf-email').value=p.email||'';
+  document.getElementById('pf-disciplina').value=p.disciplina||'';
+  document.getElementById('pf-dias-horarios').value=p.diasHorarios||'';
+  document.getElementById('pf-tipo-acuerdo').value=p.tipoAcuerdo||'Alquiler fijo mensual';
+  document.getElementById('pf-valor-acuerdo').value=p.valorAcuerdo||'';
+  document.getElementById('pf-estado').value=p.estado;
+  document.getElementById('pf-observaciones').value=p.observaciones||'';
+  showPage('profesor-form');
+}
+
+async function saveProfesor(){
+  const data = {
+    nombre: document.getElementById('pf-nombre').value.trim(),
+    dni: document.getElementById('pf-dni').value.trim(),
+    telefono: document.getElementById('pf-telefono').value.trim(),
+    email: document.getElementById('pf-email').value.trim(),
+    disciplina: document.getElementById('pf-disciplina').value.trim(),
+    diasHorarios: document.getElementById('pf-dias-horarios').value.trim(),
+    tipoAcuerdo: document.getElementById('pf-tipo-acuerdo').value,
+    valorAcuerdo: Number(document.getElementById('pf-valor-acuerdo').value)||0,
+    estado: document.getElementById('pf-estado').value,
+    observaciones: document.getElementById('pf-observaciones').value.trim(),
+  };
+  if(!data.nombre){ alert('El nombre es obligatorio.'); return; }
+
+  const btn = document.querySelector('#page-profesor-form .btn-fill');
+  if(btn){ btn.disabled = true; btn.textContent = 'Guardando…'; }
+
+  const payload = {
+    nombre: data.nombre, dni: data.dni||null, telefono: data.telefono||null, email: data.email||null,
+    disciplina: data.disciplina||null, dias_horarios: data.diasHorarios||null,
+    tipo_acuerdo: data.tipoAcuerdo, valor_acuerdo: data.valorAcuerdo,
+    estado: data.estado, observaciones: data.observaciones||null,
+  };
+
+  let result;
+  if(editingProfesorId){
+    result = await supa.from('profesores').update(payload).eq('id', editingProfesorId).select().single();
+  } else {
+    result = await supa.from('profesores').insert(payload).select().single();
+  }
+
+  if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
+  if(result.error){ alert('No se pudo guardar el profesor:\n'+result.error.message); return; }
+
+  data.id = result.data.id;
+  if(editingProfesorId){
+    const idx = DB.profesores.findIndex(x=>x.id===editingProfesorId);
+    DB.profesores[idx] = data;
+  } else {
+    DB.profesores.push(data);
+  }
+  showPage('profesores');
+}
+
+function viewProfesor(id){
+  editingProfesorId = id;
+  const p = DB.profesores.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('pd-name').textContent = p.nombre;
+  document.getElementById('pd-fields').innerHTML = `
+    <div class="detail-item"><label>DNI</label><span>${p.dni||'—'}</span></div>
+    <div class="detail-item"><label>Teléfono</label><span>${p.telefono||'—'}</span></div>
+    <div class="detail-item"><label>Email</label><span>${p.email||'—'}</span></div>
+    <div class="detail-item"><label>Disciplina</label><span>${p.disciplina||'—'}</span></div>
+    <div class="detail-item"><label>Días/Horarios</label><span>${p.diasHorarios||'—'}</span></div>
+    <div class="detail-item"><label>Tipo de Acuerdo</label><span>${p.tipoAcuerdo||'—'}</span></div>
+    <div class="detail-item"><label>Valor</label><span>${p.valorAcuerdo?(p.tipoAcuerdo==='Porcentaje'?p.valorAcuerdo+'%':'$'+Number(p.valorAcuerdo).toLocaleString('es-AR')):'—'}</span></div>
+    <div class="detail-item"><label>Estado</label><span><span class="pill ${p.estado==='Activo'?'pill-ok':'pill-warn'}">${p.estado}</span></span></div>
+    <div class="detail-item" style="grid-column:1/-1;"><label>Observaciones</label><span>${p.observaciones||'—'}</span></div>
+  `;
+  const btnEstado = document.getElementById('pd-btn-estado');
+  if(btnEstado) btnEstado.textContent = p.estado==='Activo' ? '⏸ Marcar Inactivo' : '▶ Reactivar';
+
+  document.getElementById('pp-fecha').value = HOY;
+
+  const pagos = DB.pagosProfesores.filter(x=>x.profesorId===id).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+  const saldoPendiente = pagos.reduce((s,x)=>s+Number(x.saldoPendiente||0),0);
+  const totalPagado = pagos.filter(x=>x.estadoPago==='Pagado').reduce((s,x)=>s+Number(x.monto),0);
+  document.getElementById('pd-saldo-stats').innerHTML = `
+    <div class="hud-card">${hudRing(saldoPendiente>0?100:0,'$')}
+      <div class="hud-info"><div class="hud-label">Saldo Pendiente</div><div class="hud-value">$${saldoPendiente.toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(70,'$')}
+      <div class="hud-info"><div class="hud-label">Total Pagado (histórico)</div><div class="hud-value">$${totalPagado.toLocaleString('es-AR')}</div></div></div>
+  `;
+
+  const tbody = document.getElementById('pd-pagos');
+  tbody.innerHTML = pagos.length ? pagos.map(x=>`
+    <tr><td>${x.fecha}</td><td>${x.concepto||'—'}</td><td>$${Number(x.monto).toLocaleString('es-AR')}</td>
+    <td>${x.metodo||'—'}</td><td>${x.vencimiento||'—'}</td>
+    <td><span class="pill ${x.estadoPago==='Pagado'?'pill-ok':'pill-warn'}">${x.estadoPago}</span></td></tr>`).join('')
+    : '<tr><td colspan="6" class="empty-state">Sin pagos registrados</td></tr>';
+
+  showPage('profesor-detail');
+}
+
+async function toggleEstadoProfesor(){
+  const p = DB.profesores.find(x=>x.id===editingProfesorId);
+  if(!p) return;
+  const reactivar = p.estado !== 'Activo';
+  const nuevoEstado = reactivar ? 'Activo' : 'Inactivo';
+  const msg = reactivar
+    ? `¿Reactivar a ${p.nombre}?`
+    : `¿Marcar a ${p.nombre} como inactivo? Se conserva todo su historial de pagos — podés reactivarlo cuando quieras.`;
+  if(!confirm(msg)) return;
+
+  const btn = document.getElementById('pd-btn-estado');
+  if(btn){ btn.disabled = true; }
+  const { error } = await supa.from('profesores').update({ estado: nuevoEstado }).eq('id', p.id);
+  if(btn){ btn.disabled = false; }
+  if(error){ alert('No se pudo actualizar el estado:\n'+error.message); return; }
+
+  p.estado = nuevoEstado;
+  viewProfesor(p.id);
+  renderProfesoresList();
+}
+
+// Eliminar definitivamente — solo para altas hechas por error. Si tiene pagos
+// registrados se bloquea y se sugiere "Marcar Inactivo" en su lugar.
+async function eliminarProfesorDefinitivo(){
+  const p = DB.profesores.find(x=>x.id===editingProfesorId);
+  if(!p) return;
+
+  const pagosCount = DB.pagosProfesores.filter(x=>x.profesorId===p.id).length;
+  if(pagosCount){
+    alert(`No se puede eliminar a ${p.nombre}: tiene ${pagosCount} pago(s) registrado(s).\n\nUsá "Marcar Inactivo" en su lugar — así se conserva el historial.`);
+    return;
+  }
+
+  if(!confirm(`Vas a eliminar definitivamente a ${p.nombre}.\n\nNo tiene pagos registrados. Esta acción NO se puede deshacer.\n\n¿Confirmás que fue dado de alta por error?`)) return;
+
+  const { error } = await supa.from('profesores').delete().eq('id', p.id);
+  if(error){ alert('No se pudo eliminar al profesor:\n'+error.message); return; }
+
+  DB.profesores = DB.profesores.filter(x=>x.id!==p.id);
+  showPage('profesores');
+}
+
+async function registrarPagoProfesor(){
+  const monto = Number(document.getElementById('pp-monto').value);
+  if(!editingProfesorId || !monto){ alert('Elegí un profesor (desde su ficha) y un monto.'); return; }
+
+  const btn = document.querySelector('#page-profesor-detail .btn-fill');
+  if(btn){ btn.disabled = true; btn.textContent = 'Guardando…'; }
+
+  const estadoPago = document.getElementById('pp-estado').value;
+  const saldoPendiente = estadoPago === 'Pagado' ? 0 : monto;
+
+  const { data, error } = await supa.from('pagos_profesores').insert({
+    profesor_id: editingProfesorId,
+    fecha: document.getElementById('pp-fecha').value || HOY,
+    concepto: document.getElementById('pp-concepto').value.trim() || null,
+    monto,
+    metodo_pago: document.getElementById('pp-metodo').value,
+    vencimiento: document.getElementById('pp-vencimiento').value || null,
+    estado_pago: estadoPago,
+    saldo_pendiente: saldoPendiente,
+    observaciones: document.getElementById('pp-observaciones').value.trim() || null,
+  }).select().single();
+
+  if(btn){ btn.disabled = false; btn.textContent = 'Registrar Pago'; }
+  if(error){ alert('No se pudo registrar el pago:\n'+error.message); return; }
+
+  DB.pagosProfesores.push({
+    id:data.id, profesorId:data.profesor_id, fecha:data.fecha, concepto:data.concepto||'',
+    monto:data.monto, metodo:data.metodo_pago||'', vencimiento:data.vencimiento||'',
+    estadoPago:data.estado_pago, saldoPendiente:data.saldo_pendiente||0,
+    observaciones:data.observaciones||'',
+  });
+
+  ['pp-concepto','pp-monto','pp-vencimiento','pp-observaciones'].forEach(id=>document.getElementById(id).value='');
+  viewProfesor(editingProfesorId);
 }
 
 // ═══════════════════════════════════════
@@ -2085,14 +2446,6 @@ function kkRenderHistorial(){
 
 // INIT
 initSupabase();
-
-// Registro del service worker (solo permite instalar como PWA; no cachea
-// datos de Supabase — ver comentarios en sw.js).
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
-}
 </script>
 </body>
 </html>
