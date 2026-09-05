@@ -328,6 +328,10 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="3"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M2 21v-1a3 3 0 0 1 3-3M22 21v-1a3 3 0 0 0-3-3"/></svg>
       Profesores Externos
     </button>
+    <button class="nav-btn" data-page="economia" onclick="showPage('economia',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Economía del Dojo
+    </button>
     <button class="nav-btn" data-page="config" onclick="showPage('config',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
       Config
@@ -853,7 +857,8 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
           </p>
           <div id="profesor-filtro-estado" style="display:flex;gap:8px;margin-bottom:12px;">
             <button class="btn btn-sm btn-fill" data-filtro="Activo" onclick="setFiltroProfesores('Activo')">Activos</button>
-            <button class="btn btn-sm btn-ghost" data-filtro="Inactivo" onclick="setFiltroProfesores('Inactivo')">Inactivos</button>
+            <button class="btn btn-sm btn-ghost" data-filtro="Pausado" onclick="setFiltroProfesores('Pausado')">Pausados</button>
+            <button class="btn btn-sm btn-ghost" data-filtro="Finalizado" onclick="setFiltroProfesores('Finalizado')">Finalizados</button>
             <button class="btn btn-sm btn-ghost" data-filtro="Todos" onclick="setFiltroProfesores('Todos')">Todos</button>
           </div>
           <table class="tbl"><thead><tr><th>Nombre</th><th>Disciplina</th><th>Días/Horarios</th><th>Acuerdo</th><th>Estado</th></tr></thead>
@@ -880,13 +885,17 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
                 <option value="Alquiler fijo mensual">Alquiler fijo mensual</option>
                 <option value="Porcentaje">Porcentaje de lo recaudado</option>
                 <option value="Por clase">Importe por clase/hora</option>
+                <option value="Por alumno">Importe por alumno</option>
                 <option value="Otro">Otro / en especie</option>
               </select>
             </div>
             <div class="form-item"><label>Valor del Acuerdo</label><input id="pf-valor-acuerdo" type="number" placeholder="Monto o % según el tipo"></div>
+            <div class="form-item"><label>Inicio del Acuerdo</label><input id="pf-fecha-inicio" type="date"></div>
+            <div class="form-item"><label>Fin del Acuerdo</label><input id="pf-fecha-fin" type="date" placeholder="Vacío = sin fecha de fin"></div>
             <div class="form-item"><label>Estado</label>
-              <select id="pf-estado"><option>Activo</option><option>Inactivo</option></select>
+              <select id="pf-estado"><option>Activo</option><option>Pausado</option><option>Finalizado</option></select>
             </div>
+            <div class="form-item"><label>Documentación / Contrato</label><input id="pf-documentacion" type="text" placeholder="Link a Drive u otro, si corresponde"></div>
             <div class="form-item full"><label>Observaciones</label><textarea id="pf-observaciones" rows="2" placeholder="Ej: paga con limpieza en vez de efectivo"></textarea></div>
           </div>
           <div class="form-actions">
@@ -903,9 +912,10 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <div class="card">
         <div class="card-hdr">
           <span class="card-hdr-t" id="pd-name">—</span>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
             <button class="btn btn-ghost btn-sm" onclick="editProfesor()">✏ Editar</button>
-            <button class="btn btn-ghost btn-sm" id="pd-btn-estado" onclick="toggleEstadoProfesor()">⏸ Marcar Inactivo</button>
+            <select id="pd-select-estado" style="width:auto;"><option>Activo</option><option>Pausado</option><option>Finalizado</option></select>
+            <button class="btn btn-ghost btn-sm" onclick="cambiarEstadoProfesor()">Actualizar Estado</button>
             <button class="btn btn-danger btn-sm" onclick="eliminarProfesorDefinitivo()">🗑 Eliminar</button>
           </div>
         </div>
@@ -943,6 +953,61 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
         <div class="card-body" style="padding:0;">
           <table class="tbl"><thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Método</th><th>Vencimiento</th><th>Estado</th></tr></thead>
             <tbody id="pd-pagos"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ECONOMÍA DEL DOJO -->
+    <div class="page" id="page-economia">
+      <div class="hud-row" id="economia-stats"></div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Cargar Gasto</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item"><label>Fecha</label><input id="ga-fecha" type="date"></div>
+            <div class="form-item"><label>Categoría</label>
+              <select id="ga-categoria">
+                <option>Electricidad</option><option>Limpieza</option><option>Mantenimiento</option>
+                <option>Equipamiento</option><option>Publicidad</option><option>Servicios</option>
+                <option>Mejoras</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Concepto</label><input id="ga-concepto" type="text" placeholder="Ej: Factura EPEC septiembre"></div>
+            <div class="form-item"><label>Monto</label><input id="ga-monto" type="number"></div>
+            <div class="form-item"><label>Vencimiento</label><input id="ga-vencimiento" type="date" placeholder="Opcional"></div>
+            <div class="form-item"><label>Estado</label>
+              <select id="ga-estado"><option>Pagado</option><option>Pendiente</option></select>
+            </div>
+            <div class="form-item full"><label>Observaciones</label><input id="ga-observaciones" type="text"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-fill" onclick="registrarGasto()">Cargar Gasto</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Ingresos y Deuda</span></div>
+        <div class="card-body">
+          <div class="hud-row" id="economia-ingresos-deuda"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Gastos</span></div>
+        <div class="card-body">
+          <div class="form-grid" style="margin-bottom:10px;">
+            <div class="form-item"><label>Mes</label><input id="ga-filtro-mes" type="month"></div>
+            <div class="form-item"><label>Categoría</label>
+              <select id="ga-filtro-categoria"><option value="">Todas</option>
+                <option>Electricidad</option><option>Limpieza</option><option>Mantenimiento</option>
+                <option>Equipamiento</option><option>Publicidad</option><option>Servicios</option>
+                <option>Mejoras</option><option>Otro</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="renderGastos()" style="margin-bottom:10px;">Aplicar filtros</button>
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Categoría</th><th>Concepto</th><th>Monto</th><th>Vencimiento</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="tbl-gastos"></tbody></table>
         </div>
       </div>
     </div>
@@ -1081,11 +1146,11 @@ const HOY = fechaLocalISO();
 // ═══════════════════════════════════════
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
-let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], gruposFamiliares:[], cuotas:[] };
+let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], gruposFamiliares:[], cuotas:[], gastos:[] };
 let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
-  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR, cuoR] = await Promise.all([
+  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR, cuoR, gasR] = await Promise.all([
     supa.from('disciplinas').select('id,nombre'),
     supa.from('aranceles').select('disciplina_id,monto').is('vigencia_hasta', null),
     supa.from('configuracion').select('clave,valor'),
@@ -1102,14 +1167,17 @@ async function cargarDatos(){
     supa.from('grupos_familiares').select('*').order('nombre'),
     supa.from('alumnos_disciplinas').select('*'),
     supa.from('cuotas').select('*').order('periodo', { ascending:false }),
+    supa.from('gastos').select('*').order('fecha', { ascending:false }),
   ]);
-  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR,cuoR]) if(r.error) throw r.error;
+  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR,cuoR,gasR]) if(r.error) throw r.error;
 
   DB.profesores = (profR.data||[]).map(p=>({
     id:p.id, nombre:p.nombre, dni:p.dni||'', telefono:p.telefono||'', email:p.email||'',
     disciplina:p.disciplina||'', diasHorarios:p.dias_horarios||'',
     tipoAcuerdo:p.tipo_acuerdo||'', valorAcuerdo:p.valor_acuerdo||0,
     observaciones:p.observaciones||'', estado:p.estado||'Activo',
+    fechaInicioAcuerdo:p.fecha_inicio_acuerdo||'', fechaFinAcuerdo:p.fecha_fin_acuerdo||'',
+    documentacionUrl:p.documentacion_url||'',
   }));
   DB.pagosProfesores = (pagProfR.data||[]).map(p=>({
     id:p.id, profesorId:p.profesor_id, fecha:p.fecha, concepto:p.concepto||'',
@@ -1197,6 +1265,12 @@ async function cargarDatos(){
     fechaVencimiento:c.fecha_vencimiento||'', estado:c.estado||'Activa', observaciones:c.observaciones||'',
   }));
 
+  DB.gastos = (gasR.data||[]).map(g=>({
+    id:g.id, fecha:g.fecha, categoria:g.categoria, concepto:g.concepto||'',
+    monto:Number(g.monto), vencimiento:g.vencimiento||'', estadoPago:g.estado_pago||'Pagado',
+    observaciones:g.observaciones||'',
+  }));
+
   DB.combos = (comboR.data||[]).map(c=>({
     id:c.id, nombre:c.nombre, dificultad:c.dificultad||'', distancia:c.distancia||'',
     objetivo:c.objetivo||'', pasos:c.pasos_json||[], observaciones:c.observaciones||'',
@@ -1229,7 +1303,8 @@ function showPage(id, btn){
     const navMap = {alumnos:'alumnos', cuotas:'cuotas', home:'home', config:'config',
       asistencia:'asistencia', karate:'karate', kiaiken:'kiaiken',
       tecnicas:'kiaiken', 'tecnica-detail':'kiaiken', 'tecnica-form':'kiaiken',
-      profesores:'profesores', 'profesor-form':'profesores', 'profesor-detail':'profesores'};
+      profesores:'profesores', 'profesor-form':'profesores', 'profesor-detail':'profesores',
+      economia:'economia'};
     const nb = document.querySelector(`.nav-btn[data-page="${navMap[id]||id}"]`);
     if(nb) nb.classList.add('active');
   }
@@ -1241,6 +1316,7 @@ function showPage(id, btn){
   if(id==='tecnicas') renderTecnicasList();
   if(id==='kiaiken') kkShowTab(kkTabActual||'plantillas');
   if(id==='profesores') renderProfesoresList();
+  if(id==='economia') renderEconomia();
 }
 
 // ═══════════════════════════════════════
@@ -2288,7 +2364,7 @@ async function saveConfig(){
 }
 
 function refreshAll(){
-  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList();
+  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList(); renderEconomia();
 }
 
 // ═══════════════════════════════════════
@@ -2314,7 +2390,7 @@ function renderProfesoresList(){
       <td>${p.disciplina||'—'}</td>
       <td>${p.diasHorarios||'—'}</td>
       <td>${p.tipoAcuerdo||'—'}${p.valorAcuerdo?' · '+(p.tipoAcuerdo==='Porcentaje'?p.valorAcuerdo+'%':'$'+Number(p.valorAcuerdo).toLocaleString('es-AR')):''}</td>
-      <td><span class="pill ${p.estado==='Activo'?'pill-ok':'pill-warn'}">${p.estado}</span></td>
+      <td><span class="pill ${pillEstadoProfesor(p.estado)}">${p.estado}</span></td>
     </tr>`).join('') : '<tr><td colspan="5" class="empty-state">Sin profesores registrados</td></tr>';
 }
 
@@ -2323,10 +2399,12 @@ let editingProfesorId = null;
 function openProfesorForm(){
   editingProfesorId = null;
   document.getElementById('pf-title').textContent = 'Nuevo Profesor';
-  ['pf-nombre','pf-dni','pf-telefono','pf-email','pf-disciplina','pf-dias-horarios','pf-valor-acuerdo','pf-observaciones']
+  ['pf-nombre','pf-dni','pf-telefono','pf-email','pf-disciplina','pf-dias-horarios','pf-valor-acuerdo',
+   'pf-fecha-inicio','pf-fecha-fin','pf-documentacion','pf-observaciones']
     .forEach(id=>document.getElementById(id).value='');
   document.getElementById('pf-tipo-acuerdo').value='Alquiler fijo mensual';
   document.getElementById('pf-estado').value='Activo';
+  document.getElementById('pf-fecha-inicio').value=HOY;
   showPage('profesor-form');
 }
 
@@ -2342,6 +2420,9 @@ function editProfesor(){
   document.getElementById('pf-dias-horarios').value=p.diasHorarios||'';
   document.getElementById('pf-tipo-acuerdo').value=p.tipoAcuerdo||'Alquiler fijo mensual';
   document.getElementById('pf-valor-acuerdo').value=p.valorAcuerdo||'';
+  document.getElementById('pf-fecha-inicio').value=p.fechaInicioAcuerdo||'';
+  document.getElementById('pf-fecha-fin').value=p.fechaFinAcuerdo||'';
+  document.getElementById('pf-documentacion').value=p.documentacionUrl||'';
   document.getElementById('pf-estado').value=p.estado;
   document.getElementById('pf-observaciones').value=p.observaciones||'';
   showPage('profesor-form');
@@ -2357,6 +2438,9 @@ async function saveProfesor(){
     diasHorarios: document.getElementById('pf-dias-horarios').value.trim(),
     tipoAcuerdo: document.getElementById('pf-tipo-acuerdo').value,
     valorAcuerdo: Number(document.getElementById('pf-valor-acuerdo').value)||0,
+    fechaInicioAcuerdo: document.getElementById('pf-fecha-inicio').value || null,
+    fechaFinAcuerdo: document.getElementById('pf-fecha-fin').value || null,
+    documentacionUrl: document.getElementById('pf-documentacion').value.trim(),
     estado: document.getElementById('pf-estado').value,
     observaciones: document.getElementById('pf-observaciones').value.trim(),
   };
@@ -2369,6 +2453,8 @@ async function saveProfesor(){
     nombre: data.nombre, dni: data.dni||null, telefono: data.telefono||null, email: data.email||null,
     disciplina: data.disciplina||null, dias_horarios: data.diasHorarios||null,
     tipo_acuerdo: data.tipoAcuerdo, valor_acuerdo: data.valorAcuerdo,
+    fecha_inicio_acuerdo: data.fechaInicioAcuerdo, fecha_fin_acuerdo: data.fechaFinAcuerdo,
+    documentacion_url: data.documentacionUrl||null,
     estado: data.estado, observaciones: data.observaciones||null,
   };
 
@@ -2405,11 +2491,13 @@ function viewProfesor(id){
     <div class="detail-item"><label>Días/Horarios</label><span>${p.diasHorarios||'—'}</span></div>
     <div class="detail-item"><label>Tipo de Acuerdo</label><span>${p.tipoAcuerdo||'—'}</span></div>
     <div class="detail-item"><label>Valor</label><span>${p.valorAcuerdo?(p.tipoAcuerdo==='Porcentaje'?p.valorAcuerdo+'%':'$'+Number(p.valorAcuerdo).toLocaleString('es-AR')):'—'}</span></div>
-    <div class="detail-item"><label>Estado</label><span><span class="pill ${p.estado==='Activo'?'pill-ok':'pill-warn'}">${p.estado}</span></span></div>
+    <div class="detail-item"><label>Inicio del Acuerdo</label><span>${p.fechaInicioAcuerdo||'—'}</span></div>
+    <div class="detail-item"><label>Fin del Acuerdo</label><span>${p.fechaFinAcuerdo||'—'}</span></div>
+    <div class="detail-item"><label>Estado</label><span><span class="pill ${pillEstadoProfesor(p.estado)}">${p.estado}</span></span></div>
+    <div class="detail-item"><label>Documentación</label><span>${p.documentacionUrl?`<a href="${p.documentacionUrl}" target="_blank">Ver</a>`:'—'}</span></div>
     <div class="detail-item" style="grid-column:1/-1;"><label>Observaciones</label><span>${p.observaciones||'—'}</span></div>
   `;
-  const btnEstado = document.getElementById('pd-btn-estado');
-  if(btnEstado) btnEstado.textContent = p.estado==='Activo' ? '⏸ Marcar Inactivo' : '▶ Reactivar';
+  document.getElementById('pd-select-estado').value = p.estado;
 
   document.getElementById('pp-fecha').value = HOY;
 
@@ -2433,21 +2521,24 @@ function viewProfesor(id){
   showPage('profesor-detail');
 }
 
-async function toggleEstadoProfesor(){
+function pillEstadoProfesor(estado){
+  if(estado==='Activo') return 'pill-ok';
+  if(estado==='Pausado') return 'pill-warn';
+  return 'pill-bad'; // Finalizado
+}
+
+async function cambiarEstadoProfesor(){
   const p = DB.profesores.find(x=>x.id===editingProfesorId);
   if(!p) return;
-  const reactivar = p.estado !== 'Activo';
-  const nuevoEstado = reactivar ? 'Activo' : 'Inactivo';
-  const msg = reactivar
-    ? `¿Reactivar a ${p.nombre}?`
-    : `¿Marcar a ${p.nombre} como inactivo? Se conserva todo su historial de pagos — podés reactivarlo cuando quieras.`;
-  if(!confirm(msg)) return;
+  const nuevoEstado = document.getElementById('pd-select-estado').value;
+  if(nuevoEstado===p.estado) return;
+  if(!confirm(`¿Cambiar el estado de ${p.nombre} a "${nuevoEstado}"? Se conserva todo su historial de pagos.`)) {
+    document.getElementById('pd-select-estado').value = p.estado;
+    return;
+  }
 
-  const btn = document.getElementById('pd-btn-estado');
-  if(btn){ btn.disabled = true; }
   const { error } = await supa.from('profesores').update({ estado: nuevoEstado }).eq('id', p.id);
-  if(btn){ btn.disabled = false; }
-  if(error){ alert('No se pudo actualizar el estado:\n'+error.message); return; }
+  if(error){ alert('No se pudo actualizar el estado:\n'+error.message); document.getElementById('pd-select-estado').value = p.estado; return; }
 
   p.estado = nuevoEstado;
   viewProfesor(p.id);
@@ -2455,14 +2546,14 @@ async function toggleEstadoProfesor(){
 }
 
 // Eliminar definitivamente — solo para altas hechas por error. Si tiene pagos
-// registrados se bloquea y se sugiere "Marcar Inactivo" en su lugar.
+// registrados se bloquea y se sugiere pausarlo o finalizarlo en su lugar.
 async function eliminarProfesorDefinitivo(){
   const p = DB.profesores.find(x=>x.id===editingProfesorId);
   if(!p) return;
 
   const pagosCount = DB.pagosProfesores.filter(x=>x.profesorId===p.id).length;
   if(pagosCount){
-    alert(`No se puede eliminar a ${p.nombre}: tiene ${pagosCount} pago(s) registrado(s).\n\nUsá "Marcar Inactivo" en su lugar — así se conserva el historial.`);
+    alert(`No se puede eliminar a ${p.nombre}: tiene ${pagosCount} pago(s) registrado(s).\n\nUsá "Pausado" o "Finalizado" en su lugar — así se conserva el historial.`);
     return;
   }
 
@@ -3048,6 +3139,134 @@ function kkRenderHistorial(){
   tbody.innerHTML = DBK.clases.map(c=>`<tr>
     <td>${c.fecha}</td><td>${c.nivel}</td><td>${c.nombre||''}</td><td>${c.observaciones||''}</td>
   </tr>`).join('');
+}
+
+// ═══════════════════════════════════════
+// ECONOMÍA DEL DOJO
+// ═══════════════════════════════════════
+function mesActualStr(){ return HOY.slice(0,7); } // 'YYYY-MM'
+
+function gastosDelMes(mesStr){
+  return DB.gastos.filter(g=>g.fecha && g.fecha.slice(0,7)===mesStr);
+}
+
+function renderEconomia(){
+  if(!document.getElementById('ga-filtro-mes').value) document.getElementById('ga-filtro-mes').value = mesActualStr();
+  document.getElementById('ga-fecha').value = HOY;
+
+  const mes = mesActualStr();
+  const ingresosMes = mesActualPagos().filter(p=>!p.anulado).reduce((s,p)=>s+Number(p.monto),0);
+  const gastosMes = gastosDelMes(mes).reduce((s,g)=>s+Number(g.monto),0);
+  const resultadoNeto = ingresosMes - gastosMes;
+
+  // Mes anterior, para comparar
+  const [y,m] = mes.split('-').map(Number);
+  const fechaAnt = new Date(y, m-2, 1); // m-1 es el mes actual (0-index), -2 da el anterior
+  const mesAnt = `${fechaAnt.getFullYear()}-${String(fechaAnt.getMonth()+1).padStart(2,'0')}`;
+  const ingresosMesAnt = DB.pagos.filter(p=>!p.anulado && p.fecha && p.fecha.slice(0,7)===mesAnt).reduce((s,p)=>s+Number(p.monto),0);
+  const gastosMesAnt = gastosDelMes(mesAnt).reduce((s,g)=>s+Number(g.monto),0);
+  const deltaIngresos = ingresosMesAnt ? Math.round(((ingresosMes-ingresosMesAnt)/ingresosMesAnt)*100) : null;
+  const deltaGastos = gastosMesAnt ? Math.round(((gastosMes-gastosMesAnt)/gastosMesAnt)*100) : null;
+
+  document.getElementById('economia-stats').innerHTML = `
+    <div class="hud-card">${hudRing(70,'$')}
+      <div class="hud-info"><div class="hud-label">Ingresos del Mes</div>
+        <div class="hud-value">$${ingresosMes.toLocaleString('es-AR')}</div>
+        <div class="hud-sub">${deltaIngresos===null?'Sin datos del mes anterior':(deltaIngresos>=0?'+':'')+deltaIngresos+'% vs. mes anterior'}</div></div></div>
+    <div class="hud-card">${hudRing(70,'$')}
+      <div class="hud-info"><div class="hud-label">Gastos del Mes</div>
+        <div class="hud-value">$${gastosMes.toLocaleString('es-AR')}</div>
+        <div class="hud-sub">${deltaGastos===null?'Sin datos del mes anterior':(deltaGastos>=0?'+':'')+deltaGastos+'% vs. mes anterior'}</div></div></div>
+    <div class="hud-card">${hudRing(resultadoNeto>=0?70:20,'$')}
+      <div class="hud-info"><div class="hud-label">Resultado Neto del Mes</div>
+        <div class="hud-value" style="color:${resultadoNeto>=0?'var(--green)':'var(--red)'};">$${resultadoNeto.toLocaleString('es-AR')}</div></div></div>
+  `;
+
+  // Ingresos por disciplina (mes actual) — según el plan de facturación del alumno
+  const ingresosPorDisciplina = { Karate:0, 'Kiai-Ken':0, 'Combo (Karate + Kiai-Ken)':0, Otro:0 };
+  mesActualPagos().filter(p=>!p.anulado).forEach(p=>{
+    const al = DB.alumnos.find(a=>a.id===p.alumnoId);
+    const key = al && ingresosPorDisciplina.hasOwnProperty(al.disciplina) ? al.disciplina : 'Otro';
+    ingresosPorDisciplina[key] += Number(p.monto);
+  });
+  const ingresosProfesoresMes = DB.pagosProfesores
+    .filter(x=>!x.anulado && x.fecha && x.fecha.slice(0,7)===mes)
+    .reduce((s,x)=>s+Number(x.monto),0);
+  const deudaAlumnos = DB.alumnos.filter(a=>a.estado==='Activo').reduce((s,a)=>s+saldoTotalAlumno(a.id),0);
+  const deudaProfesores = DB.pagosProfesores.reduce((s,x)=>s+Math.max(0,Number(x.saldoPendiente||0)),0);
+  const gastosPorVencer = DB.gastos.filter(g=>g.estadoPago==='Pendiente' && g.vencimiento && diasEntre(HOY,g.vencimiento)>=0 && diasEntre(HOY,g.vencimiento)<=10);
+
+  document.getElementById('economia-ingresos-deuda').innerHTML = `
+    <div class="hud-card">${hudRing(60,'$')}
+      <div class="hud-info"><div class="hud-label">Ingresos Karate (mes)</div><div class="hud-value">$${ingresosPorDisciplina['Karate'].toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(60,'$')}
+      <div class="hud-info"><div class="hud-label">Ingresos Kiaiken (mes)</div><div class="hud-value">$${ingresosPorDisciplina['Kiai-Ken'].toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(60,'$')}
+      <div class="hud-info"><div class="hud-label">Ingresos Combo (mes)</div><div class="hud-value">$${ingresosPorDisciplina['Combo (Karate + Kiai-Ken)'].toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(60,'$')}
+      <div class="hud-info"><div class="hud-label">Profesores Externos (mes)</div><div class="hud-value">$${ingresosProfesoresMes.toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(deudaAlumnos>0?80:0,'$')}
+      <div class="hud-info"><div class="hud-label">Deuda Total Alumnos</div><div class="hud-value">$${deudaAlumnos.toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(deudaProfesores>0?80:0,'$')}
+      <div class="hud-info"><div class="hud-label">Deuda Total Profesores</div><div class="hud-value">$${deudaProfesores.toLocaleString('es-AR')}</div></div></div>
+    <div class="hud-card">${hudRing(gastosPorVencer.length?80:0, gastosPorVencer.length)}
+      <div class="hud-info"><div class="hud-label">Gastos por Vencer (10 días)</div><div class="hud-value">${gastosPorVencer.length}</div></div></div>
+  `;
+
+  renderGastos();
+}
+
+async function registrarGasto(){
+  const monto = Number(document.getElementById('ga-monto').value);
+  if(!monto){ alert('Cargá un monto.'); return; }
+  const btn = document.querySelector('#page-economia .btn-fill');
+  if(btn){ btn.disabled = true; btn.textContent = 'Guardando…'; }
+
+  const { data, error } = await supa.from('gastos').insert({
+    fecha: document.getElementById('ga-fecha').value || HOY,
+    categoria: document.getElementById('ga-categoria').value,
+    concepto: document.getElementById('ga-concepto').value.trim() || null,
+    monto,
+    vencimiento: document.getElementById('ga-vencimiento').value || null,
+    estado_pago: document.getElementById('ga-estado').value,
+    observaciones: document.getElementById('ga-observaciones').value.trim() || null,
+  }).select().single();
+
+  if(btn){ btn.disabled = false; btn.textContent = 'Cargar Gasto'; }
+  if(error){ alert('No se pudo cargar el gasto:\n'+error.message); return; }
+
+  DB.gastos.unshift({
+    id:data.id, fecha:data.fecha, categoria:data.categoria, concepto:data.concepto||'',
+    monto:data.monto, vencimiento:data.vencimiento||'', estadoPago:data.estado_pago,
+    observaciones:data.observaciones||'',
+  });
+  ['ga-concepto','ga-monto','ga-vencimiento','ga-observaciones'].forEach(id=>document.getElementById(id).value='');
+  renderEconomia();
+}
+
+function renderGastos(){
+  const filtroMes = document.getElementById('ga-filtro-mes').value;
+  const filtroCategoria = document.getElementById('ga-filtro-categoria').value;
+  let filas = DB.gastos.slice();
+  if(filtroMes) filas = filas.filter(g=>g.fecha && g.fecha.slice(0,7)===filtroMes);
+  if(filtroCategoria) filas = filas.filter(g=>g.categoria===filtroCategoria);
+  filas.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+
+  const tbody = document.getElementById('tbl-gastos');
+  tbody.innerHTML = filas.length ? filas.map(g=>`
+    <tr><td>${g.fecha}</td><td>${g.categoria}</td><td>${g.concepto||'—'}</td>
+    <td>$${Number(g.monto).toLocaleString('es-AR')}</td><td>${g.vencimiento||'—'}</td>
+    <td><span class="pill ${g.estadoPago==='Pagado'?'pill-ok':'pill-warn'}">${g.estadoPago}</span></td>
+    <td><button class="btn btn-ghost btn-sm" onclick="eliminarGasto(${g.id})">🗑</button></td></tr>`).join('')
+    : '<tr><td colspan="7" class="empty-state">Sin gastos para este filtro</td></tr>';
+}
+
+async function eliminarGasto(id){
+  if(!confirm('¿Eliminar este gasto? No se puede deshacer.')) return;
+  const { error } = await supa.from('gastos').delete().eq('id', id);
+  if(error){ alert('No se pudo eliminar el gasto:\n'+error.message); return; }
+  DB.gastos = DB.gastos.filter(g=>g.id!==id);
+  renderEconomia();
 }
 
 // INIT
