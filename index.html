@@ -391,10 +391,22 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
         </div>
         <div class="card-body">
           <div class="detail-grid" id="ad-fields"></div>
+          <div class="salud-box" id="ad-resp">
+            <div class="salud-box-hdr">👤 Responsable / Adulto a cargo</div>
+            <div class="detail-grid" id="ad-resp-fields"></div>
+          </div>
           <div class="salud-box" id="ad-salud">
             <div class="salud-box-hdr">🔒 Datos de Salud — Acceso Restringido</div>
             <div class="detail-grid" id="ad-salud-fields"></div>
           </div>
+        </div>
+      </div>
+      <div class="card" id="ad-familia-card" style="display:none;">
+        <div class="card-hdr"><span class="card-hdr-t">Grupo Familiar</span></div>
+        <div class="card-body" style="padding:0;">
+          <table class="tbl"><thead><tr><th>Alumno</th><th>Disciplina</th><th>Cuota</th><th></th></tr></thead>
+            <tbody id="ad-familia-tbody"></tbody></table>
+          <div id="ad-familia-total" style="padding:12px 18px;font-weight:600;"></div>
         </div>
       </div>
       <div class="card">
@@ -417,6 +429,7 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
             <div class="form-item"><label>Apellido</label><input id="f-apellido" type="text"></div>
             <div class="form-item"><label>DNI</label><input id="f-dni" type="text" placeholder="Sin puntos"></div>
             <div class="form-item"><label>Teléfono</label><input id="f-telefono" type="text" placeholder="Ej: 3546..."></div>
+            <div class="form-item"><label>WhatsApp</label><input id="f-whatsapp" type="text" placeholder="Si es distinto al teléfono"></div>
             <div class="form-item"><label>Email</label><input id="f-email" type="email" placeholder="opcional"></div>
             <div class="form-item"><label>Fecha de Nacimiento</label><input id="f-fnac" type="date"></div>
             <div class="form-item"><label>Categoría</label>
@@ -430,6 +443,26 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
               <select id="f-estado"><option>Activo</option><option>Inactivo</option><option>Pausa</option></select>
             </div>
             <div class="form-item"><label>Domicilio</label><input id="f-domicilio" type="text"></div>
+            <div class="form-item"><label>Grupo Familiar</label>
+              <input id="f-grupo-familiar" type="text" list="dl-grupos-familiares" placeholder="Ej: Familia Pérez (dejar vacío si no aplica)">
+              <datalist id="dl-grupos-familiares"></datalist>
+            </div>
+            <div class="form-item"><label>¿Paga la cuota completa?</label>
+              <select id="f-paga-completa"><option value="si">Sí</option><option value="no">No — tiene descuento de hermanos</option></select>
+            </div>
+          </div>
+
+          <div class="salud-box">
+            <div class="salud-box-hdr">👤 Responsable / Adulto a cargo — para menores de edad</div>
+            <div class="form-grid">
+              <div class="form-item"><label>Nombre y Apellido</label><input id="f-resp-nombre" type="text"></div>
+              <div class="form-item"><label>DNI</label><input id="f-resp-dni" type="text"></div>
+              <div class="form-item"><label>Teléfono</label><input id="f-resp-telefono" type="text"></div>
+              <div class="form-item"><label>WhatsApp / Tel. alternativo</label><input id="f-resp-telefono-alt" type="text"></div>
+              <div class="form-item"><label>Email</label><input id="f-resp-email" type="email"></div>
+              <div class="form-item"><label>Parentesco</label><input id="f-resp-parentesco" type="text" placeholder="Ej: Madre, Padre, Tutor"></div>
+              <div class="form-item full"><label>Autorizaciones / Observaciones</label><textarea id="f-resp-autorizaciones" rows="2" placeholder="Ej: autorizado a retirarlo también su tío Juan"></textarea></div>
+            </div>
           </div>
 
           <div class="salud-box">
@@ -440,6 +473,9 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
               </div>
               <div class="form-item"><label>Grupo Sanguíneo</label><input id="f-sangre" type="text" placeholder="Ej: O+"></div>
               <div class="form-item full"><label>Detalle de condición (si aplica)</label><textarea id="f-detalle-salud" rows="2"></textarea></div>
+              <div class="form-item"><label>Contacto de Emergencia — Nombre</label><input id="f-emerg-nombre" type="text"></div>
+              <div class="form-item"><label>Contacto de Emergencia — Teléfono</label><input id="f-emerg-telefono" type="text"></div>
+              <div class="form-item"><label>Parentesco</label><input id="f-emerg-parentesco" type="text" placeholder="Ej: Madre, Abuela"></div>
             </div>
           </div>
 
@@ -497,10 +533,9 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
             <div class="form-item"><label>Fecha</label><input id="asi-fecha" type="date" onchange="cargarAsistenciaDelDia()"></div>
             <div class="form-item"><label>Disciplina</label>
               <select id="asi-disciplina" onchange="cargarAsistenciaDelDia()">
-                <option value="">Todas</option>
+                <option value="">Todas (solo consulta — para tomar asistencia elegí una)</option>
                 <option value="Karate">Karate</option>
                 <option value="Kiai-Ken">Kiai-Ken</option>
-                <option value="Combo (Karate + Kiai-Ken)">Combo (Karate + Kiai-Ken)</option>
               </select>
             </div>
           </div>
@@ -672,7 +707,7 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
               <div class="form-item full"><label>Observaciones de la clase</label><textarea id="kkc-observaciones" rows="3"></textarea></div>
               <div class="form-actions">
                 <button class="btn btn-fill" onclick="kkGuardarClaseEnHistorial()">Guardar en historial</button>
-                <button class="btn btn-ghost" onclick="kkCerrarClase()">Cerrar sin guardar</button>
+                <button class="btn btn-ghost" onclick="kkCerrarSinGuardar()">Cerrar sin guardar</button>
                 <span class="mono" id="kkc-status" style="font-size:12px;color:var(--muted);margin-left:8px;"></span>
               </div>
             </div>
@@ -985,18 +1020,25 @@ async function entrarApp(session){
 // ═══════════════════════════════════════
 // CARGA / GUARDADO DE DATOS (Supabase)
 // ═══════════════════════════════════════
-const HOY = new Date().toISOString().slice(0,10);
-
 function diasEntre(f1,f2){ return Math.round((new Date(f2)-new Date(f1))/86400000); }
+
+// Fecha de HOY en horario local (Argentina), nunca en UTC — toISOString()
+// convierte a UTC y adelanta el día entre las 21:00 y medianoche hora local.
+function fechaLocalISO(d){
+  d = d || new Date();
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+const HOY = fechaLocalISO();
 
 // ═══════════════════════════════════════
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
-let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[] };
+let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], gruposFamiliares:[] };
 let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
-  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR] = await Promise.all([
+  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR] = await Promise.all([
     supa.from('disciplinas').select('id,nombre'),
     supa.from('aranceles').select('disciplina_id,monto').is('vigencia_hasta', null),
     supa.from('configuracion').select('clave,valor'),
@@ -1009,8 +1051,11 @@ async function cargarDatos(){
     supa.from('kiaiken_clases').select('*').order('fecha', { ascending:false }),
     supa.from('profesores').select('*').order('nombre'),
     supa.from('pagos_profesores').select('*').order('fecha', { ascending:false }),
+    supa.from('tutores').select('*'),
+    supa.from('grupos_familiares').select('*').order('nombre'),
+    supa.from('alumnos_disciplinas').select('*'),
   ]);
-  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR]) if(r.error) throw r.error;
+  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR]) if(r.error) throw r.error;
 
   DB.profesores = (profR.data||[]).map(p=>({
     id:p.id, nombre:p.nombre, dni:p.dni||'', telefono:p.telefono||'', email:p.email||'',
@@ -1054,13 +1099,39 @@ async function cargarDatos(){
   const saludPorAlumno = {};
   (saludR.data||[]).forEach(s=>{ saludPorAlumno[s.alumno_id]=s; });
 
+  const tutorPorAlumno = {};
+  (tutR.data||[]).forEach(t=>{ tutorPorAlumno[t.alumno_id]=t; });
+
+  DB.gruposFamiliares = (gfR.data||[]).map(g=>({ id:g.id, nombre:g.nombre }));
+  const nombreGrupoPorId = {};
+  DB.gruposFamiliares.forEach(g=>{ nombreGrupoPorId[g.id]=g.nombre; });
+
+  const disciplinasPorAlumno = {};
+  (adR.data||[]).forEach(r=>{
+    (disciplinasPorAlumno[r.alumno_id] = disciplinasPorAlumno[r.alumno_id]||[]).push(r.disciplina_id);
+  });
+
   DB.alumnos = (alR.data||[]).map(a=>{
     const s = saludPorAlumno[a.id] || {};
+    const t = tutorPorAlumno[a.id] || {};
     return {
-      id:a.id, nombre:a.nombre, apellido:a.apellido, dni:a.dni||'', telefono:a.telefono||'', email:a.email||'', fnac:a.fecha_nacimiento||'',
+      id:a.id, nombre:a.nombre, apellido:a.apellido, dni:a.dni||'', telefono:a.telefono||'', email:a.email||'',
+      whatsapp:a.whatsapp||'', fnac:a.fecha_nacimiento||'',
       categoria:a.categoria||'', disciplina:discNombrePorId[a.disciplina_id]||'',
+      // Disciplinas TÉCNICAS reales del alumno (para asistencia) — distinto
+      // del campo "disciplina" de arriba, que es el plan de facturación.
+      discIds: disciplinasPorAlumno[a.id] || (a.disciplina_id!=null ? [a.disciplina_id] : []),
       turno:a.turno||'', estado:a.estado||'Activo', domicilio:a.domicilio||'',
       condicion:s.condicion_medica||'No', sangre:s.grupo_sanguineo||'', detalleSalud:s.detalle||'',
+      contactoEmergenciaNombre:s.contacto_emergencia_nombre||'', telefonoEmergencia:s.telefono_emergencia||'',
+      contactoEmergenciaParentesco:s.contacto_emergencia_parentesco||'',
+      grupoFamiliarId:a.grupo_familiar_id||null, grupoFamiliarNombre:a.grupo_familiar_id?(nombreGrupoPorId[a.grupo_familiar_id]||''):'',
+      pagaCuotaCompleta: a.paga_cuota_completa!==false,
+      responsable:{
+        nombre:t.nombre||'', apellido:t.apellido||'', dni:t.dni||'',
+        telefono:t.telefono_principal||'', telefonoAlt:t.telefono_alt||'',
+        email:t.email||'', parentesco:t.parentesco||'', autorizaciones:t.autorizaciones_observaciones||'',
+      },
     };
   });
 
@@ -1156,9 +1227,14 @@ function alumnoAlDia(alumno){
 }
 
 function renderHome(){
-  const activos = DB.alumnos.filter(a=>a.estado==='Activo').length;
-  const alDia = DB.alumnos.filter(alumnoAlDia).length;
-  const total = DB.alumnos.length || 1;
+  const activosArr = DB.alumnos.filter(a=>a.estado==='Activo');
+  const activos = activosArr.length;
+  // "Al día" se calcula SOLO sobre activos, igual que en Cuotas — antes acá
+  // se contaba sobre todos los alumnos (activos e inactivos) y en Cuotas
+  // solo sobre activos, así que los dos paneles podían mostrar porcentajes
+  // distintos para la misma realidad.
+  const alDia = activosArr.filter(alumnoAlDia).length;
+  const total = activos || 1;
   const pctAlDia = Math.round((alDia/total)*100);
   const ingresosMes = mesActualPagos().reduce((s,p)=>s+Number(p.monto),0);
   const vencidos = DB.alumnos.filter(a=>a.estado==='Activo' && !alumnoAlDia(a));
@@ -1239,12 +1315,22 @@ let editingAlumnoId = null;
 function openAlumnoForm(){
   editingAlumnoId = null;
   document.getElementById('af-title').textContent = 'Nuevo Alumno';
-  ['f-nombre','f-apellido','f-dni','f-telefono','f-email','f-fnac','f-turno','f-domicilio','f-sangre','f-detalle-salud'].forEach(id=>document.getElementById(id).value='');
+  ['f-nombre','f-apellido','f-dni','f-telefono','f-whatsapp','f-email','f-fnac','f-turno','f-domicilio',
+   'f-grupo-familiar','f-resp-nombre','f-resp-dni','f-resp-telefono','f-resp-telefono-alt','f-resp-email',
+   'f-resp-parentesco','f-resp-autorizaciones','f-sangre','f-detalle-salud','f-emerg-nombre','f-emerg-telefono','f-emerg-parentesco']
+    .forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-categoria').value='Infantil';
   document.getElementById('f-disciplina').value='Karate';
   document.getElementById('f-estado').value='Activo';
   document.getElementById('f-condicion').value='No';
+  document.getElementById('f-paga-completa').value='si';
+  poblarDatalistGruposFamiliares();
   showPage('alumno-form');
+}
+
+function poblarDatalistGruposFamiliares(){
+  const dl = document.getElementById('dl-grupos-familiares');
+  dl.innerHTML = DB.gruposFamiliares.map(g=>`<option value="${g.nombre}">`).join('');
 }
 
 function editAlumno(){
@@ -1255,6 +1341,7 @@ function editAlumno(){
   document.getElementById('f-apellido').value=a.apellido;
   document.getElementById('f-dni').value=a.dni||'';
   document.getElementById('f-telefono').value=a.telefono||'';
+  document.getElementById('f-whatsapp').value=a.whatsapp||'';
   document.getElementById('f-email').value=a.email||'';
   document.getElementById('f-fnac').value=a.fnac;
   document.getElementById('f-categoria').value=a.categoria;
@@ -1262,9 +1349,22 @@ function editAlumno(){
   document.getElementById('f-turno').value=a.turno;
   document.getElementById('f-estado').value=a.estado;
   document.getElementById('f-domicilio').value=a.domicilio;
+  document.getElementById('f-grupo-familiar').value=a.grupoFamiliarNombre||'';
+  document.getElementById('f-paga-completa').value = a.pagaCuotaCompleta ? 'si' : 'no';
+  document.getElementById('f-resp-nombre').value=a.responsable.nombre;
+  document.getElementById('f-resp-dni').value=a.responsable.dni;
+  document.getElementById('f-resp-telefono').value=a.responsable.telefono;
+  document.getElementById('f-resp-telefono-alt').value=a.responsable.telefonoAlt;
+  document.getElementById('f-resp-email').value=a.responsable.email;
+  document.getElementById('f-resp-parentesco').value=a.responsable.parentesco;
+  document.getElementById('f-resp-autorizaciones').value=a.responsable.autorizaciones;
   document.getElementById('f-condicion').value=a.condicion;
   document.getElementById('f-sangre').value=a.sangre;
   document.getElementById('f-detalle-salud').value=a.detalleSalud;
+  document.getElementById('f-emerg-nombre').value=a.contactoEmergenciaNombre||'';
+  document.getElementById('f-emerg-telefono').value=a.telefonoEmergencia||'';
+  document.getElementById('f-emerg-parentesco').value=a.contactoEmergenciaParentesco||'';
+  poblarDatalistGruposFamiliares();
   showPage('alumno-form');
 }
 
@@ -1274,6 +1374,7 @@ async function saveAlumno(){
     apellido: document.getElementById('f-apellido').value.trim(),
     dni: document.getElementById('f-dni').value.trim(),
     telefono: document.getElementById('f-telefono').value.trim(),
+    whatsapp: document.getElementById('f-whatsapp').value.trim(),
     email: document.getElementById('f-email').value.trim(),
     fnac: document.getElementById('f-fnac').value,
     categoria: document.getElementById('f-categoria').value,
@@ -1281,9 +1382,21 @@ async function saveAlumno(){
     turno: document.getElementById('f-turno').value.trim(),
     estado: document.getElementById('f-estado').value,
     domicilio: document.getElementById('f-domicilio').value.trim(),
+    grupoFamiliarNombre: document.getElementById('f-grupo-familiar').value.trim(),
+    pagaCuotaCompleta: document.getElementById('f-paga-completa').value === 'si',
+    respNombre: document.getElementById('f-resp-nombre').value.trim(),
+    respDni: document.getElementById('f-resp-dni').value.trim(),
+    respTelefono: document.getElementById('f-resp-telefono').value.trim(),
+    respTelefonoAlt: document.getElementById('f-resp-telefono-alt').value.trim(),
+    respEmail: document.getElementById('f-resp-email').value.trim(),
+    respParentesco: document.getElementById('f-resp-parentesco').value.trim(),
+    respAutorizaciones: document.getElementById('f-resp-autorizaciones').value.trim(),
     condicion: document.getElementById('f-condicion').value,
     sangre: document.getElementById('f-sangre').value.trim(),
     detalleSalud: document.getElementById('f-detalle-salud').value.trim(),
+    emergNombre: document.getElementById('f-emerg-nombre').value.trim(),
+    emergTelefono: document.getElementById('f-emerg-telefono').value.trim(),
+    emergParentesco: document.getElementById('f-emerg-parentesco').value.trim(),
   };
   if(!data.nombre || !data.apellido){ alert('Nombre y apellido son obligatorios.'); return; }
 
@@ -1306,23 +1419,91 @@ async function saveAlumno(){
     p_grupo_sanguineo: data.sangre,
   });
 
-  if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
-  if(error){ alert('No se pudo guardar el alumno:\n'+error.message); return; }
-
-  // Teléfono y email viven directo en "alumnos" (no forman parte de
-  // guardar_alumno_completo todavía) — se guardan con un update aparte.
-  const { error: errContacto } = await supa.from('alumnos')
-    .update({ telefono: data.telefono || null, email: data.email || null })
-    .eq('id', nuevoId);
-  if(errContacto){ alert('El alumno se guardó, pero no se pudo guardar el contacto:\n'+errContacto.message); }
-
-  data.id = nuevoId;
-  if(editingAlumnoId){
-    const idx = DB.alumnos.findIndex(x=>x.id===editingAlumnoId);
-    DB.alumnos[idx] = {...DB.alumnos[idx], ...data};
-  } else {
-    DB.alumnos.push(data);
+  if(error){
+    if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
+    alert('No se pudo guardar el alumno:\n'+error.message); return;
   }
+
+  try{
+    // Grupo familiar: se resuelve por nombre — si ya existe un grupo con
+    // ese nombre se usa, si no se crea. Vacío = sin grupo familiar.
+    let grupoFamiliarId = null;
+    if(data.grupoFamiliarNombre){
+      const existente = DB.gruposFamiliares.find(g=>g.nombre.toLowerCase()===data.grupoFamiliarNombre.toLowerCase());
+      if(existente){
+        grupoFamiliarId = existente.id;
+      } else {
+        const { data:nuevoGrupo, error:errGrupo } = await supa.from('grupos_familiares')
+          .insert({ nombre: data.grupoFamiliarNombre }).select().single();
+        if(errGrupo) throw errGrupo;
+        grupoFamiliarId = nuevoGrupo.id;
+        DB.gruposFamiliares.push({ id:nuevoGrupo.id, nombre:nuevoGrupo.nombre });
+      }
+    }
+
+    // Contacto (teléfono/email/whatsapp) + grupo familiar viven directo en
+    // "alumnos", fuera de guardar_alumno_completo.
+    const { error: errContacto } = await supa.from('alumnos').update({
+      telefono: data.telefono || null, email: data.email || null, whatsapp: data.whatsapp || null,
+      grupo_familiar_id: grupoFamiliarId, paga_cuota_completa: data.pagaCuotaCompleta,
+    }).eq('id', nuevoId);
+    if(errContacto) throw errContacto;
+
+    // Contacto de emergencia vive en alumnos_salud, junto a lo que ya
+    // guarda guardar_alumno_completo (condición/detalle/grupo sanguíneo).
+    const { error: errEmerg } = await supa.from('alumnos_salud').update({
+      contacto_emergencia_nombre: data.emergNombre || null,
+      telefono_emergencia: data.emergTelefono || null,
+      contacto_emergencia_parentesco: data.emergParentesco || null,
+    }).eq('alumno_id', nuevoId);
+    if(errEmerg) throw errEmerg;
+
+    // Responsable (tutores) — un registro por alumno. Se actualiza si ya
+    // existe, se crea si es la primera vez que se carga algún dato.
+    const hayDatosResponsable = data.respNombre || data.respDni || data.respTelefono || data.respTelefonoAlt || data.respEmail || data.respParentesco || data.respAutorizaciones;
+    if(hayDatosResponsable){
+      const { data:tutorExistente, error:errBuscarTutor } = await supa.from('tutores')
+        .select('id').eq('alumno_id', nuevoId).maybeSingle();
+      if(errBuscarTutor) throw errBuscarTutor;
+      const payloadTutor = {
+        alumno_id: nuevoId, nombre: data.respNombre || null, dni: data.respDni || null,
+        telefono_principal: data.respTelefono || null, telefono_alt: data.respTelefonoAlt || null,
+        email: data.respEmail || null, parentesco: data.respParentesco || null,
+        autorizaciones_observaciones: data.respAutorizaciones || null,
+      };
+      const { error: errTutor } = tutorExistente
+        ? await supa.from('tutores').update(payloadTutor).eq('id', tutorExistente.id)
+        : await supa.from('tutores').insert(payloadTutor);
+      if(errTutor) throw errTutor;
+    }
+
+    // Disciplinas técnicas: se resincronizan según el plan elegido (Combo
+    // = Karate + Kiai-Ken a la vez; el resto, la única disciplina elegida).
+    // No afecta el arancel — eso lo sigue definiendo "disciplina" arriba.
+    const { error: errBorrarDisc } = await supa.from('alumnos_disciplinas').delete().eq('alumno_id', nuevoId);
+    if(errBorrarDisc) throw errBorrarDisc;
+    const idsDisciplinasTecnicas = data.disciplina === 'Combo (Karate + Kiai-Ken)'
+      ? [discIdPorNombre['Karate'], discIdPorNombre['Kiai-Ken']]
+      : [discIdPorNombre[data.disciplina]];
+    const filasDisc = idsDisciplinasTecnicas.filter(Boolean).map(disciplina_id=>({ alumno_id: nuevoId, disciplina_id }));
+    if(filasDisc.length){
+      const { error: errInsDisc } = await supa.from('alumnos_disciplinas').insert(filasDisc);
+      if(errInsDisc) throw errInsDisc;
+    }
+  }catch(e){
+    if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
+    alert('El alumno se guardó, pero hubo un problema con algunos datos adicionales:\n'+e.message+'\n\nRevisá su ficha y volvé a guardar si hace falta.');
+    await cargarDatos(); refreshAll();
+    showPage('alumnos');
+    return;
+  }
+
+  if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
+
+  // Se recarga todo desde Supabase en vez de parchear a mano el objeto en
+  // memoria — con grupo familiar, responsable y disciplinas técnicas de
+  // por medio, es más seguro traer el estado real que reconstruirlo acá.
+  await cargarDatos(); refreshAll();
   document.getElementById('home-banner').style.display = DB.alumnos.length ? 'none' : 'flex';
   showPage('alumnos');
 }
@@ -1335,6 +1516,7 @@ function viewAlumno(id){
   document.getElementById('ad-fields').innerHTML = `
     <div class="detail-item"><label>DNI</label><span>${a.dni||'—'}</span></div>
     <div class="detail-item"><label>Teléfono</label><span>${a.telefono||'—'}</span></div>
+    <div class="detail-item"><label>WhatsApp</label><span>${a.whatsapp||'—'}</span></div>
     <div class="detail-item"><label>Email</label><span>${a.email||'—'}</span></div>
     <div class="detail-item"><label>Categoría</label><span>${a.categoria}</span></div>
     <div class="detail-item"><label>Disciplina</label><span>${a.disciplina}</span></div>
@@ -1342,14 +1524,51 @@ function viewAlumno(id){
     <div class="detail-item"><label>Estado</label><span><span class="pill ${a.estado==='Activo'?'pill-ok':'pill-warn'}">${a.estado}</span></span></div>
     <div class="detail-item"><label>Fecha de Nacimiento</label><span>${a.fnac||'—'}</span></div>
     <div class="detail-item"><label>Domicilio</label><span>${a.domicilio||'—'}</span></div>
+    <div class="detail-item"><label>Grupo Familiar</label><span>${a.grupoFamiliarNombre||'—'}</span></div>
   `;
   const btnEstado = document.getElementById('ad-btn-estado');
   if(btnEstado) btnEstado.textContent = a.estado==='Activo' ? '⏸ Marcar Inactivo' : '▶ Reactivar';
+
+  const r = a.responsable;
+  const hayResponsable = r.nombre||r.dni||r.telefono||r.telefonoAlt||r.email||r.parentesco;
+  document.getElementById('ad-resp-fields').innerHTML = hayResponsable ? `
+    <div class="detail-item"><label>Nombre</label><span>${r.nombre||'—'}</span></div>
+    <div class="detail-item"><label>DNI</label><span>${r.dni||'—'}</span></div>
+    <div class="detail-item"><label>Teléfono</label><span>${r.telefono||'—'}</span></div>
+    <div class="detail-item"><label>WhatsApp / Alt.</label><span>${r.telefonoAlt||'—'}</span></div>
+    <div class="detail-item"><label>Email</label><span>${r.email||'—'}</span></div>
+    <div class="detail-item"><label>Parentesco</label><span>${r.parentesco||'—'}</span></div>
+    <div class="detail-item" style="grid-column:1/-1;"><label>Autorizaciones/Observaciones</label><span>${r.autorizaciones||'—'}</span></div>
+  ` : `<div class="detail-item" style="grid-column:1/-1;"><span style="color:var(--muted);">Sin responsable cargado.</span></div>`;
+
   document.getElementById('ad-salud-fields').innerHTML = `
     <div class="detail-item"><label>Condición médica</label><span>${a.condicion}</span></div>
     <div class="detail-item"><label>Grupo sanguíneo</label><span>${a.sangre||'—'}</span></div>
     <div class="detail-item" style="grid-column:1/-1;"><label>Detalle</label><span>${a.detalleSalud||'—'}</span></div>
+    <div class="detail-item"><label>Contacto de Emergencia</label><span>${a.contactoEmergenciaNombre||'—'}</span></div>
+    <div class="detail-item"><label>Teléfono de Emergencia</label><span>${a.telefonoEmergencia||'—'}</span></div>
+    <div class="detail-item"><label>Parentesco</label><span>${a.contactoEmergenciaParentesco||'—'}</span></div>
   `;
+
+  // Grupo familiar: se muestra solo si el alumno pertenece a uno.
+  const familiaCard = document.getElementById('ad-familia-card');
+  if(a.grupoFamiliarId){
+    familiaCard.style.display = '';
+    const miembros = DB.alumnos.filter(x=>x.grupoFamiliarId===a.grupoFamiliarId);
+    let total = 0;
+    document.getElementById('ad-familia-tbody').innerHTML = miembros.map(m=>{
+      const base = arancelDe(m.disciplina);
+      const monto = m.pagaCuotaCompleta ? base : Math.round(base * (1 - (DB.config.hermano||0)/100));
+      total += monto;
+      return `<tr ${m.id===a.id?'style="font-weight:600;"':''}><td>${m.nombre} ${m.apellido}</td><td>${m.disciplina}</td>
+        <td>$${monto.toLocaleString('es-AR')}${m.pagaCuotaCompleta?'':' (desc. hermanos)'}</td>
+        <td>${m.id!==a.id?`<a href="#" onclick="viewAlumno(${m.id});return false;">Ver</a>`:''}</td></tr>`;
+    }).join('');
+    document.getElementById('ad-familia-total').textContent = `Total mensual del grupo "${a.grupoFamiliarNombre}": $${total.toLocaleString('es-AR')}`;
+  } else {
+    familiaCard.style.display = 'none';
+  }
+
   const pagos = DB.pagos.filter(p=>p.alumnoId===id).sort((x,y)=>new Date(y.fecha)-new Date(x.fecha));
   const tbody = document.getElementById('ad-pagos');
   tbody.innerHTML = pagos.length ? pagos.map(p=>`
@@ -1434,13 +1653,17 @@ async function eliminarAlumnoDefinitivo(){
 async function cargarAsistenciaDelDia(){
   const fechaEl = document.getElementById('asi-fecha');
   if(!fechaEl.value){
-    fechaEl.value = new Date().toISOString().slice(0,10);
+    fechaEl.value = fechaLocalISO();
   }
   const fecha = fechaEl.value;
   const discFiltro = document.getElementById('asi-disciplina').value;
+  const discId = discFiltro ? discIdPorNombre[discFiltro] : null;
 
+  // Se filtra por inscripción TÉCNICA real (alumnos_disciplinas / a.discIds),
+  // no por el plan de facturación — así un alumno con Combo aparece tanto
+  // en Karate como en Kiai-Ken, en vez de solo bajo "Combo".
   const alumnos = DB.alumnos
-    .filter(a=>a.estado==='Activo' && (!discFiltro || a.disciplina===discFiltro))
+    .filter(a=>a.estado==='Activo' && (!discId || a.discIds.includes(discId)))
     .sort((a,b)=> (a.apellido+a.nombre).localeCompare(b.apellido+b.nombre));
 
   const tbody = document.getElementById('tbl-asistencia');
@@ -1454,14 +1677,23 @@ async function cargarAsistenciaDelDia(){
   }
   empty.style.display = 'none';
 
-  const { data, error } = await supa.from('asistencias').select('*').eq('fecha', fecha);
+  // Cuando se filtra por una disciplina puntual, el registro se guarda
+  // atado a esa disciplina — así un alumno de Combo puede tener una
+  // asistencia de Karate y otra de Kiai-Ken el mismo día, cada una con
+  // su propio historial.
+  let query = supa.from('asistencias').select('*').eq('fecha', fecha);
+  query = discId ? query.eq('disciplina_id', discId) : query;
+  const { data, error } = await query;
   if(error){ alert('No se pudo cargar la asistencia del día:\n'+error.message); return; }
   const presentePorAlumno = {};
   (data||[]).forEach(r=>{ presentePorAlumno[r.alumno_id] = r.presente; });
 
   alumnos.forEach(a=>{
     const yaMarcado = Object.prototype.hasOwnProperty.call(presentePorAlumno, a.id);
-    const presente = yaMarcado ? presentePorAlumno[a.id] : true;
+    // Arranca SIN marcar (no presente) para los que todavía no tienen
+    // registro ese día — antes arrancaba tildado por defecto, lo que
+    // podía cargar "presente" por error a todo el listado.
+    const presente = yaMarcado ? presentePorAlumno[a.id] : false;
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${a.nombre} ${a.apellido}</td><td>${a.disciplina||'—'}</td><td>${a.turno||'—'}</td>
       <td style="text-align:right;"><input type="checkbox" data-alumno-id="${a.id}" ${presente?'checked':''} style="width:20px;height:20px;"></td>`;
@@ -1472,10 +1704,14 @@ async function cargarAsistenciaDelDia(){
 async function guardarAsistencia(){
   const fecha = document.getElementById('asi-fecha').value;
   if(!fecha){ alert('Elegí una fecha.'); return; }
+  const discFiltro = document.getElementById('asi-disciplina').value;
+  if(!discFiltro){ alert('Elegí una disciplina puntual (Karate o Kiai-Ken) para guardar — "Todas" es solo para consulta, porque un alumno de Combo necesita una asistencia por cada clase.'); return; }
+  const discId = discIdPorNombre[discFiltro];
   const checks = document.querySelectorAll('#tbl-asistencia input[type=checkbox]');
   if(!checks.length){ alert('No hay alumnos para guardar en esta lista.'); return; }
 
-  const { data: existentesData, error: existentesErr } = await supa.from('asistencias').select('*').eq('fecha', fecha);
+  const { data: existentesData, error: existentesErr } = await supa.from('asistencias')
+    .select('*').eq('fecha', fecha).eq('disciplina_id', discId);
   if(existentesErr){ alert('No se pudo verificar la asistencia existente:\n'+existentesErr.message); return; }
   const existentePorAlumno = {};
   (existentesData||[]).forEach(r=>{ existentePorAlumno[r.alumno_id] = r; });
@@ -1483,21 +1719,44 @@ async function guardarAsistencia(){
   const statusEl = document.getElementById('asi-status');
   statusEl.textContent = 'Guardando...';
 
-  let ok = 0, fail = 0;
+  // Se separan altas de actualizaciones: las altas se mandan en UN solo
+  // insert por lote (no una por una), y las actualizaciones se disparan
+  // todas en paralelo. No es una transacción de base de datos real —eso
+  // requeriría tocar el esquema— pero saca el guardado del patrón "una
+  // por una en fila", que era lo más lento y lo más expuesto a que un
+  // corte de conexión deje la lista a medio guardar.
+  const aInsertar = [];
+  const aActualizar = [];
   for(const chk of checks){
     const alumnoId = Number(chk.dataset.alumnoId);
     const presente = chk.checked;
     const existente = existentePorAlumno[alumnoId];
-    let error;
-    if(existente){
-      ({ error } = await supa.from('asistencias').update({ presente }).eq('id', existente.id));
-    } else {
-      ({ error } = await supa.from('asistencias').insert({ alumno_id: alumnoId, fecha, presente }));
-    }
-    if(error) fail++; else ok++;
+    if(existente) aActualizar.push({ id: existente.id, alumnoId, presente });
+    else aInsertar.push({ alumno_id: alumnoId, fecha, presente, disciplina_id: discId });
   }
 
-  statusEl.textContent = fail ? `Guardado con errores: ${ok} ok, ${fail} con error.` : `Asistencia guardada (${ok} alumnos) — ${fecha}`;
+  const fallidos = [];
+  if(aInsertar.length){
+    const { error } = await supa.from('asistencias').insert(aInsertar);
+    if(error) aInsertar.forEach(r=>fallidos.push(r.alumno_id));
+  }
+  if(aActualizar.length){
+    const resultados = await Promise.all(aActualizar.map(r =>
+      supa.from('asistencias').update({ presente: r.presente }).eq('id', r.id)
+    ));
+    resultados.forEach((res, i) => { if(res.error) fallidos.push(aActualizar[i].alumnoId); });
+  }
+
+  const total = checks.length, ok = total - fallidos.length;
+  if(fallidos.length){
+    const nombresFallidos = fallidos.map(id => {
+      const a = DB.alumnos.find(x=>x.id===id);
+      return a ? `${a.nombre} ${a.apellido}` : id;
+    }).join(', ');
+    statusEl.textContent = `Guardado con errores: ${ok} ok, ${fallidos.length} con error (${nombresFallidos}) — revisá conexión y volvé a guardar.`;
+  } else {
+    statusEl.textContent = `Asistencia guardada (${ok} alumnos) — ${fecha} · ${discFiltro}`;
+  }
 }
 
 // ═══════════════════════════════════════
@@ -1701,14 +1960,30 @@ async function saveConfig(){
     hermano: Number(document.getElementById('ar-hermano').value)||0,
   };
   try{
-    const upd = async (nombreDisc, monto) => {
-      const { error } = await supa.from('aranceles').update({monto})
-        .eq('disciplina_id', discIdPorNombre[nombreDisc]).is('vigencia_hasta', null);
-      if(error) throw error;
+    // Versiona el arancel: si el monto cambió, cierra la fila vigente
+    // (vigencia_hasta = hoy) e inserta una fila nueva desde hoy, en vez de
+    // pisar el monto de la fila vigente. Así no se pierde el precio
+    // histórico (ej. los $25.000 de antes de septiembre) cada vez que se
+    // actualiza una cuota.
+    const actualizarConVigencia = async (nombreDisc, montoNuevo) => {
+      const discId = discIdPorNombre[nombreDisc];
+      const { data: actual, error: errGet } = await supa.from('aranceles')
+        .select('id,monto').eq('disciplina_id', discId).is('vigencia_hasta', null).maybeSingle();
+      if(errGet) throw errGet;
+      if(actual && Number(actual.monto) === Number(montoNuevo)) return; // sin cambios reales
+
+      if(actual){
+        const { error: errClose } = await supa.from('aranceles')
+          .update({ vigencia_hasta: HOY }).eq('id', actual.id);
+        if(errClose) throw errClose;
+      }
+      const { error: errIns } = await supa.from('aranceles')
+        .insert({ disciplina_id: discId, monto: montoNuevo, vigencia_desde: HOY, tipo:'Mensual' });
+      if(errIns) throw errIns;
     };
-    await upd('Karate', nuevo.karate);
-    await upd('Kiai-Ken', nuevo.kiaiken);
-    await upd('Combo (Karate + Kiai-Ken)', nuevo.combo);
+    await actualizarConVigencia('Karate', nuevo.karate);
+    await actualizarConVigencia('Kiai-Ken', nuevo.kiaiken);
+    await actualizarConVigencia('Combo (Karate + Kiai-Ken)', nuevo.combo);
     const { error: errCfg } = await supa.from('configuracion')
       .upsert({ clave:'descuento_hermanos_pct', valor:String(nuevo.hermano) });
     if(errCfg) throw errCfg;
@@ -2262,7 +2537,7 @@ async function kkToggleActivoEjercicio(){
 }
 
 // ── CLASE EN VIVO (timers) ──
-let kkTimer = { bloques:[], idx:0, fase:'libre', rondaActual:1, remaining:0, running:false, intervalId:null, claseId:null };
+let kkTimer = { bloques:[], idx:0, fase:'libre', rondaActual:1, serieActual:1, remaining:0, running:false, intervalId:null, claseId:null };
 let kkAudioCtx = null;
 
 function kkCargarPlantillasParaNivel(){
@@ -2280,7 +2555,7 @@ async function kkIniciarClase(){
   const bloques = JSON.parse(JSON.stringify(plantilla.bloques));
   try{
     const { data, error } = await supa.from('kiaiken_clases').insert({
-      fecha: new Date().toISOString().slice(0,10), nombre: plantilla.nombre, nivel,
+      fecha: fechaLocalISO(), nombre: plantilla.nombre, nivel,
       plantilla_id: plantillaId, bloques_json: bloques, observaciones: '',
     }).select().single();
     if(error) throw error;
@@ -2344,6 +2619,7 @@ function kkTimerCargarBloque(idx){
   const b = kkTimer.bloques[idx];
   const f = b.formato || {modo:'libre'};
   kkTimer.rondaActual = 1;
+  kkTimer.serieActual = 1;
   if((f.modo==='rounds'||f.modo==='tabata'||f.modo==='circuito') && f.trabajo_seg>0){
     kkTimer.fase = 'trabajo';
     kkTimer.remaining = f.trabajo_seg;
@@ -2367,6 +2643,7 @@ function kkTimerRender(){
   disp.className = 'timer-big ' + (kkTimer.remaining<=3 ? 'fase-final' : (kkTimer.fase==='trabajo' ? 'fase-trabajo' : (kkTimer.fase==='descanso' ? 'fase-descanso' : '')));
   let meta = `Bloque ${kkTimer.idx+1} de ${kkTimer.bloques.length}`;
   if(f.rondas) meta += ` · Ronda ${kkTimer.rondaActual}/${f.rondas}`;
+  if(f.series>1) meta += ` · Serie ${kkTimer.serieActual}/${f.series}`;
   if(b.notas) meta += ` · ${b.notas}`;
   document.getElementById('kkt-meta').textContent = meta;
   document.getElementById('kkt-btn-playpause').textContent = kkTimer.running ? '⏸ Pausar' : '▶ Iniciar';
@@ -2383,15 +2660,33 @@ function kkTimerTick(){
       kkTimerCargarBloque(kkTimer.idx+1);
       return;
     }
+    // "Series" repite el ciclo completo de rondas — antes se guardaba
+    // el valor pero acá nunca se leía, así que el bloque terminaba
+    // apenas se cumplían las rondas de la primera (y única) serie.
+    const rondas = f.rondas||0;
+    const series = f.series||1;
     if(kkTimer.fase==='trabajo'){
-      const rondas = f.rondas||0;
-      if(rondas && kkTimer.rondaActual>=rondas){ kkBeep('fin'); kkTimerCargarBloque(kkTimer.idx+1); return; }
-      if(f.descanso_seg>0){ kkTimer.fase='descanso'; kkTimer.remaining=f.descanso_seg; kkBeep('cambio'); }
-      else { kkTimer.rondaActual++; kkTimer.fase='trabajo'; kkTimer.remaining=f.trabajo_seg; kkBeep('trabajo'); }
+      const esUltimaRondaDeLaSerie = rondas && kkTimer.rondaActual>=rondas;
+      if(esUltimaRondaDeLaSerie){
+        if(kkTimer.serieActual < series){
+          if(f.descanso_seg>0){ kkTimer.fase='descanso'; kkTimer.remaining=f.descanso_seg; kkBeep('cambio'); }
+          else { kkTimer.serieActual++; kkTimer.rondaActual=1; kkTimer.fase='trabajo'; kkTimer.remaining=f.trabajo_seg; kkBeep('trabajo'); }
+        } else {
+          kkBeep('fin'); kkTimerCargarBloque(kkTimer.idx+1); return;
+        }
+      } else if(f.descanso_seg>0){
+        kkTimer.fase='descanso'; kkTimer.remaining=f.descanso_seg; kkBeep('cambio');
+      } else {
+        kkTimer.rondaActual++; kkTimer.fase='trabajo'; kkTimer.remaining=f.trabajo_seg; kkBeep('trabajo');
+      }
     } else if(kkTimer.fase==='descanso'){
-      kkTimer.rondaActual++;
-      const rondas = f.rondas||0;
-      if(rondas && kkTimer.rondaActual>rondas){ kkBeep('fin'); kkTimerCargarBloque(kkTimer.idx+1); return; }
+      const eraUltimaRondaDeLaSerie = rondas && kkTimer.rondaActual>=rondas;
+      if(eraUltimaRondaDeLaSerie){
+        if(kkTimer.serieActual < series){ kkTimer.serieActual++; kkTimer.rondaActual=1; }
+        else { kkBeep('fin'); kkTimerCargarBloque(kkTimer.idx+1); return; }
+      } else {
+        kkTimer.rondaActual++;
+      }
       kkTimer.fase='trabajo'; kkTimer.remaining=f.trabajo_seg; kkBeep('trabajo');
     }
   }
@@ -2419,7 +2714,7 @@ async function kkGuardarClaseEnHistorial(){
     if(error) throw error;
     const c = DBK.clases.find(x=>x.id===kkTimer.claseId);
     if(c) c.observaciones = observaciones;
-    else DBK.clases.unshift({id:kkTimer.claseId, fecha:new Date().toISOString().slice(0,10), nombre:kkTimer.bloques.length?document.getElementById('kkt-blockname').textContent:'', nivel:document.getElementById('kkc-nivel').value, bloques:kkTimer.bloques, observaciones});
+    else DBK.clases.unshift({id:kkTimer.claseId, fecha:fechaLocalISO(), nombre:kkTimer.bloques.length?document.getElementById('kkt-blockname').textContent:'', nivel:document.getElementById('kkc-nivel').value, bloques:kkTimer.bloques, observaciones});
     document.getElementById('kkc-status').textContent = 'Guardado en el historial ✓';
     setTimeout(kkCerrarClase, 900);
   }catch(e){
@@ -2428,11 +2723,30 @@ async function kkGuardarClaseEnHistorial(){
 }
 function kkCerrarClase(){
   clearInterval(kkTimer.intervalId);
-  kkTimer = { bloques:[], idx:0, fase:'libre', rondaActual:1, remaining:0, running:false, intervalId:null, claseId:null };
+  kkTimer = { bloques:[], idx:0, fase:'libre', rondaActual:1, serieActual:1, remaining:0, running:false, intervalId:null, claseId:null };
   document.getElementById('kk-clase-runner').style.display='none';
   document.getElementById('kk-clase-setup').style.display='';
   kkCargarPlantillasParaNivel();
   kkRenderHistorial();
+}
+
+// "Cerrar sin guardar" — la clase ya había quedado insertada en Supabase
+// desde que se apretó "Iniciar Clase" (necesario para poder ir armando
+// el registro a medida que se dicta). Si se cierra sin confirmar el
+// guardado, esa fila queda huérfana en el historial — antes esto no se
+// limpiaba. Ahora se borra la fila antes de resetear la pantalla.
+async function kkCerrarSinGuardar(){
+  const claseId = kkTimer.claseId;
+  if(claseId){
+    try{
+      const { error } = await supa.from('kiaiken_clases').delete().eq('id', claseId);
+      if(error) throw error;
+      DBK.clases = DBK.clases.filter(c=>c.id!==claseId);
+    }catch(e){
+      alert('No se pudo descartar el registro de la clase en Supabase:\n'+e.message+'\n\nVas a tener que borrarla a mano desde el historial si sigue apareciendo.');
+    }
+  }
+  kkCerrarClase();
 }
 
 // ── HISTORIAL ──
