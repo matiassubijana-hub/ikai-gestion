@@ -410,15 +410,20 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
         </div>
       </div>
       <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Cuenta Corriente</span></div>
+        <div class="card-body" style="padding:0;">
+          <table class="tbl"><thead><tr><th>Período</th><th>Concepto</th><th>Importe</th><th>Desc.</th><th>Final</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Vence</th></tr></thead>
+            <tbody id="ad-cuenta-corriente"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
         <div class="card-hdr"><span class="card-hdr-t">Historial de Pagos</span></div>
         <div class="card-body" style="padding:0;">
-          <table class="tbl"><thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Estado</th></tr></thead>
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Estado</th><th></th></tr></thead>
             <tbody id="ad-pagos"></tbody></table>
         </div>
       </div>
     </div>
-
-    <!-- ALUMNO FORM -->
     <div class="page" id="page-alumno-form">
       <div class="detail-back" onclick="showPage('alumnos')">← Cancelar</div>
       <div class="card">
@@ -492,20 +497,42 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <div class="hud-row" id="cuotas-stats"></div>
 
       <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Generar Cuotas del Mes</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item"><label>Período</label><input id="gc-periodo" type="month"></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-fill" onclick="generarCuotasDelMes()">Generar Cuotas</button>
+          </div>
+          <div id="gc-status" style="margin-top:8px;color:var(--muted);font-size:14px;"></div>
+          <p style="color:var(--muted);font-size:13px;margin-top:8px;">
+            Crea la cuota esperada de cada alumno activo para el período elegido
+            (con el arancel vigente y el descuento de hermanos si corresponde).
+            No genera pagos — solo la deuda a cobrar. Es seguro apretarlo de
+            nuevo: a quien ya tenga la cuota de ese período no se le duplica.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="card-hdr">
           <span class="card-hdr-t">Registrar Pago</span>
         </div>
         <div class="card-body">
           <div class="form-grid">
             <div class="form-item full"><label>Alumno</label>
-              <select id="p-alumno"></select>
+              <select id="p-alumno" onchange="pCargarCuotasPendientes()"></select>
+            </div>
+            <div class="form-item full"><label>Aplicar a</label>
+              <select id="p-aplicar-a" onchange="pAlCambiarAplicarA()"></select>
+            </div>
+            <div class="form-item" id="p-concepto-item"><label>Concepto</label>
+              <select id="p-concepto"><option>Examen</option><option>Indumentaria</option><option>Otro</option></select>
             </div>
             <div class="form-item"><label>Monto</label><input id="p-monto" type="number" placeholder="0"></div>
             <div class="form-item"><label>Método de Pago</label>
               <select id="p-metodo"><option>Efectivo</option><option>Transferencia</option><option>Mercado Pago</option><option>Tarjeta</option></select>
-            </div>
-            <div class="form-item"><label>Concepto</label>
-              <select id="p-concepto"><option>Cuota Mensual</option><option>Examen</option><option>Indumentaria</option><option>Otro</option></select>
             </div>
             <div class="form-item"><label>Fecha</label><input id="p-fecha" type="date"></div>
           </div>
@@ -514,9 +541,30 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       </div>
 
       <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Cuenta Corriente General</span></div>
+        <div class="card-body">
+          <div class="form-grid" style="margin-bottom:10px;">
+            <div class="form-item"><label>Período</label><select id="cc-filtro-periodo"><option value="">Todos</option></select></div>
+            <div class="form-item"><label>Disciplina</label>
+              <select id="cc-filtro-disciplina"><option value="">Todas</option><option>Karate</option><option>Kiai-Ken</option><option>Combo (Karate + Kiai-Ken)</option></select>
+            </div>
+            <div class="form-item"><label>Estado</label>
+              <select id="cc-filtro-estado"><option value="">Todos</option><option>Pendiente</option><option>Parcial</option><option>Pagada</option><option>Vencida</option></select>
+            </div>
+            <div class="form-item"><label>Alumno</label><input id="cc-filtro-alumno" type="text" placeholder="Buscar por nombre..."></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="renderCuentaCorrienteGeneral()" style="margin-bottom:10px;">Aplicar filtros</button>
+          <div style="overflow-x:auto;">
+          <table class="tbl"><thead><tr><th>Alumno</th><th>Período</th><th>Concepto</th><th>Importe</th><th>Desc.</th><th>Final</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
+            <tbody id="tbl-cuenta-corriente"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="card-hdr"><span class="card-hdr-t">Todos los Pagos</span></div>
         <div class="card-body" style="padding:0;">
-          <table class="tbl"><thead><tr><th>Fecha</th><th>Alumno</th><th>Concepto</th><th>Monto</th><th>Método</th></tr></thead>
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Alumno</th><th>Concepto</th><th>Monto</th><th>Método</th><th></th></tr></thead>
             <tbody id="tbl-pagos"></tbody></table>
         </div>
       </div>
@@ -1034,11 +1082,11 @@ const HOY = fechaLocalISO();
 // ═══════════════════════════════════════
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
-let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], gruposFamiliares:[] };
+let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], gruposFamiliares:[], cuotas:[] };
 let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
-  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR] = await Promise.all([
+  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR, cuoR] = await Promise.all([
     supa.from('disciplinas').select('id,nombre'),
     supa.from('aranceles').select('disciplina_id,monto').is('vigencia_hasta', null),
     supa.from('configuracion').select('clave,valor'),
@@ -1054,8 +1102,9 @@ async function cargarDatos(){
     supa.from('tutores').select('*'),
     supa.from('grupos_familiares').select('*').order('nombre'),
     supa.from('alumnos_disciplinas').select('*'),
+    supa.from('cuotas').select('*').order('periodo', { ascending:false }),
   ]);
-  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR]) if(r.error) throw r.error;
+  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR,cuoR]) if(r.error) throw r.error;
 
   DB.profesores = (profR.data||[]).map(p=>({
     id:p.id, nombre:p.nombre, dni:p.dni||'', telefono:p.telefono||'', email:p.email||'',
@@ -1137,7 +1186,16 @@ async function cargarDatos(){
 
   DB.pagos = (pagR.data||[]).map(p=>({
     id:p.id, alumnoId:p.alumno_id, fecha:p.fecha, concepto:p.tipo_ingreso,
-    monto:p.monto, metodo:p.metodo_pago,
+    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null,
+    anulado:p.anulado===true, anuladoMotivo:p.anulado_motivo||'', anuladoAt:p.anulado_at||'',
+  }));
+
+  DB.cuotas = (cuoR.data||[]).map(c=>({
+    id:c.id, alumnoId:c.alumno_id, periodo:c.periodo, disciplinaId:c.disciplina_id,
+    disciplinaNombre:discNombrePorId[c.disciplina_id]||'', concepto:c.concepto,
+    importeOriginal:Number(c.importe_original), descuento:Number(c.descuento||0),
+    importeFinal:Number(c.importe_final), fechaEmision:c.fecha_emision,
+    fechaVencimiento:c.fecha_vencimiento||'', estado:c.estado||'Activa', observaciones:c.observaciones||'',
   }));
 
   DB.combos = (comboR.data||[]).map(c=>({
@@ -1219,25 +1277,66 @@ function arancelDe(disciplina){
   return c.karate;
 }
 
+// ── Cuenta corriente por cuota ──
+// Pagado/saldo/estado de una cuota se calculan siempre en el momento a
+// partir de los pagos vigentes (no anulados) que la referencian — así
+// nunca queda un estado guardado desincronizado del historial real.
+function calcCuota(cuota){
+  const pagosCuota = DB.pagos.filter(p=>p.cuotaId===cuota.id && !p.anulado);
+  const pagado = pagosCuota.reduce((s,p)=>s+Number(p.monto),0);
+  const saldo = Math.round((cuota.importeFinal - pagado)*100)/100;
+  let estado;
+  if(cuota.estado==='Anulada') estado='Anulada';
+  else if(saldo<=0) estado='Pagada';
+  else if(pagado>0) estado='Parcial';
+  else if(cuota.fechaVencimiento && cuota.fechaVencimiento < HOY) estado='Vencida';
+  else estado='Pendiente';
+  return { pagado, saldo, estado };
+}
+
+function saldoTotalAlumno(alumnoId){
+  return DB.cuotas.filter(c=>c.alumnoId===alumnoId && c.estado!=='Anulada')
+    .reduce((s,c)=>s+Math.max(0,calcCuota(c).saldo), 0);
+}
+
 function alumnoAlDia(alumno){
-  const pagosAlumno = DB.pagos.filter(p=>p.alumnoId===alumno.id && p.concepto==='Cuota Mensual');
-  if(!pagosAlumno.length) return false;
-  const ultimo = pagosAlumno.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0];
-  return diasEntre(ultimo.fecha, HOY) < 35;
+  const cuotasAlumno = DB.cuotas.filter(c=>c.alumnoId===alumno.id);
+  if(!cuotasAlumno.length){
+    // Todavía no se generó ninguna cuota para este alumno (no usaste
+    // "Generar Cuotas del Mes" aún, o es de antes de esta función) — se
+    // usa el chequeo anterior para no perder continuidad: último pago
+    // de cuota registrado hace menos de 35 días.
+    const pagosAlumno = DB.pagos.filter(p=>p.alumnoId===alumno.id && p.concepto==='Cuota Mensual' && !p.anulado);
+    if(!pagosAlumno.length) return false;
+    const ultimo = pagosAlumno.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0];
+    return diasEntre(ultimo.fecha, HOY) < 35;
+  }
+  return saldoTotalAlumno(alumno.id) <= 0;
+}
+
+// 'al-dia' | 'proximo-a-vencer' | 'con-deuda' — reemplaza al viejo
+// esquema binario al-día/vencido para poder distinguir a quién avisarle
+// con tiempo de a quién ya se le venció la cuota.
+function estadoDeudaAlumno(alumno){
+  const cuotasAlumno = DB.cuotas.filter(c=>c.alumnoId===alumno.id && c.estado!=='Anulada');
+  if(!cuotasAlumno.length) return alumnoAlDia(alumno) ? 'al-dia' : 'con-deuda';
+  const pendientes = cuotasAlumno.map(c=>({...c, ...calcCuota(c)})).filter(c=>c.saldo>0);
+  if(!pendientes.length) return 'al-dia';
+  const hayVencida = pendientes.some(c=>c.estado==='Vencida');
+  if(hayVencida) return 'con-deuda';
+  const proximaAVencer = pendientes.some(c=>c.fechaVencimiento && diasEntre(HOY,c.fechaVencimiento)>=0 && diasEntre(HOY,c.fechaVencimiento)<=5);
+  return proximaAVencer ? 'proximo-a-vencer' : 'con-deuda';
 }
 
 function renderHome(){
   const activosArr = DB.alumnos.filter(a=>a.estado==='Activo');
   const activos = activosArr.length;
-  // "Al día" se calcula SOLO sobre activos, igual que en Cuotas — antes acá
-  // se contaba sobre todos los alumnos (activos e inactivos) y en Cuotas
-  // solo sobre activos, así que los dos paneles podían mostrar porcentajes
-  // distintos para la misma realidad.
-  const alDia = activosArr.filter(alumnoAlDia).length;
+  const alDia = activosArr.filter(a=>estadoDeudaAlumno(a)==='al-dia').length;
+  const proximosAVencer = activosArr.filter(a=>estadoDeudaAlumno(a)==='proximo-a-vencer');
+  const conDeuda = activosArr.filter(a=>estadoDeudaAlumno(a)==='con-deuda');
   const total = activos || 1;
   const pctAlDia = Math.round((alDia/total)*100);
   const ingresosMes = mesActualPagos().reduce((s,p)=>s+Number(p.monto),0);
-  const vencidos = DB.alumnos.filter(a=>a.estado==='Activo' && !alumnoAlDia(a));
 
   document.getElementById('hud-stats').innerHTML = `
     <div class="hud-card">
@@ -1257,19 +1356,28 @@ function renderHome(){
     </div>
   `;
 
+  const pendientes = [...proximosAVencer.map(a=>({a, tag:'Próxima a vencer', pill:'pill-warn'})),
+                      ...conDeuda.map(a=>({a, tag:'Con deuda', pill:'pill-bad'}))];
   const tbody = document.getElementById('tbl-vencidas');
-  document.getElementById('venc-count').textContent = vencidos.length + ' pendientes';
-  if(!vencidos.length){
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Sin cuotas vencidas 🎉</td></tr>';
-  } else {
-    tbody.innerHTML = vencidos.map(a=>`
-      <tr onclick="viewAlumno(${a.id})">
-        <td>${a.nombre} ${a.apellido}</td>
+  document.getElementById('venc-count').textContent = pendientes.length + ' pendientes';
+  tbody.innerHTML = pendientes.length ? pendientes.map(({a,tag,pill})=>`
+      <tr>
+        <td onclick="viewAlumno(${a.id})" style="cursor:pointer;">${a.nombre} ${a.apellido}</td>
         <td>${a.disciplina}</td>
-        <td><span class="pill pill-bad">Vencida</span></td>
-        <td>$${arancelDe(a.disciplina).toLocaleString('es-AR')}</td>
-      </tr>`).join('');
-  }
+        <td><span class="pill ${pill}">${tag}</span></td>
+        <td>$${saldoTotalAlumno(a.id).toLocaleString('es-AR')} ${linkRecordatorioWhatsApp(a)}</td>
+      </tr>`).join('') : '<tr><td colspan="4" class="empty-state">Sin cuotas pendientes 🎉</td></tr>';
+}
+
+// Link de recordatorio por WhatsApp, con mensaje precargado — nunca se
+// manda solo, es el instructor quien lo abre y lo envía a mano.
+function linkRecordatorioWhatsApp(alumno){
+  const numero = (alumno.whatsapp || alumno.telefono || '').replace(/\D/g,'');
+  if(!numero) return '';
+  const numeroIntl = numero.startsWith('549') ? numero : ('549'+numero.replace(/^0/,'').replace(/^15/,''));
+  const saldo = saldoTotalAlumno(alumno.id);
+  const msg = encodeURIComponent(`Hola ${alumno.nombre}! Te escribo de Ikai Dojo — tenés un saldo pendiente de $${saldo.toLocaleString('es-AR')}. Cualquier consulta avisame. ¡Gracias!`);
+  return `<a href="https://wa.me/${numeroIntl}?text=${msg}" target="_blank" onclick="event.stopPropagation()" style="margin-left:6px;">💬 Recordar</a>`;
 }
 
 // ═══════════════════════════════════════
@@ -1571,10 +1679,31 @@ function viewAlumno(id){
 
   const pagos = DB.pagos.filter(p=>p.alumnoId===id).sort((x,y)=>new Date(y.fecha)-new Date(x.fecha));
   const tbody = document.getElementById('ad-pagos');
-  tbody.innerHTML = pagos.length ? pagos.map(p=>`
-    <tr><td>${p.fecha}</td><td>${p.concepto}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td>
-    <td><span class="pill pill-ok">Pagado</span></td></tr>`).join('')
-    : '<tr><td colspan="4" class="empty-state">Sin pagos registrados</td></tr>';
+  tbody.innerHTML = pagos.length ? pagos.map(p=>{
+    if(p.anulado){
+      return `<tr style="opacity:0.55;"><td>${p.fecha}</td><td>${p.concepto}</td><td><s>$${Number(p.monto).toLocaleString('es-AR')}</s></td>
+        <td><span class="pill pill-bad" title="${p.anuladoMotivo}">Anulado</span></td><td></td></tr>`;
+    }
+    return `<tr><td>${p.fecha}</td><td>${p.concepto}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td>
+    <td><span class="pill pill-ok">Pagado</span></td>
+    <td><button class="btn btn-ghost btn-sm" onclick="verComprobante(${p.id})">Comprobante</button>
+        <button class="btn btn-ghost btn-sm" onclick="anularPago(${p.id})">Anular</button></td></tr>`;
+  }).join('')
+    : '<tr><td colspan="5" class="empty-state">Sin pagos registrados</td></tr>';
+
+  const cuotasAlumno = DB.cuotas.filter(c=>c.alumnoId===id && c.estado!=='Anulada')
+    .map(c=>({...c, ...calcCuota(c)})).sort((x,y)=>y.periodo.localeCompare(x.periodo));
+  const pillPorEstado = { Pagada:'pill-ok', Parcial:'pill-warn', Pendiente:'pill-warn', Vencida:'pill-bad' };
+  document.getElementById('ad-cuenta-corriente').innerHTML = cuotasAlumno.length ? cuotasAlumno.map(c=>`
+    <tr><td>${c.periodo}</td><td>${c.concepto}</td>
+      <td>$${c.importeOriginal.toLocaleString('es-AR')}</td>
+      <td>${c.descuento?'$'+c.descuento.toLocaleString('es-AR'):'—'}</td>
+      <td>$${c.importeFinal.toLocaleString('es-AR')}</td>
+      <td>$${c.pagado.toLocaleString('es-AR')}</td>
+      <td>$${c.saldo.toLocaleString('es-AR')}</td>
+      <td><span class="pill ${pillPorEstado[c.estado]||''}">${c.estado}</span></td>
+      <td>${c.fechaVencimiento||'—'}</td></tr>`).join('')
+    : '<tr><td colspan="9" class="empty-state">Todavía no se generó ninguna cuota para este alumno</td></tr>';
   showPage('alumno-detail');
 }
 
@@ -1886,15 +2015,18 @@ async function eliminarTecnica(){
 // ═══════════════════════════════════════
 function renderCuotas(){
   const activos = DB.alumnos.filter(a=>a.estado==='Activo');
-  const alDia = activos.filter(alumnoAlDia).length;
-  const vencidos = activos.length - alDia;
+  const alDia = activos.filter(a=>estadoDeudaAlumno(a)==='al-dia').length;
+  const proximosAVencer = activos.filter(a=>estadoDeudaAlumno(a)==='proximo-a-vencer').length;
+  const conDeuda = activos.filter(a=>estadoDeudaAlumno(a)==='con-deuda').length;
   const ingresosMes = mesActualPagos().reduce((s,p)=>s+Number(p.monto),0);
 
   document.getElementById('cuotas-stats').innerHTML = `
     <div class="hud-card">${hudRing(activos.length?Math.round(alDia/activos.length*100):0, alDia)}
       <div class="hud-info"><div class="hud-label">Al día</div><div class="hud-value">${alDia}</div></div></div>
-    <div class="hud-card">${hudRing(activos.length?Math.round(vencidos/activos.length*100):0, vencidos)}
-      <div class="hud-info"><div class="hud-label">Vencidos</div><div class="hud-value">${vencidos}</div></div></div>
+    <div class="hud-card">${hudRing(activos.length?Math.round(proximosAVencer/activos.length*100):0, proximosAVencer)}
+      <div class="hud-info"><div class="hud-label">Próximos a vencer</div><div class="hud-value">${proximosAVencer}</div></div></div>
+    <div class="hud-card">${hudRing(activos.length?Math.round(conDeuda/activos.length*100):0, conDeuda)}
+      <div class="hud-info"><div class="hud-label">Con deuda</div><div class="hud-value">${conDeuda}</div></div></div>
     <div class="hud-card">${hudRing(70,'$')}
       <div class="hud-info"><div class="hud-label">Ingresos del mes</div><div class="hud-value">$${ingresosMes.toLocaleString('es-AR')}</div></div></div>
   `;
@@ -1902,14 +2034,99 @@ function renderCuotas(){
   const sel = document.getElementById('p-alumno');
   sel.innerHTML = DB.alumnos.map(a=>`<option value="${a.id}">${a.nombre} ${a.apellido}</option>`).join('');
   document.getElementById('p-fecha').value = HOY;
+  if(!document.getElementById('gc-periodo').value) document.getElementById('gc-periodo').value = HOY.slice(0,7);
+  pCargarCuotasPendientes();
 
+  const filtroPeriodo = document.getElementById('cc-filtro-periodo');
+  const periodosExistentes = [...new Set(DB.cuotas.map(c=>c.periodo))].sort().reverse();
+  const seleccionPrevia = filtroPeriodo.value;
+  filtroPeriodo.innerHTML = '<option value="">Todos</option>' + periodosExistentes.map(p=>`<option value="${p}">${p}</option>`).join('');
+  filtroPeriodo.value = seleccionPrevia;
+
+  renderCuentaCorrienteGeneral();
+  renderTablaPagos();
+}
+
+function renderTablaPagos(){
   const tbody = document.getElementById('tbl-pagos');
   const pagosOrdenados = [...DB.pagos].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
   tbody.innerHTML = pagosOrdenados.length ? pagosOrdenados.map(p=>{
     const al = DB.alumnos.find(a=>a.id===p.alumnoId);
-    return `<tr><td>${p.fecha}</td><td>${al?al.nombre+' '+al.apellido:'—'}</td>
-      <td>${p.concepto}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td><td>${p.metodo}</td></tr>`;
-  }).join('') : '<tr><td colspan="5" class="empty-state">Sin pagos registrados</td></tr>';
+    const nombreAl = al?al.nombre+' '+al.apellido:'—';
+    if(p.anulado){
+      return `<tr style="opacity:0.55;"><td>${p.fecha}</td><td>${nombreAl}</td>
+        <td>${p.concepto}</td><td><s>$${Number(p.monto).toLocaleString('es-AR')}</s></td><td>${p.metodo}</td>
+        <td><span class="pill pill-bad" title="${p.anuladoMotivo}">Anulado</span></td></tr>`;
+    }
+    return `<tr><td>${p.fecha}</td><td>${nombreAl}</td>
+      <td>${p.concepto}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td><td>${p.metodo}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-ghost btn-sm" onclick="verComprobante(${p.id})">Comprobante</button>
+        <button class="btn btn-ghost btn-sm" onclick="anularPago(${p.id})">Anular</button>
+      </td></tr>`;
+  }).join('') : '<tr><td colspan="6" class="empty-state">Sin pagos registrados</td></tr>';
+}
+
+// ── Generar Cuotas del Mes ──
+async function generarCuotasDelMes(){
+  const periodo = document.getElementById('gc-periodo').value; // 'YYYY-MM'
+  if(!periodo){ alert('Elegí un período.'); return; }
+  const statusEl = document.getElementById('gc-status');
+  statusEl.textContent = 'Generando…';
+
+  const activos = DB.alumnos.filter(a=>a.estado==='Activo');
+  const vencimiento = periodo+'-10';
+  const filas = [];
+  for(const a of activos){
+    const discId = discIdPorNombre[a.disciplina];
+    if(!discId) continue;
+    const yaExiste = DB.cuotas.some(c=>c.alumnoId===a.id && c.periodo===periodo && c.disciplinaId===discId);
+    if(yaExiste) continue;
+    const importeOriginal = arancelDe(a.disciplina);
+    const descuento = (a.grupoFamiliarId && !a.pagaCuotaCompleta) ? Math.round(importeOriginal * (DB.config.hermano||0)/100) : 0;
+    filas.push({
+      alumno_id: a.id, periodo, disciplina_id: discId, concepto: 'Cuota Mensual',
+      importe_original: importeOriginal, descuento, importe_final: importeOriginal - descuento,
+      fecha_emision: HOY, fecha_vencimiento: vencimiento,
+    });
+  }
+
+  if(!filas.length){ statusEl.textContent = 'No hay nada para generar — todos los alumnos activos ya tienen su cuota de ese período.'; return; }
+
+  const { error } = await supa.from('cuotas').insert(filas);
+  if(error){ statusEl.textContent = ''; alert('No se pudieron generar las cuotas:\n'+error.message); return; }
+
+  statusEl.textContent = `Listo: se generaron ${filas.length} cuota(s) para ${periodo}.`;
+  await cargarDatos(); refreshAll();
+}
+
+// ── Registrar Pago (contra una cuota puntual, o suelto) ──
+function pCargarCuotasPendientes(){
+  const alumnoId = Number(document.getElementById('p-alumno').value);
+  const sel = document.getElementById('p-aplicar-a');
+  if(!alumnoId){ sel.innerHTML = '<option value="">Otro concepto (Examen, Indumentaria, etc.)</option>'; pAlCambiarAplicarA(); return; }
+  const cuotasPendientes = DB.cuotas
+    .filter(c=>c.alumnoId===alumnoId && c.estado!=='Anulada')
+    .map(c=>({...c, ...calcCuota(c)}))
+    .filter(c=>c.saldo>0)
+    .sort((a,b)=>a.periodo.localeCompare(b.periodo));
+  sel.innerHTML = cuotasPendientes.map(c=>
+    `<option value="${c.id}">Cuota ${c.periodo} (${c.disciplinaNombre}) — saldo $${c.saldo.toLocaleString('es-AR')}</option>`
+  ).join('') + '<option value="">Otro concepto (Examen, Indumentaria, etc.)</option>';
+  pAlCambiarAplicarA();
+}
+
+function pAlCambiarAplicarA(){
+  const cuotaId = document.getElementById('p-aplicar-a').value;
+  const conceptoItem = document.getElementById('p-concepto-item');
+  if(cuotaId){
+    conceptoItem.style.display = 'none';
+    const cuota = DB.cuotas.find(c=>c.id===Number(cuotaId));
+    if(cuota) document.getElementById('p-monto').value = calcCuota(cuota).saldo;
+  } else {
+    conceptoItem.style.display = '';
+    document.getElementById('p-monto').value = '';
+  }
 }
 
 async function registrarPago(){
@@ -1917,6 +2134,8 @@ async function registrarPago(){
   const monto = Number(document.getElementById('p-monto').value);
   if(!alumnoId || !monto){ alert('Elegí un alumno y un monto.'); return; }
   const alumno = DB.alumnos.find(a=>a.id===alumnoId);
+  const cuotaIdSel = document.getElementById('p-aplicar-a').value;
+  const cuota = cuotaIdSel ? DB.cuotas.find(c=>c.id===Number(cuotaIdSel)) : null;
 
   const btn = document.querySelector('#page-cuotas .btn-fill');
   if(btn){ btn.disabled = true; btn.textContent = 'Guardando…'; }
@@ -1925,10 +2144,11 @@ async function registrarPago(){
     alumno_id: alumnoId,
     monto,
     metodo_pago: document.getElementById('p-metodo').value,
-    tipo_ingreso: document.getElementById('p-concepto').value,
+    tipo_ingreso: cuota ? 'Cuota Mensual' : document.getElementById('p-concepto').value,
     fecha: document.getElementById('p-fecha').value || HOY,
     disciplina_id: alumno ? (discIdPorNombre[alumno.disciplina]||null) : null,
     estado_pago: 'Pagado',
+    cuota_id: cuota ? cuota.id : null,
   }).select().single();
 
   if(btn){ btn.disabled = false; btn.textContent = 'Registrar Pago'; }
@@ -1937,10 +2157,83 @@ async function registrarPago(){
   DB.pagos.push({
     id:data.id, alumnoId:data.alumno_id, fecha:data.fecha,
     concepto:data.tipo_ingreso, monto:data.monto, metodo:data.metodo_pago,
+    cuotaId:data.cuota_id||null, anulado:false, anuladoMotivo:'', anuladoAt:'',
   });
   document.getElementById('p-monto').value='';
   renderCuotas();
   renderHome();
+}
+
+// Anular en vez de editar/borrar — el pago queda en el historial con el
+// motivo y la fecha de anulación, y deja de contar para el saldo de su
+// cuota. Es el criterio de auditoría que pidió el documento de requisitos.
+async function anularPago(pagoId){
+  const p = DB.pagos.find(x=>x.id===pagoId);
+  if(!p || p.anulado) return;
+  const motivo = prompt('Motivo de la anulación (queda registrado en el historial):');
+  if(motivo===null) return;
+  if(!motivo.trim()){ alert('Necesitás indicar un motivo para anular el pago.'); return; }
+
+  const { error } = await supa.from('pagos').update({
+    anulado: true, anulado_motivo: motivo.trim(), anulado_at: new Date().toISOString(),
+  }).eq('id', pagoId);
+  if(error){ alert('No se pudo anular el pago:\n'+error.message); return; }
+
+  p.anulado = true; p.anuladoMotivo = motivo.trim();
+  renderCuotas(); renderHome();
+}
+
+function verComprobante(pagoId){
+  const p = DB.pagos.find(x=>x.id===pagoId);
+  if(!p) return;
+  const al = DB.alumnos.find(a=>a.id===p.alumnoId);
+  const numero = 'REC-'+String(p.id).padStart(6,'0');
+  alert(
+    `IKAI DOJO — Comprobante ${numero}\n\n`+
+    `Alumno: ${al?al.nombre+' '+al.apellido:'—'}\n`+
+    `Concepto: ${p.concepto}\n`+
+    `Fecha: ${p.fecha}\n`+
+    `Importe: $${Number(p.monto).toLocaleString('es-AR')}\n`+
+    `Método de pago: ${p.metodo}`
+  );
+}
+
+// ── Cuenta Corriente General (todas las cuotas, con filtros) ──
+function renderCuentaCorrienteGeneral(){
+  const fPeriodo = document.getElementById('cc-filtro-periodo').value;
+  const fDisciplina = document.getElementById('cc-filtro-disciplina').value;
+  const fEstado = document.getElementById('cc-filtro-estado').value;
+  const fAlumno = document.getElementById('cc-filtro-alumno').value.trim().toLowerCase();
+
+  let filas = DB.cuotas.filter(c=>c.estado!=='Anulada').map(c=>({ ...c, ...calcCuota(c) }));
+  if(fPeriodo) filas = filas.filter(c=>c.periodo===fPeriodo);
+  if(fDisciplina) filas = filas.filter(c=>c.disciplinaNombre===fDisciplina);
+  if(fEstado) filas = filas.filter(c=>c.estado===fEstado);
+  if(fAlumno){
+    filas = filas.filter(c=>{
+      const a = DB.alumnos.find(x=>x.id===c.alumnoId);
+      return a && (a.nombre+' '+a.apellido).toLowerCase().includes(fAlumno);
+    });
+  }
+  filas.sort((a,b)=> b.periodo.localeCompare(a.periodo) || a.alumnoId-b.alumnoId);
+
+  const pillPorEstado = { Pagada:'pill-ok', Parcial:'pill-warn', Pendiente:'pill-warn', Vencida:'pill-bad' };
+  const tbody = document.getElementById('tbl-cuenta-corriente');
+  tbody.innerHTML = filas.length ? filas.map(c=>{
+    const a = DB.alumnos.find(x=>x.id===c.alumnoId);
+    return `<tr>
+      <td>${a?`<a href="#" onclick="viewAlumno(${a.id});return false;">${a.nombre} ${a.apellido}</a>`:'—'}</td>
+      <td>${c.periodo}</td><td>${c.concepto}</td>
+      <td>$${c.importeOriginal.toLocaleString('es-AR')}</td>
+      <td>${c.descuento?'$'+c.descuento.toLocaleString('es-AR'):'—'}</td>
+      <td>$${c.importeFinal.toLocaleString('es-AR')}</td>
+      <td>$${c.pagado.toLocaleString('es-AR')}</td>
+      <td>$${c.saldo.toLocaleString('es-AR')}</td>
+      <td><span class="pill ${pillPorEstado[c.estado]||''}">${c.estado}</span></td>
+      <td>${c.fechaVencimiento||'—'}</td>
+      <td>${c.saldo>0 && a ? linkRecordatorioWhatsApp(a) : ''}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="11" class="empty-state">Sin cuotas para este filtro</td></tr>';
 }
 
 // ═══════════════════════════════════════
