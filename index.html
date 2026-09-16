@@ -325,6 +325,10 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>
       Kiaiken
     </button>
+    <button class="nav-btn" data-page="entrenamiento" onclick="showPage('entrenamiento',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12h3M19 12h3M5 8v8M19 8v8M8 12h8" stroke-width="1.8"/><rect x="5" y="9" width="3" height="6" rx="1"/><rect x="16" y="9" width="3" height="6" rx="1"/></svg>
+      Entrenamiento
+    </button>
     <button class="nav-btn" data-page="profesores" onclick="showPage('profesores',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="3"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M2 21v-1a3 3 0 0 1 3-3M22 21v-1a3 3 0 0 0-3-3"/></svg>
       Profesores Externos
@@ -332,6 +336,10 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
     <button class="nav-btn" data-page="economia" onclick="showPage('economia',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       Economía del Dojo
+    </button>
+    <button class="nav-btn" data-page="calendario" onclick="showPage('calendario',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      Calendario
     </button>
     <button class="nav-btn" data-page="config" onclick="showPage('config',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
@@ -854,6 +862,19 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       </div>
     </div>
 
+    <!-- ENTRENAMIENTO (herramienta anterior, embebida — módulo independiente, no migrado todavía) -->
+    <div class="page" id="page-entrenamiento" style="max-width:100%;height:calc(100vh - 150px);">
+      <div class="card" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+        <div class="card-hdr">
+          <span class="card-hdr-t">Entrenamiento — herramienta anterior</span>
+          <a href="ikai-dojo.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Abrir en pestaña aparte ↗</a>
+        </div>
+        <div class="card-body" style="flex:1;min-height:0;padding:0;">
+          <iframe src="ikai-dojo.html" title="Ikai Dojo — Entrenamiento" style="width:100%;height:100%;border:0;display:block;background:#0c0c0c;"></iframe>
+        </div>
+      </div>
+    </div>
+
     <!-- PROFESORES EXTERNOS -->
     <div class="page" id="page-profesores">
       <div class="card">
@@ -1056,6 +1077,109 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       </div>
     </div>
 
+    <!-- CALENDARIO -->
+    <div class="page" id="page-calendario">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t">Calendario del Dojo</span>
+          <button class="btn btn-fill btn-sm" onclick="openCalendarioForm()">+ Nuevo Evento</button>
+        </div>
+        <div class="card-body" style="padding:12px 18px;">
+          <div class="form-grid">
+            <div class="form-item"><label>Organización</label>
+              <select id="cal-filtro-org" onchange="renderCalendarioList()">
+                <option value="">Todas</option>
+                <option>Inoue-Ha</option><option>UCKF</option><option>FAK</option><option>Interno</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Tipo de Actividad</label>
+              <select id="cal-filtro-tipo" onchange="renderCalendarioList()">
+                <option value="">Todos</option>
+                <option>Torneo</option><option>Examen</option><option>Visita</option><option>Entrenamiento</option>
+                <option>Reunión de Danes</option><option>Encuentro</option><option>Seminario</option>
+                <option>Acantonamiento</option><option>Cierre</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Estado</label>
+              <select id="cal-filtro-estado" onchange="renderCalendarioList()">
+                <option value="">Todos</option>
+                <option>Confirmado</option><option>A confirmar</option><option>Pendiente</option>
+                <option>Finalizado</option><option>Cancelado</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Rango</label>
+              <select id="cal-filtro-proximos" onchange="renderCalendarioList()">
+                <option value="">Todo el año</option>
+                <option value="1">Desde hoy en adelante</option>
+              </select>
+            </div>
+          </div>
+          <div id="calendario-lista"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDARIO FORM -->
+    <div class="page" id="page-calendario-form">
+      <div class="detail-back" onclick="showPage('calendario')">← Cancelar</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t" id="cf-title">Nuevo Evento</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item full"><label>Nombre del Evento</label><input id="cf-evento" type="text"></div>
+            <div class="form-item"><label>Fecha</label><input id="cf-fecha" type="date"></div>
+            <div class="form-item"><label>Fecha Fin</label><input id="cf-fecha-fin" type="date" placeholder="Solo si dura más de un día"></div>
+            <div class="form-item"><label>Horario</label><input id="cf-horario" type="text" placeholder="Ej: 9 a 13 hs"></div>
+            <div class="form-item"><label>Organización</label>
+              <select id="cf-organizacion">
+                <option value="">Sin especificar</option>
+                <option>Inoue-Ha</option><option>UCKF</option><option>FAK</option><option>Interno</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Tipo de Actividad</label>
+              <select id="cf-tipo">
+                <option value="">Sin especificar</option>
+                <option>Torneo</option><option>Examen</option><option>Visita</option><option>Entrenamiento</option>
+                <option>Reunión de Danes</option><option>Encuentro</option><option>Seminario</option>
+                <option>Acantonamiento</option><option>Cierre</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="form-item"><label>Lugar</label><input id="cf-lugar" type="text"></div>
+            <div class="form-item"><label>Categorías / Alumnos que Participan</label><input id="cf-categoria" type="text" placeholder="Ej: todas las categorías, solo competencia"></div>
+            <div class="form-item"><label>Estado</label>
+              <select id="cf-estado"><option>Confirmado</option><option>A confirmar</option><option>Pendiente</option><option>Finalizado</option><option>Cancelado</option></select>
+            </div>
+            <div class="form-item"><label>Documentación Relacionada</label><input id="cf-documentacion" type="text" placeholder="Link a Drive u otro, si corresponde"></div>
+            <div class="form-item"><label>Costo</label><input id="cf-costo" type="number" placeholder="Opcional"></div>
+            <div class="form-item"><label>Inscripción</label><input id="cf-inscripcion" type="text" placeholder="Opcional"></div>
+            <div class="form-item"><label>Transporte</label><input id="cf-transporte" type="text" placeholder="Opcional"></div>
+            <div class="form-item full"><label>Observaciones</label><textarea id="cf-observaciones" rows="2"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-fill" onclick="saveCalendarioEvento()">Guardar</button>
+            <button class="btn btn-ghost" onclick="showPage('calendario')">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDARIO DETAIL -->
+    <div class="page" id="page-calendario-detail">
+      <div class="detail-back" onclick="showPage('calendario')">← Volver al Calendario</div>
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t" id="cd-nombre">—</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn-ghost btn-sm" onclick="editCalendarioEvento()">✏ Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarCalendarioEvento()">🗑 Eliminar</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="detail-grid" id="cd-fields"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIG -->
     <div class="page" id="page-config">
       <div class="card">
@@ -1190,11 +1314,11 @@ const HOY = fechaLocalISO();
 // ═══════════════════════════════════════
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
-let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], vencimientosProfesores:[], profesoresHistorial:[], gruposFamiliares:[], cuotas:[], gastos:[] };
+let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], vencimientosProfesores:[], profesoresHistorial:[], gruposFamiliares:[], cuotas:[], gastos:[], eventosCalendario:[] };
 let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
-  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR, cuoR, gasR, vpR, phR] = await Promise.all([
+  const [discR, arR, cfgR, alR, saludR, pagR, comboR, kkejR, kkplR, kkclR, profR, pagProfR, tutR, gfR, adR, cuoR, gasR, vpR, phR, evR] = await Promise.all([
     supa.from('disciplinas').select('id,nombre'),
     supa.from('aranceles').select('disciplina_id,monto').is('vigencia_hasta', null),
     supa.from('configuracion').select('clave,valor'),
@@ -1214,8 +1338,19 @@ async function cargarDatos(){
     supa.from('gastos').select('*').order('fecha', { ascending:false }),
     supa.from('vencimientos_profesores').select('*').order('periodo', { ascending:false }),
     supa.from('profesores_historial').select('*').order('fecha', { ascending:false }),
+    supa.from('eventos_calendario').select('*').order('fecha'),
   ]);
-  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR,cuoR,gasR,vpR,phR]) if(r.error) throw r.error;
+  for(const r of [discR,arR,cfgR,alR,saludR,pagR,comboR,kkejR,kkplR,kkclR,profR,pagProfR,tutR,gfR,adR,cuoR,gasR,vpR,phR,evR]) if(r.error) throw r.error;
+
+  DB.eventosCalendario = (evR.data||[]).map(e=>({
+    id:e.id, fecha:e.fecha, fechaFin:e.fecha_fin||'', evento:e.evento, lugar:e.lugar||'',
+    horario:e.horario||'', organizacion:e.organizacion||'', tipoActividad:e.tipo_actividad||'',
+    categoriaParticipantes:e.categoria_participantes||'', observaciones:e.observaciones||'',
+    documentacionUrl:e.documentacion_url||'',
+    costo:(e.costo===null||e.costo===undefined)?null:Number(e.costo),
+    infoInscripcion:e.info_inscripcion||'', infoTransporte:e.info_transporte||'',
+    estado:e.estado||'Confirmado',
+  }));
 
   DB.profesores = (profR.data||[]).map(p=>({
     id:p.id, nombre:p.nombre, dni:p.dni||'', telefono:p.telefono||'', email:p.email||'',
@@ -1363,7 +1498,8 @@ function showPage(id, btn){
       asistencia:'asistencia', karate:'karate', kiaiken:'kiaiken',
       tecnicas:'kiaiken', 'tecnica-detail':'kiaiken', 'tecnica-form':'kiaiken',
       profesores:'profesores', 'profesor-form':'profesores', 'profesor-detail':'profesores',
-      economia:'economia'};
+      economia:'economia',
+      calendario:'calendario', 'calendario-form':'calendario', 'calendario-detail':'calendario'};
     const nb = document.querySelector(`.nav-btn[data-page="${navMap[id]||id}"]`);
     if(nb) nb.classList.add('active');
   }
@@ -1376,6 +1512,7 @@ function showPage(id, btn){
   if(id==='kiaiken') kkShowTab(kkTabActual||'plantillas');
   if(id==='profesores') renderProfesoresList();
   if(id==='economia') renderEconomia();
+  if(id==='calendario') renderCalendarioList();
 }
 
 // ═══════════════════════════════════════
@@ -2621,7 +2758,189 @@ async function saveConfig(){
 }
 
 function refreshAll(){
-  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList(); renderEconomia();
+  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList(); renderEconomia(); renderCalendarioList();
+}
+
+// ═══════════════════════════════════════
+// CALENDARIO DEL DOJO
+// ═══════════════════════════════════════
+const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function pillEstadoEvento(estado){
+  if(estado==='Confirmado') return 'pill-ok';
+  if(estado==='Finalizado') return 'pill-ghost';
+  if(estado==='Cancelado') return 'pill-bad';
+  return 'pill-warn'; // A confirmar / Pendiente
+}
+
+function renderCalendarioList(){
+  const cont = document.getElementById('calendario-lista');
+  if(!cont) return;
+  const fOrg = document.getElementById('cal-filtro-org').value;
+  const fTipo = document.getElementById('cal-filtro-tipo').value;
+  const fEstado = document.getElementById('cal-filtro-estado').value;
+  const soloProximos = document.getElementById('cal-filtro-proximos').value==='1';
+
+  let lista = DB.eventosCalendario.slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  if(fOrg) lista = lista.filter(e=>e.organizacion===fOrg);
+  if(fTipo) lista = lista.filter(e=>e.tipoActividad===fTipo);
+  if(fEstado) lista = lista.filter(e=>e.estado===fEstado);
+  if(soloProximos) lista = lista.filter(e=>(e.fechaFin||e.fecha) >= HOY);
+
+  if(!lista.length){
+    cont.innerHTML = '<div class="empty-state">No hay eventos que coincidan con el filtro.</div>';
+    return;
+  }
+
+  const grupos = {};
+  lista.forEach(e=>{
+    const key = e.fecha.slice(0,7); // YYYY-MM
+    (grupos[key]=grupos[key]||[]).push(e);
+  });
+
+  cont.innerHTML = Object.keys(grupos).sort().map(key=>{
+    const [anio, mes] = key.split('-');
+    const filas = grupos[key].map(e=>{
+      const diasFaltan = Math.round((new Date(e.fecha+'T00:00:00') - new Date(HOY+'T00:00:00'))/86400000);
+      const proximo = diasFaltan>=0 && diasFaltan<=7 && e.estado!=='Finalizado' && e.estado!=='Cancelado';
+      const rango = e.fechaFin && e.fechaFin!==e.fecha ? `${e.fecha.slice(8,10)} al ${e.fechaFin.slice(8,10)}` : e.fecha.slice(8,10);
+      return `<tr onclick="viewCalendarioEvento(${e.id})">
+        <td class="mono" style="white-space:nowrap;">${rango}${proximo?' <span class="pill pill-warn" style="margin-left:6px;">Próximo</span>':''}</td>
+        <td>${e.evento}</td>
+        <td>${e.organizacion||'—'}</td>
+        <td>${e.tipoActividad||'—'}</td>
+        <td>${e.lugar||'—'}</td>
+        <td><span class="pill ${pillEstadoEvento(e.estado)}">${e.estado}</span></td>
+      </tr>`;
+    }).join('');
+    return `<div class="card-hdr" style="padding:10px 0 6px;border:none;">
+        <span class="card-hdr-t" style="font-size:16px;">${MESES_ES[Number(mes)-1]} ${anio}</span>
+      </div>
+      <table class="tbl"><thead><tr><th>Día</th><th>Evento</th><th>Organización</th><th>Tipo</th><th>Lugar</th><th>Estado</th></tr></thead>
+        <tbody>${filas}</tbody></table>`;
+  }).join('');
+}
+
+let editingCalendarioId = null;
+
+function openCalendarioForm(){
+  editingCalendarioId = null;
+  document.getElementById('cf-title').textContent = 'Nuevo Evento';
+  ['cf-evento','cf-fecha','cf-fecha-fin','cf-horario','cf-lugar','cf-categoria','cf-documentacion','cf-costo','cf-inscripcion','cf-transporte','cf-observaciones']
+    .forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cf-organizacion').value='';
+  document.getElementById('cf-tipo').value='';
+  document.getElementById('cf-estado').value='Confirmado';
+  showPage('calendario-form');
+}
+
+function editCalendarioEvento(){
+  const e = DB.eventosCalendario.find(x=>x.id===editingCalendarioId);
+  if(!e) return;
+  document.getElementById('cf-title').textContent = 'Editar Evento';
+  document.getElementById('cf-evento').value = e.evento;
+  document.getElementById('cf-fecha').value = e.fecha;
+  document.getElementById('cf-fecha-fin').value = e.fechaFin||'';
+  document.getElementById('cf-horario').value = e.horario||'';
+  document.getElementById('cf-organizacion').value = e.organizacion||'';
+  document.getElementById('cf-tipo').value = e.tipoActividad||'';
+  document.getElementById('cf-lugar').value = e.lugar||'';
+  document.getElementById('cf-categoria').value = e.categoriaParticipantes||'';
+  document.getElementById('cf-estado').value = e.estado||'Confirmado';
+  document.getElementById('cf-documentacion').value = e.documentacionUrl||'';
+  document.getElementById('cf-costo').value = e.costo===null?'':e.costo;
+  document.getElementById('cf-inscripcion').value = e.infoInscripcion||'';
+  document.getElementById('cf-transporte').value = e.infoTransporte||'';
+  document.getElementById('cf-observaciones').value = e.observaciones||'';
+  showPage('calendario-form');
+}
+
+async function saveCalendarioEvento(){
+  const data = {
+    evento: document.getElementById('cf-evento').value.trim(),
+    fecha: document.getElementById('cf-fecha').value,
+    fechaFin: document.getElementById('cf-fecha-fin').value || null,
+    horario: document.getElementById('cf-horario').value.trim(),
+    organizacion: document.getElementById('cf-organizacion').value,
+    tipoActividad: document.getElementById('cf-tipo').value,
+    lugar: document.getElementById('cf-lugar').value.trim(),
+    categoriaParticipantes: document.getElementById('cf-categoria').value.trim(),
+    estado: document.getElementById('cf-estado').value,
+    documentacionUrl: document.getElementById('cf-documentacion').value.trim(),
+    costo: document.getElementById('cf-costo').value===''?null:Number(document.getElementById('cf-costo').value),
+    infoInscripcion: document.getElementById('cf-inscripcion').value.trim(),
+    infoTransporte: document.getElementById('cf-transporte').value.trim(),
+    observaciones: document.getElementById('cf-observaciones').value.trim(),
+  };
+  if(!data.evento){ alert('El nombre del evento es obligatorio.'); return; }
+  if(!data.fecha){ alert('La fecha es obligatoria.'); return; }
+  if(data.fechaFin && data.fechaFin<data.fecha){ alert('La fecha de fin no puede ser anterior a la fecha de inicio.'); return; }
+
+  const btn = document.querySelector('#page-calendario-form .btn-fill');
+  if(btn){ btn.disabled = true; btn.textContent = 'Guardando…'; }
+
+  const payload = {
+    evento: data.evento, fecha: data.fecha, fecha_fin: data.fechaFin,
+    horario: data.horario||null, organizacion: data.organizacion||null,
+    tipo_actividad: data.tipoActividad||null, lugar: data.lugar||null,
+    categoria_participantes: data.categoriaParticipantes||null, estado: data.estado,
+    documentacion_url: data.documentacionUrl||null, costo: data.costo,
+    info_inscripcion: data.infoInscripcion||null, info_transporte: data.infoTransporte||null,
+    observaciones: data.observaciones||null,
+  };
+
+  let result;
+  if(editingCalendarioId){
+    result = await supa.from('eventos_calendario').update(payload).eq('id', editingCalendarioId).select().single();
+  } else {
+    result = await supa.from('eventos_calendario').insert(payload).select().single();
+  }
+
+  if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
+  if(result.error){ alert('No se pudo guardar el evento:\n'+result.error.message); return; }
+
+  data.id = result.data.id;
+  if(editingCalendarioId){
+    const idx = DB.eventosCalendario.findIndex(x=>x.id===editingCalendarioId);
+    DB.eventosCalendario[idx] = data;
+  } else {
+    DB.eventosCalendario.push(data);
+  }
+
+  showPage('calendario');
+}
+
+function viewCalendarioEvento(id){
+  editingCalendarioId = id;
+  const e = DB.eventosCalendario.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('cd-nombre').textContent = e.evento;
+  const rangoFecha = e.fechaFin && e.fechaFin!==e.fecha ? `${e.fecha} al ${e.fechaFin}` : e.fecha;
+  document.getElementById('cd-fields').innerHTML = `
+    <div class="detail-item"><label>Fecha</label><span>${rangoFecha}</span></div>
+    <div class="detail-item"><label>Horario</label><span>${e.horario||'—'}</span></div>
+    <div class="detail-item"><label>Organización</label><span>${e.organizacion||'—'}</span></div>
+    <div class="detail-item"><label>Tipo de Actividad</label><span>${e.tipoActividad||'—'}</span></div>
+    <div class="detail-item"><label>Lugar</label><span>${e.lugar||'—'}</span></div>
+    <div class="detail-item"><label>Categorías / Participantes</label><span>${e.categoriaParticipantes||'—'}</span></div>
+    <div class="detail-item"><label>Estado</label><span><span class="pill ${pillEstadoEvento(e.estado)}">${e.estado}</span></span></div>
+    <div class="detail-item"><label>Documentación</label><span>${e.documentacionUrl?`<a href="${e.documentacionUrl}" target="_blank">Ver</a>`:'—'}</span></div>
+    <div class="detail-item"><label>Costo</label><span>${e.costo!==null&&e.costo!==undefined?'$'+Number(e.costo).toLocaleString('es-AR'):'—'}</span></div>
+    <div class="detail-item"><label>Inscripción</label><span>${e.infoInscripcion||'—'}</span></div>
+    <div class="detail-item"><label>Transporte</label><span>${e.infoTransporte||'—'}</span></div>
+    <div class="detail-item" style="grid-column:1/-1;"><label>Observaciones</label><span>${e.observaciones||'—'}</span></div>
+  `;
+  showPage('calendario-detail');
+}
+
+async function eliminarCalendarioEvento(){
+  const e = DB.eventosCalendario.find(x=>x.id===editingCalendarioId);
+  if(!e) return;
+  if(!confirm(`¿Eliminar el evento "${e.evento}"? No se puede deshacer.`)) return;
+  const { error } = await supa.from('eventos_calendario').delete().eq('id', e.id);
+  if(error){ alert('No se pudo eliminar el evento:\n'+error.message); return; }
+  DB.eventosCalendario = DB.eventosCalendario.filter(x=>x.id!==e.id);
+  showPage('calendario');
 }
 
 // ═══════════════════════════════════════
