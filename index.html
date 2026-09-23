@@ -355,6 +355,14 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <div class="demo-banner" id="home-banner">⚠ Todavía no hay alumnos cargados en la base — empezá dando de alta desde "Alumnos".</div>
       <div class="hud-row" id="hud-stats"></div>
 
+      <!-- Acceso rápido: Panel → Entrenamiento → App de clases Ikai Dojo -->
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t">Entrenamiento — App de clases</span>
+          <button class="btn btn-fill btn-sm" onclick="showPage('entrenamiento')">Abrir ↗</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-hdr">
           <span class="card-hdr-t">Cuotas Vencidas — Atención</span>
@@ -862,15 +870,25 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       </div>
     </div>
 
-    <!-- ENTRENAMIENTO (herramienta anterior, embebida — módulo independiente, no migrado todavía) -->
+    <!-- ENTRENAMIENTO — App de clases Ikai Dojo (ikai-dojo.html) embebida.
+         Módulo independiente: no comparte datos ni código con Gestión. El iframe
+         se carga recién al entrar a esta página (cargarEntrenamiento) y después
+         queda vivo, así un timer de clase no se corta al cambiar de sección.
+         ikai-dojo.html tiene que estar publicado AL LADO de este index.html. -->
     <div class="page" id="page-entrenamiento" style="max-width:100%;height:calc(100vh - 150px);">
       <div class="card" style="display:flex;flex-direction:column;flex:1;min-height:0;">
-        <div class="card-hdr">
-          <span class="card-hdr-t">Entrenamiento — herramienta anterior</span>
-          <a href="ikai-dojo.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Abrir en pestaña aparte ↗</a>
+        <div class="card-hdr" style="flex-wrap:wrap;gap:8px;">
+          <span class="card-hdr-t">Entrenamiento — App de clases Ikai Dojo</span>
+          <span style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="entrenamientoExportar()" title="Descarga un respaldo (.json) de ejercicios, combos, configuración e historial de la app de clases">Respaldo ↓</button>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('ent-import-file').click()" title="Carga un respaldo .json en la app de clases">Restaurar ↑</button>
+            <input type="file" id="ent-import-file" accept=".json,application/json" style="display:none" onchange="entrenamientoImportar(this)">
+            <a href="ikai-dojo.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Abrir en pestaña aparte ↗</a>
+          </span>
         </div>
-        <div class="card-body" style="flex:1;min-height:0;padding:0;">
-          <iframe src="ikai-dojo.html" title="Ikai Dojo — Entrenamiento" style="width:100%;height:100%;border:0;display:block;background:#0c0c0c;"></iframe>
+        <div class="card-body" style="flex:1;min-height:0;padding:0;position:relative;">
+          <div id="ent-msg" style="display:none;padding:24px;color:var(--muted);font-size:15px;line-height:1.5;"></div>
+          <iframe id="ent-frame" data-src="ikai-dojo.html" title="Ikai Dojo — App de clases" allow="autoplay; fullscreen; screen-wake-lock" style="width:100%;height:100%;border:0;display:block;background:#0c0c0c;"></iframe>
         </div>
       </div>
     </div>
@@ -1513,6 +1531,87 @@ function showPage(id, btn){
   if(id==='profesores') renderProfesoresList();
   if(id==='economia') renderEconomia();
   if(id==='calendario') renderCalendarioList();
+  if(id==='entrenamiento') cargarEntrenamiento();
+}
+
+// ═══════════════════════════════════════
+// ENTRENAMIENTO — App de clases (ikai-dojo.html) en iframe
+// ═══════════════════════════════════════
+// Carga diferida: el iframe recibe su src la primera vez que se entra a la
+// página y después no se recarga (un timer de clase en curso sigue corriendo
+// aunque se navegue a otra sección de Gestión). Antes de cargarlo se verifica
+// que ikai-dojo.html exista junto a index.html; si falta, se muestra un aviso
+// claro en vez de la página 404 de GitHub.
+// ikai-dojo.html guarda sus datos en localStorage (clave 'ikai_v3'). Al estar
+// publicado en el mismo origen que Gestión, esa clave es accesible desde acá:
+// eso permite el Respaldo/Restaurar de abajo sin modificar ikai-dojo.html.
+const ENT_SK = 'ikai_v3';
+let entCargado = false;
+
+async function cargarEntrenamiento(){
+  if(entCargado) return;
+  const frame = document.getElementById('ent-frame');
+  const msg = document.getElementById('ent-msg');
+  const src = frame.dataset.src;
+  let existe = true;
+  if(location.protocol.startsWith('http')){
+    try{
+      const r = await fetch(src, {method:'HEAD', cache:'no-store'});
+      existe = r.ok;
+    }catch(e){
+      existe = true; // sin conexión: dejamos que el service worker lo sirva desde caché
+    }
+  }
+  if(!existe){
+    msg.textContent = 'No se encontró la App de clases (ikai-dojo.html) junto a Gestión. ' +
+      'Hay que subir el archivo ikai-dojo.html a la raíz del repositorio de GitHub (ikai-gestion), ' +
+      'al lado de index.html. Mientras tanto podés seguir usándola desde el archivo local.';
+    msg.style.display = 'block';
+    frame.style.display = 'none';
+    return;
+  }
+  msg.style.display = 'none';
+  frame.style.display = 'block';
+  frame.src = src;
+  entCargado = true;
+}
+
+function entrenamientoExportar(){
+  const raw = localStorage.getItem(ENT_SK);
+  if(!raw){ alert('La App de clases todavía no tiene datos guardados en este navegador.'); return; }
+  const blob = new Blob([raw], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'respaldo_app_clases_ikai_' + fechaLocalISO() + '.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+
+function entrenamientoImportar(input){
+  const file = input.files && input.files[0];
+  input.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try{ data = JSON.parse(reader.result); }catch(e){ data = null; }
+    if(!data || typeof data !== 'object' || Array.isArray(data)){
+      alert('El archivo no es un respaldo válido de la App de clases.');
+      return;
+    }
+    const partes = ['exercises','combos','cfg','circ','history','level'].filter(k => k in data);
+    if(!partes.length){
+      alert('El archivo no contiene datos reconocibles de la App de clases.');
+      return;
+    }
+    if(!confirm('Esto reemplaza los datos actuales de la App de clases en este navegador ' +
+      '(' + partes.join(', ') + ').\nSi hay una clase en curso se va a reiniciar. ¿Continuar?')) return;
+    localStorage.setItem(ENT_SK, JSON.stringify(data));
+    const frame = document.getElementById('ent-frame');
+    if(entCargado) frame.src = frame.dataset.src; else cargarEntrenamiento();
+    alert('Respaldo cargado en la App de clases.');
+  };
+  reader.readAsText(file);
 }
 
 // ═══════════════════════════════════════
