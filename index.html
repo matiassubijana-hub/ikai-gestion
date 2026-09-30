@@ -257,6 +257,22 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
   .timer-big{font-size:44px;}
   .hdr-badge{display:none;}
 }
+
+main a{color:var(--blue);}
+/* ── PRODUCTOS Y PEDIDOS ── */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.prod-card{border:1px solid var(--bord);background:var(--surf);display:flex;flex-direction:column;}
+.prod-card.inactivo{opacity:.55;}
+.prod-img{height:210px;display:flex;align-items:center;justify-content:center;padding:8px;
+  background:radial-gradient(circle at 50% 40%,rgba(255,106,26,.12),transparent 70%),var(--mid);
+  border-bottom:1px solid var(--bord);}
+.prod-img img{max-width:100%;max-height:100%;object-fit:contain;}
+.sin-img{color:var(--dim);font-size:13px;letter-spacing:2px;text-transform:uppercase;}
+.prod-info{padding:12px 14px;display:flex;flex-direction:column;gap:4px;flex:1;}
+.prod-nombre{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;line-height:1.15;}
+.prod-meta{font-size:13px;color:var(--muted);letter-spacing:1px;}
+.prod-precios{font-size:14px;color:var(--amber);}
+.prod-actions{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--bord);flex-wrap:wrap;}
 </style>
 </head>
 <body>
@@ -312,6 +328,10 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
     <button class="nav-btn" data-page="cuotas" onclick="showPage('cuotas',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 15h4"/></svg>
       Cuotas y Pagos
+    </button>
+    <button class="nav-btn" data-page="indumentaria" onclick="showPage('indumentaria',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3L3 6l2 4 3-1v11h8V9l3 1 2-4-5-3c-1 1.5-2.2 2-4 2s-3-.5-4-2z"/></svg>
+      Productos y Pedidos
     </button>
     <button class="nav-btn" data-page="asistencia" onclick="showPage('asistencia',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M18 15l2 2 3-3" stroke-width="1.8"/></svg>
@@ -453,6 +473,13 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
             <tbody id="ad-pagos"></tbody></table>
         </div>
       </div>
+      <div class="card" id="ad-pedidos-card" style="display:none;">
+        <div class="card-hdr"><span class="card-hdr-t">Indumentaria — Pedidos</span></div>
+        <div class="card-body" style="padding:0;">
+          <table class="tbl"><thead><tr><th>Pedido</th><th>Fecha</th><th>Prendas</th><th>Total</th><th>Pagó</th><th>Saldo</th><th>Estado</th></tr></thead>
+            <tbody id="ad-pedidos"></tbody></table>
+        </div>
+      </div>
     </div>
     <div class="page" id="page-alumno-form">
       <div class="detail-back" onclick="showPage('alumnos')">← Cancelar</div>
@@ -532,8 +559,10 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
           <div class="form-grid">
             <div class="form-item"><label>Período</label><input id="gc-periodo" type="month"></div>
           </div>
-          <div class="form-actions">
+          <div class="form-actions" style="flex-wrap:wrap;gap:8px;">
             <button class="btn btn-fill" onclick="generarCuotasDelMes()">Generar Cuotas</button>
+            <button class="btn btn-ghost" onclick="recalcularCuotasDelPeriodo()" title="Vuelve a calcular importe, descuento y vencimiento de las cuotas del período que todavía no tienen pagos">Recalcular Período</button>
+            <button class="btn btn-ghost" onclick="anularCuotasDelPeriodo()" title="Anula las cuotas del período que todavía no tienen pagos">Anular Período</button>
           </div>
           <div id="gc-status" style="margin-top:8px;color:var(--muted);font-size:14px;"></div>
           <p style="color:var(--muted);font-size:13px;margin-top:8px;">
@@ -541,6 +570,13 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
             (con el arancel vigente y el descuento de hermanos si corresponde).
             No genera pagos — solo la deuda a cobrar. Es seguro apretarlo de
             nuevo: a quien ya tenga la cuota de ese período no se le duplica.
+          </p>
+          <p style="color:var(--muted);font-size:13px;margin-top:6px;">
+            ¿Las generaste mal? <b>Recalcular Período</b>: corregí primero el arancel
+            (Config) y apretalo — rehace importe, descuento y vencimiento de las cuotas
+            del período sin pagos. <b>Anular Período</b>: las anula (quedan registradas
+            con motivo) y después podés volver a generarlas. Una cuota puntual se
+            corrige con <b>Editar</b> en la Cuenta Corriente General, más abajo.
           </p>
         </div>
       </div>
@@ -573,17 +609,33 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
       <div class="card">
         <div class="card-hdr"><span class="card-hdr-t">Cuenta Corriente General</span></div>
         <div class="card-body">
+          <!-- Editor de una cuota puntual (se muestra con el botón Editar de cada fila) -->
+          <div id="cc-editar" style="display:none;border:1px solid var(--bord, #3a2a1a);padding:14px;margin-bottom:14px;">
+            <div style="font-weight:600;margin-bottom:10px;" id="cc-editar-titulo">Editar cuota</div>
+            <div class="form-grid">
+              <div class="form-item"><label>Importe</label><input id="cc-ed-importe" type="number" min="0"></div>
+              <div class="form-item"><label>Descuento</label><input id="cc-ed-descuento" type="number" min="0"></div>
+              <div class="form-item"><label>Vencimiento</label><input id="cc-ed-vencimiento" type="date"></div>
+              <div class="form-item"><label>Motivo del cambio</label><input id="cc-ed-motivo" type="text" placeholder="Ej: arancel mal cargado"></div>
+            </div>
+            <div id="cc-ed-final" style="color:var(--muted);font-size:14px;margin:6px 0;"></div>
+            <div class="form-actions" style="gap:8px;">
+              <button class="btn btn-fill btn-sm" onclick="guardarEdicionCuota()">Guardar cambios</button>
+              <button class="btn btn-ghost btn-sm" onclick="cerrarEdicionCuota()">Cancelar</button>
+            </div>
+          </div>
           <div class="form-grid" style="margin-bottom:10px;">
             <div class="form-item"><label>Período</label><select id="cc-filtro-periodo"><option value="">Todos</option></select></div>
             <div class="form-item"><label>Disciplina</label>
               <select id="cc-filtro-disciplina"><option value="">Todas</option><option>Karate</option><option>Kiai-Ken</option><option>Combo (Karate + Kiai-Ken)</option></select>
             </div>
             <div class="form-item"><label>Estado</label>
-              <select id="cc-filtro-estado"><option value="">Todos</option><option>Pendiente</option><option>Parcial</option><option>Pagada</option><option>Vencida</option></select>
+              <select id="cc-filtro-estado"><option value="">Todas (sin las anuladas)</option><option>Pendiente</option><option>Parcial</option><option>Pagada</option><option>Vencida</option><option value="Modificada">Modificadas después de generarlas</option><option value="Anulada">Anuladas</option></select>
             </div>
             <div class="form-item"><label>Alumno</label><input id="cc-filtro-alumno" type="text" placeholder="Buscar por nombre..."></div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="renderCuentaCorrienteGeneral()" style="margin-bottom:10px;">Aplicar filtros</button>
+          <div id="cc-resumen" style="color:var(--muted);font-size:14px;margin-bottom:8px;"></div>
           <div style="overflow-x:auto;">
           <table class="tbl"><thead><tr><th>Alumno</th><th>Período</th><th>Concepto</th><th>Importe</th><th>Desc.</th><th>Final</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
             <tbody id="tbl-cuenta-corriente"></tbody></table>
@@ -596,6 +648,251 @@ main{flex:1;overflow-y:auto;padding:24px 28px 60px;position:relative;z-index:1;}
         <div class="card-body" style="padding:0;">
           <table class="tbl"><thead><tr><th>Fecha</th><th>Alumno</th><th>Concepto</th><th>Monto</th><th>Método</th><th></th></tr></thead>
             <tbody id="tbl-pagos"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTOS Y PEDIDOS (indumentaria y artículos del Dojo) -->
+    <div class="page" id="page-indumentaria">
+      <div class="section-hero"><h1>Productos y Pedidos</h1></div>
+      <div class="demo-banner" id="ind-banner" style="display:none;"></div>
+      <div id="ind-main" style="display:flex;flex-direction:column;gap:18px;">
+        <div class="hud-row" id="ind-stats"></div>
+        <div class="subnav" style="margin-bottom:0;">
+          <button class="btn btn-sm btn-fill" data-indtab="pedidos" onclick="indShowTab('pedidos')">Pedidos</button>
+          <button class="btn btn-sm btn-ghost" data-indtab="fabricante" onclick="indShowTab('fabricante')">Pedido al fabricante</button>
+          <button class="btn btn-sm btn-ghost" data-indtab="productos" onclick="indShowTab('productos')">Productos</button>
+        </div>
+
+        <!-- TAB: PEDIDOS -->
+        <div class="ind-tab" id="ind-tab-pedidos">
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-hdr-t">Pedidos</span>
+              <button class="btn btn-fill btn-sm" onclick="pedNuevo()">+ Nuevo Pedido</button>
+            </div>
+            <div class="card-body">
+              <div class="form-grid" style="margin-bottom:10px;">
+                <div class="form-item"><label>Mostrar</label>
+                  <select id="ped-filtro-estado" onchange="renderPedidosList()">
+                    <option value="sin-entregar">Pendientes de entrega</option>
+                    <option value="por-pedir">Con prendas por pedir al fabricante</option>
+                    <option value="en-fabricacion">Pedidos / en fabricación</option>
+                    <option value="recibidos">Con prendas recibidas para entregar</option>
+                    <option value="con-saldo">Con saldo por cobrar</option>
+                    <option value="entregados">Entregados</option>
+                    <option value="cancelados">Cancelados</option>
+                    <option value="todos">Todos</option>
+                  </select></div>
+                <div class="form-item"><label>Buscar por cliente</label><input id="ped-filtro-texto" type="text" placeholder="Nombre o apellido…" oninput="renderPedidosList()"></div>
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="tbl"><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Prendas</th><th>Total</th><th>Pagó</th><th>Saldo</th><th>Estado</th><th>Pago</th><th>Entrega est.</th></tr></thead>
+                  <tbody id="tbl-pedidos"></tbody></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: PEDIDO AL FABRICANTE -->
+        <div class="ind-tab" id="ind-tab-fabricante" style="display:none;">
+          <div class="card">
+            <div class="card-hdr"><span class="card-hdr-t">Para pedir al fabricante</span></div>
+            <div class="card-body">
+              <p style="color:var(--muted);font-size:14px;margin-bottom:10px;">
+                Junta todas las prendas que están "Pendiente de pedir", agrupadas por fabricante, producto y talle.
+                Podés copiar el texto, mandarlo por WhatsApp, bajarlo a Excel o imprimirlo / guardarlo como PDF.
+                Cuando se lo pasaste, tocá <b>"Ya se lo pedí"</b>: las prendas pasan a "Pedido al fabricante" y queda guardada una copia.
+              </p>
+              <label style="display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer;">
+                <input type="checkbox" id="fab-con-nombres"> Incluir quién encargó cada prenda en el texto / archivo
+              </label>
+            </div>
+          </div>
+          <div id="fab-pendientes" style="display:flex;flex-direction:column;gap:18px;margin-top:18px;"></div>
+          <div class="card" style="margin-top:18px;">
+            <div class="card-hdr"><span class="card-hdr-t">Pedidos ya enviados al fabricante</span></div>
+            <div class="card-body" id="fab-lotes"></div>
+          </div>
+        </div>
+
+        <!-- TAB: PRODUCTOS -->
+        <div class="ind-tab" id="ind-tab-productos" style="display:none;">
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-hdr-t">Productos</span>
+              <button class="btn btn-fill btn-sm" onclick="prdAbrirForm()">+ Nuevo Producto</button>
+            </div>
+            <div class="card-body">
+              <div class="form-grid" style="margin-bottom:14px;">
+                <div class="form-item"><label>Estado</label>
+                  <select id="prod-filtro-estado" onchange="renderProductosList()">
+                    <option value="activos">Activos</option><option value="inactivos">Inactivos</option><option value="todos">Todos</option>
+                  </select></div>
+                <div class="form-item"><label>Categoría</label><select id="prod-filtro-categoria" onchange="renderProductosList()"><option value="">Todas</option></select></div>
+              </div>
+              <div class="prod-grid" id="prod-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PEDIDO NUEVO -->
+    <div class="page" id="page-pedido-form">
+      <div class="detail-back" onclick="showPage('indumentaria')">← Cancelar</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Nuevo Pedido</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item full"><label>Alumno o cliente</label><select id="ped-alumno" onchange="pedAlCambiarCliente()"></select></div>
+            <div class="form-item" id="ped-otro-nombre-item" style="display:none;"><label>Nombre del cliente</label><input id="ped-cliente-nombre" type="text"></div>
+            <div class="form-item" id="ped-otro-tel-item" style="display:none;"><label>Teléfono</label><input id="ped-cliente-tel" type="text"></div>
+            <div class="form-item"><label>Fecha del pedido</label><input id="ped-fecha" type="date"></div>
+            <div class="form-item"><label>Fecha estimada de entrega</label><input id="ped-entrega" type="date"></div>
+          </div>
+          <div class="salud-box-hdr" style="color:var(--orange);margin:18px 0 10px;">Prendas del pedido</div>
+          <div id="ped-items"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+            <button class="btn btn-ghost btn-sm" onclick="ctxAgregar('ped')">+ Agregar otra prenda</button>
+            <span class="mono" id="ped-total" style="font-size:18px;color:var(--amber);"></span>
+          </div>
+          <div class="form-grid">
+            <div class="form-item"><label>Seña / importe entregado ($)</label><input id="ped-sena" type="number" min="0" placeholder="0 si todavía no pagó"></div>
+            <div class="form-item"><label>Método de pago de la seña</label>
+              <select id="ped-sena-metodo"><option>Efectivo</option><option>Transferencia</option><option>Mercado Pago</option><option>Tarjeta</option></select></div>
+            <div class="form-item full"><label>Observaciones</label><textarea id="ped-observaciones" rows="2" placeholder="Ej: lo retira el papá"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-fill" id="ped-btn-guardar" onclick="guardarPedido()">Guardar Pedido</button>
+            <button class="btn btn-ghost" onclick="showPage('indumentaria')">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PEDIDO DETALLE -->
+    <div class="page" id="page-pedido-detail">
+      <div class="detail-back" onclick="showPage('indumentaria')">← Volver a Pedidos</div>
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t" id="pdd-title">—</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span id="pdd-avisos"></span>
+            <button class="btn btn-danger btn-sm" id="pdd-btn-cancelar" onclick="cancelarPedido()">Cancelar pedido</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="detail-grid" id="pdd-fields"></div>
+          <div class="form-grid" style="margin-top:14px;">
+            <div class="form-item"><label>Fecha estimada de entrega</label><input id="pdd-entrega" type="date"></div>
+            <div class="form-item"><label>Observaciones</label><input id="pdd-obs" type="text"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-ghost btn-sm" onclick="guardarDatosPedido()">Guardar fecha y observaciones</button></div>
+        </div>
+      </div>
+
+      <div class="hud-row" id="pdd-stats"></div>
+
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t">Prendas</span>
+          <button class="btn btn-fill btn-sm" id="pdd-btn-entregar-todo" onclick="entregarTodoRecibido()" style="display:none;">✔ Entregar todo lo recibido</button>
+        </div>
+        <div class="card-body">
+          <div id="pdd-edit-item" style="display:none;border:1px solid var(--bord);padding:14px;margin-bottom:14px;">
+            <div style="font-weight:600;margin-bottom:10px;" id="pdd-ed-titulo">Editar prenda</div>
+            <div class="form-grid">
+              <div class="form-item"><label>Talle</label><select id="pdd-ed-talle"></select></div>
+              <div class="form-item"><label>Cantidad</label><input id="pdd-ed-cantidad" type="number" min="1"></div>
+              <div class="form-item"><label>Precio unitario</label><input id="pdd-ed-precio" type="number" min="0"></div>
+              <div class="form-item"><label>Motivo del cambio</label><input id="pdd-ed-motivo" type="text" placeholder="Ej: se equivocó de talle"></div>
+            </div>
+            <div id="pdd-ed-nota" style="color:var(--muted);font-size:14px;margin:6px 0;"></div>
+            <div class="form-actions" style="gap:8px;">
+              <button class="btn btn-fill btn-sm" onclick="guardarEdicionItem()">Guardar cambios</button>
+              <button class="btn btn-ghost btn-sm" onclick="cerrarEdicionItem()">Cancelar</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tbl"><thead><tr><th>Prenda</th><th>Talle</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th>Estado</th><th></th></tr></thead>
+              <tbody id="pdd-items"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="pdd-add-card">
+        <div class="card-hdr"><span class="card-hdr-t">Agregar otra prenda a este pedido</span></div>
+        <div class="card-body">
+          <div id="pdd-add-items"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <button class="btn btn-fill btn-sm" onclick="pedAgregarItems()">Agregar al pedido</button>
+            <span class="mono" id="pdd-add-total" style="color:var(--amber);"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="pdd-pago-card">
+        <div class="card-hdr"><span class="card-hdr-t">Registrar Pago / Seña</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item"><label>Monto ($)</label><input id="pdd-pago-monto" type="number" min="0"></div>
+            <div class="form-item"><label>Método de Pago</label>
+              <select id="pdd-pago-metodo"><option>Efectivo</option><option>Transferencia</option><option>Mercado Pago</option><option>Tarjeta</option></select></div>
+            <div class="form-item"><label>Fecha</label><input id="pdd-pago-fecha" type="date"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-fill" onclick="registrarPagoPedido()">Registrar Pago</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Pagos del pedido</span></div>
+        <div class="card-body" style="padding:0;">
+          <table class="tbl"><thead><tr><th>Fecha</th><th>Monto</th><th>Método</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="pdd-pagos"></tbody></table>
+        </div>
+      </div>
+
+      <div class="card" id="pdd-hist-card" style="display:none;">
+        <div class="card-hdr"><span class="card-hdr-t">Historial de cambios</span></div>
+        <div class="card-body" id="pdd-hist"></div>
+      </div>
+    </div>
+
+    <!-- PRODUCTO (alta / edición) -->
+    <div class="page" id="page-producto-form">
+      <div class="detail-back" onclick="showPage('indumentaria'); indShowTab('productos');">← Cancelar</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t" id="prd-title">Nuevo Producto</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-item"><label>Nombre</label><input id="prd-nombre" type="text" placeholder="Ej: Campera Rompeviento con Capucha"></div>
+            <div class="form-item"><label>Modelo o código</label><input id="prd-modelo" type="text" placeholder="Ej: K105"></div>
+            <div class="form-item"><label>Categoría</label><input id="prd-categoria" type="text" list="dl-categorias" placeholder="Elegí o escribí una nueva"><datalist id="dl-categorias"></datalist></div>
+            <div class="form-item"><label>Fabricante o proveedor</label><input id="prd-proveedor" type="text" list="dl-proveedores"><datalist id="dl-proveedores"></datalist></div>
+            <div class="form-item full"><label>Descripción</label><textarea id="prd-descripcion" rows="2" placeholder="Ej: 100 % tela Sire, forro en red, escudo simil bordado"></textarea></div>
+            <div class="form-item"><label>Estado</label><select id="prd-activo"><option value="si">Activo (se puede pedir)</option><option value="no">Inactivo</option></select></div>
+            <div class="form-item"><label>Imagen (opcional)</label>
+              <div id="prd-img-preview" class="prod-img" style="height:150px;margin-bottom:8px;border:1px solid var(--bord);"></div>
+              <input type="file" accept="image/*" onchange="prdCargarImagen(this)" style="font-size:14px;">
+              <button class="btn btn-ghost btn-sm" id="prd-btn-quitar-img" onclick="prdQuitarImagen()" style="margin-top:6px;">Quitar imagen</button>
+            </div>
+          </div>
+
+          <div class="salud-box-hdr" style="color:var(--orange);margin:18px 0 6px;">Talles y precios</div>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:10px;">
+            Armá un grupo por cada precio distinto. Ej: grupo "Talles menores" con 4, 6, 8, 10, 12, 14, 16 a un precio,
+            y grupo "Talles mayores" con S, M, L, XL, XXL a otro. Al hacer un pedido, el precio se completa solo según el talle.
+            Si el producto no tiene talles, poné "Único".
+          </p>
+          <div id="prd-grupos"></div>
+          <button class="btn btn-ghost btn-sm" onclick="prdAgregarGrupo()">+ Agregar otro grupo de talles</button>
+
+          <div class="form-actions" style="margin-top:18px;">
+            <button class="btn btn-fill" id="prd-btn-guardar" onclick="guardarProducto()">Guardar</button>
+            <button class="btn btn-ghost" onclick="showPage('indumentaria'); indShowTab('productos');">Cancelar</button>
+            <button class="btn btn-danger" id="prd-btn-eliminar" onclick="prdEliminar()" style="margin-left:auto;">🗑 Eliminar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1332,7 +1629,8 @@ const HOY = fechaLocalISO();
 // ═══════════════════════════════════════
 // ESTADO EN MEMORIA (se llena desde Supabase — cargarDatos())
 // ═══════════════════════════════════════
-let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], vencimientosProfesores:[], profesoresHistorial:[], gruposFamiliares:[], cuotas:[], gastos:[], eventosCalendario:[] };
+let DB = { config:{karate:0,kiaiken:0,combo:0,hermano:0}, alumnos:[], pagos:[], combos:[], profesores:[], pagosProfesores:[], vencimientosProfesores:[], profesoresHistorial:[], gruposFamiliares:[], cuotas:[], gastos:[], eventosCalendario:[],
+  productos:[], productosTalles:[], pedidos:[], pedidosItems:[], pedidosFabricante:[], indError:'' };
 let DBK = { ejercicios:[], plantillas:[], clases:[] }; // Kiaiken: ejercicios, plantillas, clases (historial)
 
 async function cargarDatos(){
@@ -1464,8 +1762,8 @@ async function cargarDatos(){
   });
 
   DB.pagos = (pagR.data||[]).map(p=>({
-    id:p.id, alumnoId:p.alumno_id, fecha:p.fecha, concepto:p.tipo_ingreso,
-    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null,
+    id:p.id, alumnoId:p.alumno_id, fecha:p.fecha, concepto:p.tipo_ingreso, detalle:p.detalle||'',
+    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null, pedidoId:p.pedido_id||null,
     anulado:p.anulado===true, anuladoMotivo:p.anulado_motivo||'', anuladoAt:p.anulado_at||'',
   }));
 
@@ -1488,6 +1786,9 @@ async function cargarDatos(){
     objetivo:c.objetivo||'', pasos:c.pasos_json||[], observaciones:c.observaciones||'',
     activo: c.activo!==false,
   }));
+
+  // Productos y pedidos: si todavía no se corrió migracion_012, el resto de la app sigue andando
+  await cargarIndumentaria();
 
   document.getElementById('home-banner').style.display = DB.alumnos.length ? 'none' : 'flex';
   refreshAll();
@@ -1517,7 +1818,8 @@ function showPage(id, btn){
       tecnicas:'kiaiken', 'tecnica-detail':'kiaiken', 'tecnica-form':'kiaiken',
       profesores:'profesores', 'profesor-form':'profesores', 'profesor-detail':'profesores',
       economia:'economia',
-      calendario:'calendario', 'calendario-form':'calendario', 'calendario-detail':'calendario'};
+      calendario:'calendario', 'calendario-form':'calendario', 'calendario-detail':'calendario',
+      'pedido-form':'indumentaria', 'pedido-detail':'indumentaria', 'producto-form':'indumentaria'};
     const nb = document.querySelector(`.nav-btn[data-page="${navMap[id]||id}"]`);
     if(nb) nb.classList.add('active');
   }
@@ -1531,6 +1833,7 @@ function showPage(id, btn){
   if(id==='profesores') renderProfesoresList();
   if(id==='economia') renderEconomia();
   if(id==='calendario') renderCalendarioList();
+  if(id==='indumentaria') indShowTab(indTab);
   if(id==='entrenamiento') cargarEntrenamiento();
 }
 
@@ -1632,12 +1935,11 @@ function hudRing(pct, valText){
 // ═══════════════════════════════════════
 // HOME / PANEL
 // ═══════════════════════════════════════
+// Pagos vigentes (no anulados) del mes en curso. Se compara por texto 'YYYY-MM'
+// en vez de new Date(fecha): un pago del día 1 caía en el mes anterior por el huso horario.
 function mesActualPagos(){
-  const now = new Date();
-  return DB.pagos.filter(p=>{
-    const d = new Date(p.fecha);
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-  });
+  const mes = HOY.slice(0,7);
+  return DB.pagos.filter(p=>!p.anulado && p.fecha && String(p.fecha).slice(0,7)===mes);
 }
 
 function arancelDe(disciplina){
@@ -1873,6 +2175,7 @@ function renderHome(){
     .map(p=>({p, estadoConv:estadoConvenioProfesor(p)}))
     .filter(x=>x.estadoConv==='vencido' || x.estadoConv==='proximo-a-vencer');
 
+  const ind = DB.indError ? null : indResumen();
   document.getElementById('hud-stats').innerHTML = `
     <div class="hud-card">
       ${hudRing(pctAlDia, pctAlDia+'%')}
@@ -1894,6 +2197,11 @@ function renderHome(){
       <div class="hud-info"><div class="hud-label">Profesores — Convenios</div>
         <div class="hud-value">${profesoresPendientes.length}</div><div class="hud-sub">Próx. a vencer o vencidos, de ${profesoresActivos.length}</div></div>
     </div>
+    ${ind ? `<div class="hud-card" style="cursor:pointer;" onclick="showPage('indumentaria')">
+      ${hudRing(ind.porPedir+ind.paraEntregar?80:0, ind.porPedir+ind.paraEntregar)}
+      <div class="hud-info"><div class="hud-label">Indumentaria — para actuar</div>
+        <div class="hud-value">${ind.porPedir} por pedir</div><div class="hud-sub">${ind.paraEntregar} para entregar · ${money(ind.saldoTotal)} por cobrar</div></div>
+    </div>` : ''}
   `;
 
   const pendientes = [...proximosAVencer.map(a=>({a, tag:'Próxima a vencer', pill:'pill-warn'})),
@@ -2249,10 +2557,10 @@ function viewAlumno(id){
   const tbody = document.getElementById('ad-pagos');
   tbody.innerHTML = pagos.length ? pagos.map(p=>{
     if(p.anulado){
-      return `<tr style="opacity:0.55;"><td>${p.fecha}</td><td>${p.concepto}</td><td><s>$${Number(p.monto).toLocaleString('es-AR')}</s></td>
+      return `<tr style="opacity:0.55;"><td>${p.fecha}</td><td>${p.concepto}${p.detalle?' — '+esc(p.detalle):''}</td><td><s>$${Number(p.monto).toLocaleString('es-AR')}</s></td>
         <td><span class="pill pill-bad" title="${p.anuladoMotivo}">Anulado</span></td><td></td></tr>`;
     }
-    return `<tr><td>${p.fecha}</td><td>${p.concepto}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td>
+    return `<tr><td>${p.fecha}</td><td>${p.concepto}${p.detalle?' — '+esc(p.detalle):''}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td>
     <td><span class="pill pill-ok">Pagado</span></td>
     <td><button class="btn btn-ghost btn-sm" onclick="verComprobante(${p.id})">Comprobante</button>
         <button class="btn btn-ghost btn-sm" onclick="anularPago(${p.id})">Anular</button></td></tr>`;
@@ -2272,6 +2580,15 @@ function viewAlumno(id){
       <td><span class="pill ${pillPorEstado[c.estado]||''}">${c.estado}</span></td>
       <td>${c.fechaVencimiento||'—'}</td></tr>`).join('')
     : '<tr><td colspan="9" class="empty-state">Todavía no se generó ninguna cuota para este alumno</td></tr>';
+
+  const pedidosAlumno = DB.pedidos.filter(p=>p.alumnoId===id).sort((x,y)=>String(y.fecha).localeCompare(String(x.fecha)) || y.id-x.id);
+  document.getElementById('ad-pedidos-card').style.display = pedidosAlumno.length ? '' : 'none';
+  document.getElementById('ad-pedidos').innerHTML = pedidosAlumno.map(p=>{
+    const c = calcPedido(p);
+    return `<tr onclick="verPedido(${p.id})" ${p.estado==='Cancelado'?'style="opacity:.55;"':''}><td class="mono">${pedNumero(p)}</td><td>${fechaAR(p.fecha)}</td>
+      <td style="font-size:14px;">${esc(pedResumenPrendas(p))||'—'}</td><td>${money(c.total)}</td><td>${money(c.pagado)}</td>
+      <td>${money(Math.max(0,c.saldo))}</td><td><span class="pill ${pillEstadoItem(c.estadoEntrega)}">${c.estadoEntrega}</span></td></tr>`;
+  }).join('');
   showPage('alumno-detail');
 }
 
@@ -2327,6 +2644,8 @@ async function eliminarAlumnoDefinitivo(){
   if(exCount) motivos.push(`${exCount} examen(es)`);
   if(asCount) motivos.push(`${asCount} asistencia(s)`);
   if(venCount) motivos.push(`${venCount} venta(s)`);
+  const pedCount = DB.pedidos.filter(p=>p.alumnoId===a.id).length;
+  if(pedCount) motivos.push(`${pedCount} pedido(s) de indumentaria`);
 
   if(motivos.length){
     alert(`No se puede eliminar a ${a.nombre} ${a.apellido}: tiene actividad registrada (${motivos.join(', ')}).\n\nUsá "Marcar Inactivo" en su lugar — así se conserva su historial.`);
@@ -2620,14 +2939,14 @@ function renderTablaPagos(){
   const pagosOrdenados = [...DB.pagos].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
   tbody.innerHTML = pagosOrdenados.length ? pagosOrdenados.map(p=>{
     const al = DB.alumnos.find(a=>a.id===p.alumnoId);
-    const nombreAl = al?al.nombre+' '+al.apellido:'—';
+    const nombreAl = al?al.nombre+' '+al.apellido:pedNombrePorPago(p);
     if(p.anulado){
       return `<tr style="opacity:0.55;"><td>${p.fecha}</td><td>${nombreAl}</td>
-        <td>${p.concepto}</td><td><s>$${Number(p.monto).toLocaleString('es-AR')}</s></td><td>${p.metodo}</td>
+        <td>${p.concepto}${p.detalle?' — '+esc(p.detalle):''}</td><td><s>$${Number(p.monto).toLocaleString('es-AR')}</s></td><td>${p.metodo}</td>
         <td><span class="pill pill-bad" title="${p.anuladoMotivo}">Anulado</span></td></tr>`;
     }
     return `<tr><td>${p.fecha}</td><td>${nombreAl}</td>
-      <td>${p.concepto}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td><td>${p.metodo}</td>
+      <td>${p.concepto}${p.detalle?' — '+esc(p.detalle):''}</td><td>$${Number(p.monto).toLocaleString('es-AR')}</td><td>${p.metodo}</td>
       <td style="white-space:nowrap;">
         <button class="btn btn-ghost btn-sm" onclick="verComprobante(${p.id})">Comprobante</button>
         <button class="btn btn-ghost btn-sm" onclick="anularPago(${p.id})">Anular</button>
@@ -2643,28 +2962,202 @@ async function generarCuotasDelMes(){
   statusEl.textContent = 'Generando…';
 
   const activos = DB.alumnos.filter(a=>a.estado==='Activo');
-  const vencimiento = periodo+'-10';
   const filas = [];
+  const reactivar = []; // cuotas anuladas del período: la base no admite otra fila igual, se reactivan
   for(const a of activos){
     const discId = discIdPorNombre[a.disciplina];
     if(!discId) continue;
-    const yaExiste = DB.cuotas.some(c=>c.alumnoId===a.id && c.periodo===periodo && c.disciplinaId===discId);
-    if(yaExiste) continue;
-    const importeOriginal = arancelDe(a.disciplina);
-    const descuento = (a.grupoFamiliarId && !a.pagaCuotaCompleta) ? Math.round(importeOriginal * (DB.config.hermano||0)/100) : 0;
-    filas.push({
-      alumno_id: a.id, periodo, disciplina_id: discId, concepto: 'Cuota Mensual',
-      importe_original: importeOriginal, descuento, importe_final: importeOriginal - descuento,
-      fecha_emision: HOY, fecha_vencimiento: vencimiento,
-    });
+    const existente = DB.cuotas.find(c=>c.alumnoId===a.id && c.periodo===periodo && c.disciplinaId===discId);
+    if(existente && existente.estado!=='Anulada') continue;
+    const valores = valoresCuotaAlumno(a, periodo);
+    if(existente){
+      reactivar.push({ cuota: existente, valores });
+    } else {
+      filas.push({ alumno_id: a.id, periodo, disciplina_id: discId, concepto: 'Cuota Mensual',
+        ...valores, fecha_emision: HOY });
+    }
   }
 
-  if(!filas.length){ statusEl.textContent = 'No hay nada para generar — todos los alumnos activos ya tienen su cuota de ese período.'; return; }
+  if(!filas.length && !reactivar.length){ statusEl.textContent = 'No hay nada para generar — todos los alumnos activos ya tienen su cuota de ese período.'; return; }
 
-  const { error } = await supa.from('cuotas').insert(filas);
-  if(error){ statusEl.textContent = ''; alert('No se pudieron generar las cuotas:\n'+error.message); return; }
+  if(filas.length){
+    const { error } = await supa.from('cuotas').insert(filas);
+    if(error){ statusEl.textContent = ''; alert('No se pudieron generar las cuotas:\n'+error.message); return; }
+  }
+  for(const r of reactivar){
+    const { error } = await supa.from('cuotas').update({
+      ...r.valores, estado: 'Activa', fecha_emision: HOY,
+      observaciones: notaAuditoriaCuota(r.cuota, 'Regenerada (estaba anulada)'),
+    }).eq('id', r.cuota.id);
+    if(error){ alert('No se pudo regenerar una cuota anulada:\n'+error.message); break; }
+  }
 
-  statusEl.textContent = `Listo: se generaron ${filas.length} cuota(s) para ${periodo}.`;
+  statusEl.textContent = `Listo: se generaron ${filas.length + reactivar.length} cuota(s) para ${periodo}.`;
+  await cargarDatos(); refreshAll();
+}
+
+// ── Corrección de cuotas ya generadas ──
+// Nunca se borra una cuota: se edita (dejando nota de qué cambió y por qué
+// en "observaciones") o se anula (estado 'Anulada' + motivo). Una cuota
+// con pagos aplicados no se anula ni se recalcula en lote: primero hay que
+// anular esos pagos, o corregirla a mano con Editar.
+
+// Importe, descuento y vencimiento que le corresponden hoy a un alumno
+// para un período (misma regla que usa "Generar Cuotas").
+function valoresCuotaAlumno(a, periodo, disciplina){
+  const importeOriginal = Number(arancelDe(disciplina || a.disciplina)) || 0;
+  const descuento = (a.grupoFamiliarId && !a.pagaCuotaCompleta) ? Math.round(importeOriginal * (DB.config.hermano||0)/100) : 0;
+  return { importe_original: importeOriginal, descuento, importe_final: importeOriginal - descuento,
+    fecha_vencimiento: periodo+'-10' };
+}
+
+function notaAuditoriaCuota(cuota, texto){
+  const linea = `[${HOY}] ${texto}`;
+  return cuota.observaciones ? cuota.observaciones + '\n' + linea : linea;
+}
+
+let cuotaEnEdicion = null;
+
+function abrirEdicionCuota(id){
+  const c = DB.cuotas.find(x=>x.id===id);
+  if(!c) return;
+  cuotaEnEdicion = c;
+  const a = DB.alumnos.find(x=>x.id===c.alumnoId);
+  document.getElementById('cc-editar-titulo').textContent =
+    `Editar cuota ${c.periodo} — ${a?a.nombre+' '+a.apellido:'—'} (${c.disciplinaNombre})`;
+  document.getElementById('cc-ed-importe').value = c.importeOriginal;
+  document.getElementById('cc-ed-descuento').value = c.descuento;
+  document.getElementById('cc-ed-vencimiento').value = c.fechaVencimiento || '';
+  document.getElementById('cc-ed-motivo').value = '';
+  const actualizarFinal = ()=>{
+    const f = (Number(document.getElementById('cc-ed-importe').value)||0) - (Number(document.getElementById('cc-ed-descuento').value)||0);
+    document.getElementById('cc-ed-final').textContent = `Importe final: $${f.toLocaleString('es-AR')}` +
+      (calcCuota(c).pagado>0 ? ` — ya tiene $${calcCuota(c).pagado.toLocaleString('es-AR')} pagado` : '');
+  };
+  document.getElementById('cc-ed-importe').oninput = actualizarFinal;
+  document.getElementById('cc-ed-descuento').oninput = actualizarFinal;
+  actualizarFinal();
+  const panel = document.getElementById('cc-editar');
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function cerrarEdicionCuota(){
+  cuotaEnEdicion = null;
+  document.getElementById('cc-editar').style.display = 'none';
+}
+
+async function guardarEdicionCuota(){
+  const c = cuotaEnEdicion;
+  if(!c) return;
+  const importe = Number(document.getElementById('cc-ed-importe').value);
+  const descuento = Number(document.getElementById('cc-ed-descuento').value)||0;
+  const vencimiento = document.getElementById('cc-ed-vencimiento').value || null;
+  const motivo = document.getElementById('cc-ed-motivo').value.trim();
+  if(!(importe>=0) || document.getElementById('cc-ed-importe').value===''){ alert('Ingresá un importe válido.'); return; }
+  if(descuento<0 || descuento>importe){ alert('El descuento tiene que estar entre 0 y el importe.'); return; }
+  if(!motivo){ alert('Indicá el motivo del cambio (queda registrado en la cuota).'); return; }
+
+  const cambios = [];
+  if(importe!==c.importeOriginal) cambios.push(`importe $${c.importeOriginal}→$${importe}`);
+  if(descuento!==c.descuento) cambios.push(`descuento $${c.descuento}→$${descuento}`);
+  if((vencimiento||'')!==(c.fechaVencimiento||'')) cambios.push(`vence ${c.fechaVencimiento||'—'}→${vencimiento||'—'}`);
+  if(!cambios.length){ cerrarEdicionCuota(); return; }
+  const yaPagado = calcCuota(c).pagado;
+  if(yaPagado > importe - descuento && !confirm(`El nuevo importe final ($${(importe-descuento).toLocaleString('es-AR')}) es menor que lo que ya pagó ($${yaPagado.toLocaleString('es-AR')}). La cuota va a quedar como Pagada con plata de más. ¿Guardar igual?`)) return;
+
+  const { error } = await supa.from('cuotas').update({
+    importe_original: importe, descuento, importe_final: importe - descuento, fecha_vencimiento: vencimiento,
+    observaciones: notaAuditoriaCuota(c, `Editada: ${cambios.join(', ')} — motivo: ${motivo}`),
+  }).eq('id', c.id);
+  if(error){ alert('No se pudo guardar la cuota:\n'+error.message); return; }
+
+  cerrarEdicionCuota();
+  await cargarDatos(); refreshAll();
+}
+
+async function anularCuota(id){
+  const c = DB.cuotas.find(x=>x.id===id);
+  if(!c || c.estado==='Anulada') return;
+  const pagadoCuota = calcCuota(c).pagado;
+  if(pagadoCuota>0){
+    alert(`Esta cuota ya tiene $${pagadoCuota.toLocaleString('es-AR')} cobrados, por eso no se anula directamente (así no se pierde el historial de cobro).\n\n` +
+      `• Para corregirla: usá "Editar" (queda registrado qué cambió y por qué).\n` +
+      `• Si el cobro también fue un error: primero anulá ese pago en "Todos los Pagos" (queda registrado con su motivo) y después anulá la cuota.`);
+    return;
+  }
+  const motivo = prompt('Motivo de la anulación de esta cuota (queda registrado):');
+  if(motivo===null) return;
+  if(!motivo.trim()){ alert('Necesitás indicar un motivo para anular la cuota.'); return; }
+  const { error } = await supa.from('cuotas').update({
+    estado: 'Anulada', observaciones: notaAuditoriaCuota(c, `Anulada — motivo: ${motivo.trim()}`),
+  }).eq('id', id);
+  if(error){ alert('No se pudo anular la cuota:\n'+error.message); return; }
+  await cargarDatos(); refreshAll();
+}
+
+// Cuotas del período elegido en "Generar Cuotas", separadas en las que se
+// pueden tocar en lote (sin pagos) y las que no.
+function cuotasDelPeriodoParaLote(){
+  const periodo = document.getElementById('gc-periodo').value;
+  if(!periodo){ alert('Elegí un período.'); return null; }
+  const delPeriodo = DB.cuotas.filter(c=>c.periodo===periodo && c.estado!=='Anulada');
+  return { periodo,
+    sinPagos: delPeriodo.filter(c=>calcCuota(c).pagado<=0),
+    conPagos: delPeriodo.filter(c=>calcCuota(c).pagado>0) };
+}
+
+async function recalcularCuotasDelPeriodo(){
+  const lote = cuotasDelPeriodoParaLote();
+  if(!lote) return;
+  const statusEl = document.getElementById('gc-status');
+  const cambios = [];
+  for(const c of lote.sinPagos){
+    const a = DB.alumnos.find(x=>x.id===c.alumnoId);
+    if(!a) continue;
+    const v = valoresCuotaAlumno(a, lote.periodo, c.disciplinaNombre);
+    if(v.importe_original===c.importeOriginal && v.descuento===c.descuento && v.fecha_vencimiento===c.fechaVencimiento) continue;
+    cambios.push({ c, v });
+  }
+  if(!cambios.length){
+    statusEl.textContent = `Nada para recalcular en ${lote.periodo}: las cuotas sin pagos ya coinciden con el arancel vigente.` +
+      (lote.conPagos.length ? ` (${lote.conPagos.length} con pagos no se tocan — usá Editar.)` : '');
+    return;
+  }
+  if(!confirm(`Se van a recalcular ${cambios.length} cuota(s) de ${lote.periodo} con el arancel y descuento vigentes.` +
+    (lote.conPagos.length ? `\n${lote.conPagos.length} cuota(s) con pagos NO se tocan.` : '') + '\n¿Continuar?')) return;
+  statusEl.textContent = 'Recalculando…';
+  for(const {c, v} of cambios){
+    const { error } = await supa.from('cuotas').update({
+      ...v, observaciones: notaAuditoriaCuota(c, `Recalculada: importe $${c.importeOriginal}→$${v.importe_original}, descuento $${c.descuento}→$${v.descuento}`),
+    }).eq('id', c.id);
+    if(error){ alert('No se pudo recalcular una cuota:\n'+error.message); break; }
+  }
+  statusEl.textContent = `Listo: se recalcularon ${cambios.length} cuota(s) de ${lote.periodo}.`;
+  await cargarDatos(); refreshAll();
+}
+
+async function anularCuotasDelPeriodo(){
+  const lote = cuotasDelPeriodoParaLote();
+  if(!lote) return;
+  const statusEl = document.getElementById('gc-status');
+  if(!lote.sinPagos.length){
+    statusEl.textContent = `No hay cuotas sin pagos para anular en ${lote.periodo}.`;
+    return;
+  }
+  const motivo = prompt(`Se van a anular ${lote.sinPagos.length} cuota(s) de ${lote.periodo}` +
+    (lote.conPagos.length ? ` (${lote.conPagos.length} con pagos no se tocan)` : '') +
+    '.\nDespués podés volver a generarlas.\n\nMotivo (queda registrado):');
+  if(motivo===null) return;
+  if(!motivo.trim()){ alert('Necesitás indicar un motivo.'); return; }
+  statusEl.textContent = 'Anulando…';
+  for(const c of lote.sinPagos){
+    const { error } = await supa.from('cuotas').update({
+      estado: 'Anulada', observaciones: notaAuditoriaCuota(c, `Anulada (lote ${lote.periodo}) — motivo: ${motivo.trim()}`),
+    }).eq('id', c.id);
+    if(error){ alert('No se pudo anular una cuota:\n'+error.message); break; }
+  }
+  statusEl.textContent = `Listo: se anularon ${lote.sinPagos.length} cuota(s) de ${lote.periodo}. Podés volver a generarlas.`;
   await cargarDatos(); refreshAll();
 }
 
@@ -2749,6 +3242,7 @@ async function anularPago(pagoId){
 
   p.anulado = true; p.anuladoMotivo = motivo.trim();
   renderCuotas(); renderHome();
+  if(p.pedidoId) refrescarVistasPedidos();
 }
 
 function verComprobante(pagoId){
@@ -2758,8 +3252,8 @@ function verComprobante(pagoId){
   const numero = 'REC-'+String(p.id).padStart(6,'0');
   alert(
     `IKAI DOJO — Comprobante ${numero}\n\n`+
-    `Alumno: ${al?al.nombre+' '+al.apellido:'—'}\n`+
-    `Concepto: ${p.concepto}\n`+
+    `Alumno: ${al?al.nombre+' '+al.apellido:pedNombrePorPago(p)}\n`+
+    `Concepto: ${p.concepto}${p.detalle?' — '+p.detalle:''}\n`+
     `Fecha: ${p.fecha}\n`+
     `Importe: $${Number(p.monto).toLocaleString('es-AR')}\n`+
     `Método de pago: ${p.metodo}`
@@ -2767,39 +3261,78 @@ function verComprobante(pagoId){
 }
 
 // ── Cuenta Corriente General (todas las cuotas, con filtros) ──
+// Estados que se ven claramente: Pendiente / Parcial / Pagada / Vencida
+// (se calculan solos contra los pagos), Anulada (queda en el historial, con
+// su motivo) y la marca "Modificada" cuando se editó o recalculó después de
+// generarla. Las anuladas no se muestran salvo que se filtre por "Anuladas".
+function cuotaEsModificada(c){
+  return /\]\s(Editada|Recalculada|Regenerada)/.test(c.observaciones||'');
+}
+function ultimaLineaObservaciones(c){
+  const l = (c.observaciones||'').split('\n').filter(Boolean);
+  return l.length ? l[l.length-1] : '';
+}
+function verHistorialCuota(id){
+  const c = DB.cuotas.find(x=>x.id===id); if(!c) return;
+  const a = DB.alumnos.find(x=>x.id===c.alumnoId);
+  alert(`Historial — cuota ${c.periodo} (${c.disciplinaNombre})\n${a?a.nombre+' '+a.apellido:'—'}\n\n` +
+    `Generada el ${c.fechaEmision}\nImporte original $${c.importeOriginal.toLocaleString('es-AR')} · descuento $${c.descuento.toLocaleString('es-AR')} · final $${c.importeFinal.toLocaleString('es-AR')}\n\n` +
+    (c.observaciones ? 'Cambios registrados:\n' + c.observaciones : 'Sin cambios desde que se generó.'));
+}
+
 function renderCuentaCorrienteGeneral(){
   const fPeriodo = document.getElementById('cc-filtro-periodo').value;
   const fDisciplina = document.getElementById('cc-filtro-disciplina').value;
   const fEstado = document.getElementById('cc-filtro-estado').value;
   const fAlumno = document.getElementById('cc-filtro-alumno').value.trim().toLowerCase();
 
-  let filas = DB.cuotas.filter(c=>c.estado!=='Anulada').map(c=>({ ...c, ...calcCuota(c) }));
-  if(fPeriodo) filas = filas.filter(c=>c.periodo===fPeriodo);
-  if(fDisciplina) filas = filas.filter(c=>c.disciplinaNombre===fDisciplina);
-  if(fEstado) filas = filas.filter(c=>c.estado===fEstado);
+  let base = DB.cuotas.map(c=>({ ...c, ...calcCuota(c) }));
+  if(fPeriodo) base = base.filter(c=>c.periodo===fPeriodo);
+  if(fDisciplina) base = base.filter(c=>c.disciplinaNombre===fDisciplina);
   if(fAlumno){
-    filas = filas.filter(c=>{
+    base = base.filter(c=>{
       const a = DB.alumnos.find(x=>x.id===c.alumnoId);
       return a && (a.nombre+' '+a.apellido).toLowerCase().includes(fAlumno);
     });
   }
+  let filas;
+  if(fEstado==='Anulada') filas = base.filter(c=>c.estado==='Anulada');
+  else if(fEstado==='Modificada') filas = base.filter(c=>c.estado!=='Anulada' && cuotaEsModificada(c));
+  else if(fEstado) filas = base.filter(c=>c.estado===fEstado);
+  else filas = base.filter(c=>c.estado!=='Anulada');
+  const anuladasOcultas = (fEstado==='Anulada') ? 0 : base.filter(c=>c.estado==='Anulada').length;
   filas.sort((a,b)=> b.periodo.localeCompare(a.periodo) || a.alumnoId-b.alumnoId);
 
-  const pillPorEstado = { Pagada:'pill-ok', Parcial:'pill-warn', Pendiente:'pill-warn', Vencida:'pill-bad' };
+  document.getElementById('cc-resumen').textContent =
+    `${filas.length} cuota(s)` + (anuladasOcultas ? ` — hay ${anuladasOcultas} anulada(s) que no se muestran (elegí Estado → Anuladas para verlas).` : '.');
+
+  const pillPorEstado = { Pagada:'pill-ok', Parcial:'pill-warn', Pendiente:'pill-warn', Vencida:'pill-bad', Anulada:'pill-bad' };
   const tbody = document.getElementById('tbl-cuenta-corriente');
   tbody.innerHTML = filas.length ? filas.map(c=>{
     const a = DB.alumnos.find(x=>x.id===c.alumnoId);
-    return `<tr>
-      <td>${a?`<a href="#" onclick="viewAlumno(${a.id});return false;">${a.nombre} ${a.apellido}</a>`:'—'}</td>
+    const anulada = c.estado==='Anulada';
+    const nombre = a?`<a href="#" onclick="viewAlumno(${a.id});return false;">${a.nombre} ${a.apellido}</a>`:'—';
+    const estadoHtml = anulada
+      ? `<span class="pill pill-bad" title="${esc(ultimaLineaObservaciones(c))}">Anulada</span>`
+      : `<span class="pill ${pillPorEstado[c.estado]||''}">${c.estado}</span>` +
+        (cuotaEsModificada(c) ? ` <span class="pill pill-ghost" title="Se modificó después de generarla — ver Historial">Modificada</span>` : '');
+    const acciones = anulada
+      ? `<button class="btn btn-ghost btn-sm" onclick="verHistorialCuota(${c.id})">Historial</button>`
+      : `${c.saldo>0 && a ? linkRecordatorioWhatsApp(a) : ''}
+        <button class="btn btn-ghost btn-sm" onclick="abrirEdicionCuota(${c.id})">Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="anularCuota(${c.id})">Anular</button>
+        ${c.observaciones ? `<button class="btn btn-ghost btn-sm" onclick="verHistorialCuota(${c.id})">Historial</button>` : ''}`;
+    return `<tr ${anulada?'style="opacity:.6;"':''}>
+      <td>${nombre}</td>
       <td>${c.periodo}</td><td>${c.concepto}</td>
-      <td>$${c.importeOriginal.toLocaleString('es-AR')}</td>
+      <td>${anulada?'<s>':''}$${c.importeOriginal.toLocaleString('es-AR')}${anulada?'</s>':''}</td>
       <td>${c.descuento?'$'+c.descuento.toLocaleString('es-AR'):'—'}</td>
-      <td>$${c.importeFinal.toLocaleString('es-AR')}</td>
+      <td>${anulada?'<s>':''}$${c.importeFinal.toLocaleString('es-AR')}${anulada?'</s>':''}</td>
       <td>$${c.pagado.toLocaleString('es-AR')}</td>
-      <td>$${c.saldo.toLocaleString('es-AR')}</td>
-      <td><span class="pill ${pillPorEstado[c.estado]||''}">${c.estado}</span></td>
+      <td>${anulada?'—':'$'+c.saldo.toLocaleString('es-AR')}</td>
+      <td>${estadoHtml}</td>
       <td>${c.fechaVencimiento||'—'}</td>
-      <td>${c.saldo>0 && a ? linkRecordatorioWhatsApp(a) : ''}</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap;min-width:170px;align-items:center;">${acciones}</div></td>
     </tr>`;
   }).join('') : '<tr><td colspan="11" class="empty-state">Sin cuotas para este filtro</td></tr>';
 }
@@ -2857,7 +3390,7 @@ async function saveConfig(){
 }
 
 function refreshAll(){
-  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList(); renderEconomia(); renderCalendarioList();
+  renderHome(); renderAlumnosList(); renderCuotas(); loadConfigForm(); renderProfesoresList(); renderEconomia(); renderCalendarioList(); renderIndumentaria();
 }
 
 // ═══════════════════════════════════════
@@ -4055,6 +4588,1157 @@ async function eliminarGasto(id){
   if(error){ alert('No se pudo eliminar el gasto:\n'+error.message); return; }
   DB.gastos = DB.gastos.filter(g=>g.id!==id);
   renderEconomia();
+}
+
+// ═══════════════════════════════════════
+// PRODUCTOS, INDUMENTARIA Y PEDIDOS (migracion_012)
+// ═══════════════════════════════════════
+// Encargo del alumno → talle → precio → seña/pagos → pedido al fabricante →
+// recepción → entrega → saldo final.
+// - Productos: "productos" (ya existía) + "productos_talles" (precio por talle).
+// - Pedidos: "pedidos" + "pedidos_items" (una fila por prenda, cada una con
+//   su propio avance). El precio/nombre quedan copiados en cada prenda al
+//   pedir, así cambiar un precio después NO altera pedidos ya cargados.
+// - Pagos: se guardan en la tabla "pagos" de siempre (pedido_id), o sea que
+//   cuentan solos en Ingresos del mes / Economía, con comprobante y
+//   anulación auditada. El saldo y el estado de pago se calculan siempre
+//   en el momento contra los pagos vigentes — nunca se guardan.
+// - Pedido al fabricante: se arma agrupando las prendas "Pendiente de pedir".
+const ESTADOS_ITEM = ['Pendiente de pedir','Pedido al fabricante','En fabricación','Recibido','Entregado'];
+const CATEGORIAS_PRODUCTO = ['Remeras / Camisetas','Camperas','Pantalones','Distintivos','Escudos','Cinturones','Otros'];
+
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function money(n){ return '$'+Number(n||0).toLocaleString('es-AR'); }
+function fechaAR(iso){
+  if(!iso) return '—';
+  const [y,m,d] = String(iso).slice(0,10).split('-');
+  return `${d}/${m}/${y}`;
+}
+function auditLinea(previo, texto){
+  const linea = `[${HOY}] ${texto}`;
+  return previo ? previo + '\n' + linea : linea;
+}
+function waNumero(tel){
+  const n = String(tel||'').replace(/\D/g,'');
+  if(!n) return '';
+  return n.startsWith('549') ? n : ('549'+n.replace(/^0/,'').replace(/^15/,''));
+}
+
+// ── Carga ──
+// Si todavía no se corrió migracion_012, el resto de la app sigue andando:
+// acá solo se marca el error y la pantalla del módulo avisa qué falta.
+async function cargarIndumentaria(){
+  const [prodR, talR, pedR, itR, pfR] = await Promise.all([
+    supa.from('productos').select('*').order('articulo'),
+    supa.from('productos_talles').select('*').order('orden'),
+    supa.from('pedidos').select('*').order('fecha_pedido', { ascending:false }),
+    supa.from('pedidos_items').select('*').order('id'),
+    supa.from('pedidos_fabricante').select('*').order('fecha', { ascending:false }),
+  ]);
+  const fallo = [prodR,talR,pedR,itR,pfR].find(r=>r.error);
+  if(fallo){
+    DB.indError = fallo.error.message || String(fallo.error);
+    DB.productos = []; DB.productosTalles = []; DB.pedidos = []; DB.pedidosItems = []; DB.pedidosFabricante = [];
+    return;
+  }
+  DB.indError = '';
+  DB.productos = (prodR.data||[]).map(p=>({
+    id:p.id, nombre:p.articulo, modelo:p.modelo||'', descripcion:p.descripcion||'',
+    categoria:p.categoria||'', proveedor:p.proveedor||'', imagen:p.imagen_url||'', activo:p.activo!==false,
+  }));
+  DB.productosTalles = (talR.data||[]).map(t=>({
+    id:t.id, productoId:t.producto_id, talle:String(t.talle), grupo:t.grupo||'',
+    precio:Number(t.precio_venta), costo:(t.costo===null||t.costo===undefined)?null:Number(t.costo),
+    orden:t.orden||0, activo:t.activo!==false,
+  }));
+  DB.pedidos = (pedR.data||[]).map(p=>({
+    id:p.id, alumnoId:p.alumno_id||null, clienteNombre:p.cliente_nombre||'', clienteTelefono:p.cliente_telefono||'',
+    fecha:p.fecha_pedido, fechaEntrega:p.fecha_entrega_estimada||'', observaciones:p.observaciones||'',
+    estado:p.estado||'Activo', canceladoMotivo:p.cancelado_motivo||'',
+  }));
+  DB.pedidosItems = (itR.data||[]).map(i=>({
+    id:i.id, pedidoId:i.pedido_id, productoId:i.producto_id||null, nombre:i.producto_nombre, modelo:i.modelo||'',
+    talle:String(i.talle), cantidad:Number(i.cantidad), precio:Number(i.precio_unitario),
+    costo:(i.costo_unitario===null||i.costo_unitario===undefined)?null:Number(i.costo_unitario),
+    estado:i.estado||'Pendiente de pedir', loteId:i.pedido_fabricante_id||null,
+    fechaPedidoFab:i.fecha_pedido_fabricante||'', fechaRecibido:i.fecha_recibido||'', fechaEntregado:i.fecha_entregado||'',
+    observaciones:i.observaciones||'',
+  }));
+  DB.pedidosFabricante = (pfR.data||[]).map(f=>({
+    id:f.id, fecha:f.fecha, proveedor:f.proveedor||'', observaciones:f.observaciones||'', resumen:f.resumen||'',
+  }));
+}
+
+// ── Cálculos (siempre en el momento, nunca guardados) ──
+function tallesDeProducto(productoId, soloActivos=true){
+  return DB.productosTalles.filter(t=>t.productoId===productoId && (!soloActivos || t.activo)).sort((a,b)=>a.orden-b.orden);
+}
+
+function calcPedido(p){
+  const items = DB.pedidosItems.filter(i=>i.pedidoId===p.id);
+  const vigentes = items.filter(i=>i.estado!=='Cancelado');
+  const total = vigentes.reduce((s,i)=>s+i.cantidad*i.precio, 0);
+  const pagos = DB.pagos.filter(x=>x.pedidoId===p.id && !x.anulado);
+  const pagado = pagos.reduce((s,x)=>s+Number(x.monto), 0);
+  const saldo = Math.round((total-pagado)*100)/100;
+  // Seña = el primer pago, mientras todavía falta plata; Pago parcial = varios pagos y todavía falta.
+  let estadoPago;
+  if(pagado<=0) estadoPago = 'Sin pago';
+  else if(saldo<=0) estadoPago = 'Pagado';
+  else estadoPago = pagos.length===1 ? 'Seña' : 'Pago parcial';
+
+  let estadoEntrega;
+  if(p.estado==='Cancelado' || !vigentes.length) estadoEntrega = 'Cancelado';
+  else {
+    const sinEntregar = vigentes.filter(i=>i.estado!=='Entregado');
+    estadoEntrega = sinEntregar.length
+      ? sinEntregar.reduce((min,i)=> ESTADOS_ITEM.indexOf(i.estado) < ESTADOS_ITEM.indexOf(min) ? i.estado : min, sinEntregar[0].estado)
+      : 'Entregado';
+  }
+  const prendas = vigentes.reduce((s,i)=>s+i.cantidad, 0);
+  const entregadas = vigentes.filter(i=>i.estado==='Entregado').reduce((s,i)=>s+i.cantidad, 0);
+  return { items, vigentes, total, pagos, pagado, saldo, estadoPago, estadoEntrega, prendas, entregadas };
+}
+
+function pedClienteNombre(p){
+  const a = p.alumnoId ? DB.alumnos.find(x=>x.id===p.alumnoId) : null;
+  return a ? `${a.nombre} ${a.apellido}` : (p.clienteNombre || '—');
+}
+function pedClienteTelefono(p){
+  const a = p.alumnoId ? DB.alumnos.find(x=>x.id===p.alumnoId) : null;
+  return a ? (a.whatsapp || a.telefono || '') : (p.clienteTelefono || '');
+}
+function pedResumenPrendas(p){
+  return calcPedido(p).vigentes.map(i=>`${i.nombre}${i.modelo?' ('+i.modelo+')':''} · T.${i.talle}${i.cantidad>1?' ×'+i.cantidad:''}`).join('  |  ');
+}
+function pedNumero(p){ return '#'+p.id; }
+
+function pillEstadoItem(e){
+  if(e==='Entregado') return 'pill-ok';
+  if(e==='Cancelado') return 'pill-bad';
+  if(e==='Pendiente de pedir' || e==='Recibido') return 'pill-warn';
+  return 'pill-ghost';
+}
+function pillEstadoPagoPedido(e){
+  if(e==='Pagado') return 'pill-ok';
+  if(e==='Seña' || e==='Pago parcial') return 'pill-warn';
+  return 'pill-ghost';
+}
+
+function indResumen(){
+  let porPedir=0, enCurso=0, paraEntregar=0, saldoTotal=0, pedidosSinEntregar=0;
+  DB.pedidos.filter(p=>p.estado!=='Cancelado').forEach(p=>{
+    const c = calcPedido(p);
+    c.vigentes.forEach(i=>{
+      if(i.estado==='Pendiente de pedir') porPedir += i.cantidad;
+      else if(i.estado==='Pedido al fabricante' || i.estado==='En fabricación') enCurso += i.cantidad;
+      else if(i.estado==='Recibido') paraEntregar += i.cantidad;
+    });
+    if(c.saldo>0) saldoTotal += c.saldo;
+    if(c.estadoEntrega!=='Entregado' && c.estadoEntrega!=='Cancelado') pedidosSinEntregar++;
+  });
+  return { porPedir, enCurso, paraEntregar, saldoTotal, pedidosSinEntregar };
+}
+
+// ── Pantalla principal (pestañas) ──
+let indTab = 'pedidos';
+function indShowTab(tab){
+  indTab = tab;
+  document.querySelectorAll('#page-indumentaria .ind-tab').forEach(el=>{ el.style.display = (el.id==='ind-tab-'+tab)?'':'none'; });
+  document.querySelectorAll('#page-indumentaria [data-indtab]').forEach(b=>{
+    const on = b.dataset.indtab===tab;
+    b.classList.toggle('btn-fill', on); b.classList.toggle('btn-ghost', !on);
+  });
+  renderIndumentaria();
+}
+
+function renderIndumentaria(){
+  const banner = document.getElementById('ind-banner');
+  const main = document.getElementById('ind-main');
+  if(DB.indError){
+    banner.style.display = 'flex';
+    banner.innerHTML = '⚠ Falta preparar la base de datos para este módulo: hay que correr <b>&nbsp;migracion_012_productos_y_pedidos.sql&nbsp;</b> en Supabase (SQL Editor). Detalle: ' + esc(DB.indError);
+    main.style.display = 'none';
+    return;
+  }
+  banner.style.display = 'none';
+  main.style.display = 'flex';
+
+  const r = indResumen();
+  document.getElementById('ind-stats').innerHTML = `
+    <div class="hud-card">${hudRing(r.porPedir?80:0, r.porPedir)}
+      <div class="hud-info"><div class="hud-label">Por pedir al fabricante</div><div class="hud-value">${r.porPedir}</div><div class="hud-sub">prendas</div></div></div>
+    <div class="hud-card">${hudRing(r.enCurso?60:0, r.enCurso)}
+      <div class="hud-info"><div class="hud-label">Pedidas / en fabricación</div><div class="hud-value">${r.enCurso}</div><div class="hud-sub">prendas</div></div></div>
+    <div class="hud-card">${hudRing(r.paraEntregar?80:0, r.paraEntregar)}
+      <div class="hud-info"><div class="hud-label">Recibidas para entregar</div><div class="hud-value">${r.paraEntregar}</div><div class="hud-sub">prendas</div></div></div>
+    <div class="hud-card">${hudRing(r.saldoTotal>0?80:0,'$')}
+      <div class="hud-info"><div class="hud-label">Saldo por cobrar</div><div class="hud-value">${money(r.saldoTotal)}</div><div class="hud-sub">${r.pedidosSinEntregar} pedido(s) sin entregar</div></div></div>
+  `;
+  if(indTab==='pedidos') renderPedidosList();
+  else if(indTab==='fabricante') renderFabricante();
+  else renderProductosList();
+}
+
+// ═══════════════════════════════════════
+// PEDIDOS — lista
+// ═══════════════════════════════════════
+function renderPedidosList(){
+  const fEstado = document.getElementById('ped-filtro-estado').value;
+  const fTexto = document.getElementById('ped-filtro-texto').value.trim().toLowerCase();
+  let filas = DB.pedidos.map(p=>({ p, c:calcPedido(p) }));
+  filas = filas.filter(({p,c})=>{
+    const cancelado = p.estado==='Cancelado';
+    switch(fEstado){
+      case 'cancelados': return cancelado;
+      case 'entregados': return !cancelado && c.estadoEntrega==='Entregado';
+      case 'por-pedir': return !cancelado && c.vigentes.some(i=>i.estado==='Pendiente de pedir');
+      case 'en-fabricacion': return !cancelado && c.vigentes.some(i=>i.estado==='Pedido al fabricante' || i.estado==='En fabricación');
+      case 'recibidos': return !cancelado && c.vigentes.some(i=>i.estado==='Recibido');
+      case 'con-saldo': return !cancelado && c.saldo>0;
+      case 'todos': return true;
+      default: return !cancelado && c.estadoEntrega!=='Entregado'; // 'sin-entregar'
+    }
+  });
+  if(fTexto) filas = filas.filter(({p})=>pedClienteNombre(p).toLowerCase().includes(fTexto));
+  filas.sort((a,b)=> String(b.p.fecha).localeCompare(String(a.p.fecha)) || b.p.id-a.p.id);
+
+  const tbody = document.getElementById('tbl-pedidos');
+  tbody.innerHTML = filas.length ? filas.map(({p,c})=>{
+    const cancelado = p.estado==='Cancelado';
+    const parcial = !cancelado && c.estadoEntrega!=='Entregado' && c.entregadas>0 ? ` <span style="color:var(--muted);">(${c.entregadas}/${c.prendas} entregadas)</span>` : '';
+    return `<tr onclick="verPedido(${p.id})" ${cancelado?'style="opacity:.55;"':''}>
+      <td class="mono">${pedNumero(p)}</td><td>${fechaAR(p.fecha)}</td><td>${esc(pedClienteNombre(p))}</td>
+      <td style="max-width:280px;font-size:14px;">${esc(pedResumenPrendas(p)) || '—'}</td>
+      <td>${money(c.total)}</td><td>${money(c.pagado)}</td>
+      <td ${c.saldo>0&&!cancelado?'style="color:var(--amber);"':''}>${money(Math.max(0,c.saldo))}</td>
+      <td><span class="pill ${pillEstadoItem(c.estadoEntrega)}">${c.estadoEntrega}</span>${parcial}</td>
+      <td>${cancelado?'—':`<span class="pill ${pillEstadoPagoPedido(c.estadoPago)}">${c.estadoPago}</span>`}</td>
+      <td>${fechaAR(p.fechaEntrega)}</td></tr>`;
+  }).join('') : '<tr><td colspan="10" class="empty-state">No hay pedidos para este filtro</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// PEDIDO — filas de prendas (compartido entre "Nuevo pedido" y "Agregar prenda")
+// ═══════════════════════════════════════
+const ITEM_CTX = {
+  ped: { items:[], cont:'ped-items', total:'ped-total' },
+  pda: { items:[], cont:'pdd-add-items', total:'pdd-add-total' },
+};
+function ctxFilaNueva(){ return { productoId:'', talle:'', cantidad:1, precio:'' }; }
+
+function ctxRender(k){
+  const ctx = ITEM_CTX[k];
+  const productos = DB.productos.filter(p=>p.activo && tallesDeProducto(p.id).length);
+  document.getElementById(ctx.cont).innerHTML = ctx.items.map((it,i)=>{
+    const talles = it.productoId ? tallesDeProducto(Number(it.productoId)) : [];
+    return `<div class="bloque-item">
+      <div class="form-grid">
+        <div class="form-item"><label>Producto</label>
+          <select onchange="ctxSetProducto('${k}',${i},this.value)"><option value="">— Elegí un producto —</option>
+            ${productos.map(p=>`<option value="${p.id}" ${String(p.id)===String(it.productoId)?'selected':''}>${esc(p.nombre)}${p.modelo?' ('+esc(p.modelo)+')':''}</option>`).join('')}
+          </select></div>
+        <div class="form-item"><label>Talle</label>
+          <select onchange="ctxSetTalle('${k}',${i},this.value)"><option value="">— Talle —</option>
+            ${talles.map(t=>`<option value="${esc(t.talle)}" ${t.talle===it.talle?'selected':''}>${esc(t.talle)} — ${money(t.precio)}</option>`).join('')}
+          </select></div>
+        <div class="form-item"><label>Cantidad</label><input type="number" min="1" value="${it.cantidad}" oninput="ctxSetCantidad('${k}',${i},this.value)"></div>
+        <div class="form-item"><label>Precio unitario</label><input type="number" min="0" value="${it.precio}" oninput="ctxSetPrecio('${k}',${i},this.value)" placeholder="Se completa al elegir el talle"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;flex-wrap:wrap;">
+        <span class="mono" id="${ctx.cont}-sub-${i}"></span>
+        ${ctx.items.length>1 ? `<button class="btn btn-ghost btn-sm" onclick="ctxQuitar('${k}',${i})">Quitar</button>` : '<span></span>'}
+      </div></div>`;
+  }).join('');
+  ctxActualizarTotales(k);
+}
+
+function ctxActualizarTotales(k){
+  const ctx = ITEM_CTX[k];
+  let total = 0;
+  ctx.items.forEach((it,i)=>{
+    const sub = (Number(it.cantidad)||0) * (Number(it.precio)||0);
+    total += sub;
+    const el = document.getElementById(`${ctx.cont}-sub-${i}`);
+    if(el) el.textContent = it.precio!=='' && it.talle ? `Subtotal: ${money(sub)}` : '';
+  });
+  const tEl = document.getElementById(ctx.total);
+  if(tEl) tEl.textContent = 'Total: ' + money(total);
+  return total;
+}
+
+function ctxSetProducto(k, i, v){
+  const it = ITEM_CTX[k].items[i];
+  it.productoId = v; it.talle = ''; it.precio = '';
+  if(v){
+    const talles = tallesDeProducto(Number(v));
+    if(talles.length===1){ it.talle = talles[0].talle; it.precio = talles[0].precio; }
+  }
+  ctxRender(k);
+}
+function ctxSetTalle(k, i, v){
+  const it = ITEM_CTX[k].items[i];
+  it.talle = v;
+  const t = v ? tallesDeProducto(Number(it.productoId)).find(x=>x.talle===v) : null;
+  it.precio = t ? t.precio : '';
+  ctxRender(k);
+}
+function ctxSetCantidad(k, i, v){ ITEM_CTX[k].items[i].cantidad = v; ctxActualizarTotales(k); }
+function ctxSetPrecio(k, i, v){ ITEM_CTX[k].items[i].precio = v; ctxActualizarTotales(k); }
+function ctxAgregar(k){ ITEM_CTX[k].items.push(ctxFilaNueva()); ctxRender(k); }
+function ctxQuitar(k, i){ ITEM_CTX[k].items.splice(i,1); if(!ITEM_CTX[k].items.length) ITEM_CTX[k].items.push(ctxFilaNueva()); ctxRender(k); }
+
+// Devuelve { error } o { filas } con todo validado y resuelto contra el producto real.
+function ctxValidar(k){
+  const filas = [];
+  for(const [n,it] of ITEM_CTX[k].items.entries()){
+    const etiqueta = `Prenda ${n+1}`;
+    const prod = DB.productos.find(p=>String(p.id)===String(it.productoId));
+    if(!prod) return { error:`${etiqueta}: elegí un producto.` };
+    if(!it.talle) return { error:`${etiqueta}: elegí el talle.` };
+    const cantidad = Number(it.cantidad);
+    if(!Number.isInteger(cantidad) || cantidad<1) return { error:`${etiqueta}: la cantidad tiene que ser un número entero de 1 en adelante.` };
+    if(it.precio==='' || !(Number(it.precio)>=0)) return { error:`${etiqueta}: falta el precio.` };
+    const talleRow = tallesDeProducto(prod.id).find(t=>t.talle===it.talle);
+    filas.push({ producto:prod, talle:it.talle, cantidad, precio:Number(it.precio), costo: talleRow && talleRow.costo!==null ? talleRow.costo : null });
+  }
+  return { filas };
+}
+
+// ═══════════════════════════════════════
+// PEDIDO NUEVO
+// ═══════════════════════════════════════
+function pedNuevo(){
+  if(DB.indError){ alert('Primero hay que correr migracion_012 en Supabase.'); return; }
+  if(!DB.productos.some(p=>p.activo && tallesDeProducto(p.id).length)){
+    alert('Todavía no hay productos activos con talles y precios. Cargalos primero en la pestaña Productos.'); return;
+  }
+  const sel = document.getElementById('ped-alumno');
+  sel.innerHTML = '<option value="">— Elegí un alumno —</option>' +
+    DB.alumnos.filter(a=>a.estado==='Activo').map(a=>`<option value="${a.id}">${esc(a.apellido)}, ${esc(a.nombre)}</option>`).join('') +
+    '<option value="otro">Otro cliente (no es alumno)…</option>';
+  document.getElementById('ped-cliente-nombre').value = '';
+  document.getElementById('ped-cliente-tel').value = '';
+  document.getElementById('ped-fecha').value = HOY;
+  document.getElementById('ped-entrega').value = '';
+  document.getElementById('ped-observaciones').value = '';
+  document.getElementById('ped-sena').value = '';
+  document.getElementById('ped-sena-metodo').value = 'Efectivo';
+  pedAlCambiarCliente();
+  ITEM_CTX.ped.items = [ctxFilaNueva()];
+  ctxRender('ped');
+  showPage('pedido-form');
+}
+function pedAlCambiarCliente(){
+  const otro = document.getElementById('ped-alumno').value==='otro';
+  document.getElementById('ped-otro-nombre-item').style.display = otro ? '' : 'none';
+  document.getElementById('ped-otro-tel-item').style.display = otro ? '' : 'none';
+}
+
+async function guardarPedido(){
+  const alumnoSel = document.getElementById('ped-alumno').value;
+  let alumnoId = null, clienteNombre = null, clienteTel = null;
+  if(alumnoSel==='otro'){
+    clienteNombre = document.getElementById('ped-cliente-nombre').value.trim();
+    clienteTel = document.getElementById('ped-cliente-tel').value.trim() || null;
+    if(!clienteNombre){ alert('Escribí el nombre del cliente.'); return; }
+  } else if(alumnoSel){
+    alumnoId = Number(alumnoSel);
+  } else { alert('Elegí el alumno (o "Otro cliente").'); return; }
+
+  const v = ctxValidar('ped');
+  if(v.error){ alert(v.error); return; }
+  const total = v.filas.reduce((s,f)=>s+f.cantidad*f.precio, 0);
+
+  const sena = Number(document.getElementById('ped-sena').value) || 0;
+  if(sena<0){ alert('La seña no puede ser negativa.'); return; }
+  if(sena>total && !confirm(`La seña (${money(sena)}) es mayor que el total del pedido (${money(total)}). ¿Continuar igual?`)) return;
+
+  const fechaPedido = document.getElementById('ped-fecha').value || HOY;
+  const btn = document.getElementById('ped-btn-guardar');
+  btn.disabled = true; btn.textContent = 'Guardando…';
+  const restaurar = ()=>{ btn.disabled = false; btn.textContent = 'Guardar Pedido'; };
+
+  const { data:ped, error:e1 } = await supa.from('pedidos').insert({
+    alumno_id: alumnoId, cliente_nombre: clienteNombre, cliente_telefono: clienteTel,
+    fecha_pedido: fechaPedido, fecha_entrega_estimada: document.getElementById('ped-entrega').value || null,
+    observaciones: document.getElementById('ped-observaciones').value.trim() || null,
+  }).select().single();
+  if(e1){ restaurar(); alert('No se pudo guardar el pedido:\n'+e1.message); return; }
+
+  const { error:e2 } = await supa.from('pedidos_items').insert(v.filas.map(f=>({
+    pedido_id: ped.id, producto_id: f.producto.id, producto_nombre: f.producto.nombre,
+    modelo: f.producto.modelo || null, talle: f.talle, cantidad: f.cantidad,
+    precio_unitario: f.precio, costo_unitario: f.costo,
+  })));
+  if(e2){
+    // No dejar un pedido vacío a medias
+    await supa.from('pedidos').delete().eq('id', ped.id);
+    restaurar(); alert('No se pudieron guardar las prendas del pedido (no se creó nada):\n'+e2.message); return;
+  }
+
+  let avisoSena = '';
+  if(sena>0){
+    const { data:pg, error:e3 } = await supa.from('pagos').insert({
+      alumno_id: alumnoId, monto: sena, metodo_pago: document.getElementById('ped-sena-metodo').value,
+      tipo_ingreso: 'Indumentaria', detalle: `Pedido #${ped.id} — seña`, fecha: fechaPedido,
+      estado_pago: 'Pagado', pedido_id: ped.id,
+    }).select().single();
+    if(e3) avisoSena = '\n\nOJO: el pedido se guardó, pero la seña NO se pudo registrar ('+e3.message+'). Cargala de nuevo desde el pedido.';
+    else DB.pagos.push(mapPagoFila(pg));
+  }
+
+  restaurar();
+  await cargarIndumentaria();
+  renderHome(); renderTablaPagos();
+  if(avisoSena) alert(avisoSena.trim());
+  verPedido(ped.id);
+}
+
+function mapPagoFila(p){
+  return { id:p.id, alumnoId:p.alumno_id, fecha:p.fecha, concepto:p.tipo_ingreso, detalle:p.detalle||'',
+    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null, pedidoId:p.pedido_id||null,
+    anulado:p.anulado===true, anuladoMotivo:p.anulado_motivo||'', anuladoAt:p.anulado_at||'' };
+}
+
+// ═══════════════════════════════════════
+// PEDIDO — detalle (prendas, estados, pagos, saldo)
+// ═══════════════════════════════════════
+let pedidoActualId = null;
+let itemEnEdicion = null;
+
+function verPedido(id){
+  pedidoActualId = id;
+  itemEnEdicion = null;
+  ITEM_CTX.pda.items = [ctxFilaNueva()];
+  renderPedidoDetalle();
+  showPage('pedido-detail');
+}
+
+function pedidoDetalleVisible(){
+  return pedidoActualId && document.getElementById('page-pedido-detail').classList.contains('active');
+}
+
+function refrescarVistasPedidos(){
+  renderIndumentaria(); renderHome(); renderTablaPagos();
+  if(pedidoDetalleVisible()) renderPedidoDetalle();
+}
+
+function renderPedidoDetalle(){
+  const p = DB.pedidos.find(x=>x.id===pedidoActualId);
+  if(!p){ showPage('indumentaria'); return; }
+  const c = calcPedido(p);
+  const cancelado = p.estado==='Cancelado';
+  const tel = pedClienteTelefono(p);
+
+  document.getElementById('pdd-title').textContent = `Pedido ${pedNumero(p)} — ${pedClienteNombre(p)}`;
+  document.getElementById('pdd-btn-cancelar').style.display = cancelado ? 'none' : '';
+
+  let aviso = '';
+  const recibidas = c.vigentes.filter(i=>i.estado==='Recibido');
+  const numWa = waNumero(tel);
+  if(!cancelado && recibidas.length && numWa){
+    const msg = encodeURIComponent(`Hola ${pedClienteNombre(p).split(' ')[0]}! Te aviso desde Ikai Dojo que ya llegó tu pedido de indumentaria (${recibidas.map(i=>i.nombre+' T.'+i.talle+(i.cantidad>1?' x'+i.cantidad:'')).join(', ')}).` +
+      (c.saldo>0 ? ` Queda un saldo de ${money(c.saldo)}.` : '') + ' Cuando quieras pasás a retirarlo. ¡Gracias!');
+    aviso = `<a href="https://wa.me/${numWa}?text=${msg}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none;">💬 Avisar que llegó</a>`;
+  }
+  document.getElementById('pdd-avisos').innerHTML = aviso;
+
+  document.getElementById('pdd-fields').innerHTML = `
+    <div class="detail-item"><label>Cliente</label><span>${esc(pedClienteNombre(p))}${p.alumnoId?` — <a href="#" onclick="viewAlumno(${p.alumnoId});return false;">ver ficha</a>`:' (no es alumno)'}</span></div>
+    <div class="detail-item"><label>Teléfono</label><span>${esc(tel)||'—'}</span></div>
+    <div class="detail-item"><label>Fecha del pedido</label><span>${fechaAR(p.fecha)}</span></div>
+    <div class="detail-item"><label>Estado del pedido</label><span><span class="pill ${pillEstadoItem(c.estadoEntrega)}">${c.estadoEntrega}</span>${c.estadoEntrega!=='Entregado'&&c.entregadas>0?` (${c.entregadas}/${c.prendas} prendas entregadas)`:''}</span></div>
+    ${cancelado?`<div class="detail-item" style="grid-column:1/-1;"><label>Cancelado</label><span>${esc(p.canceladoMotivo)||'—'}</span></div>`:''}
+  `;
+  document.getElementById('pdd-entrega').value = p.fechaEntrega || '';
+  document.getElementById('pdd-obs').value = p.observaciones || '';
+  document.getElementById('pdd-entrega').disabled = cancelado;
+  document.getElementById('pdd-obs').disabled = cancelado;
+
+  document.getElementById('pdd-stats').innerHTML = `
+    <div class="hud-card">${hudRing(70,'$')}<div class="hud-info"><div class="hud-label">Total del pedido</div><div class="hud-value">${money(c.total)}</div><div class="hud-sub">${c.prendas} prenda(s)</div></div></div>
+    <div class="hud-card">${hudRing(c.total?Math.min(100,Math.round(c.pagado/c.total*100)):0, c.total?Math.min(100,Math.round(c.pagado/c.total*100))+'%':'—')}<div class="hud-info"><div class="hud-label">Pagó</div><div class="hud-value">${money(c.pagado)}</div></div></div>
+    <div class="hud-card">${hudRing(c.saldo>0?80:0,'$')}<div class="hud-info"><div class="hud-label">Saldo pendiente</div><div class="hud-value" style="color:${c.saldo>0?'var(--amber)':'var(--green)'};">${money(Math.max(0,c.saldo))}</div>${c.saldo<0?`<div class="hud-sub">Pagó ${money(-c.saldo)} de más</div>`:''}</div></div>
+    <div class="hud-card">${hudRing(c.estadoPago==='Pagado'?100:(c.pagado>0?50:0),'')}<div class="hud-info"><div class="hud-label">Estado del pago</div><div class="hud-value" style="font-size:22px;">${cancelado?'—':c.estadoPago}</div></div></div>
+  `;
+
+  // Prendas
+  document.getElementById('pdd-items').innerHTML = c.items.length ? c.items.map(i=>{
+    const anulada = i.estado==='Cancelado';
+    const bloqueado = cancelado || anulada;
+    const fechas = [i.fechaPedidoFab?'Pedida '+fechaAR(i.fechaPedidoFab):'', i.fechaRecibido?'Recibida '+fechaAR(i.fechaRecibido):'', i.fechaEntregado?'Entregada '+fechaAR(i.fechaEntregado):''].filter(Boolean).join(' · ');
+    const sig = ESTADOS_ITEM[ESTADOS_ITEM.indexOf(i.estado)+1];
+    return `<tr style="cursor:default;${anulada?'opacity:.5;':''}">
+      <td>${esc(i.nombre)}${i.modelo?` <span style="color:var(--muted);">(${esc(i.modelo)})</span>`:''}</td>
+      <td>${esc(i.talle)}</td><td>${i.cantidad}</td><td>${money(i.precio)}</td><td>${anulada?`<s>${money(i.cantidad*i.precio)}</s>`:money(i.cantidad*i.precio)}</td>
+      <td>${bloqueado
+        ? `<span class="pill ${pillEstadoItem(i.estado)}">${i.estado}</span>`
+        : `<select onchange="cambiarEstadoItem(${i.id}, this.value)" style="width:auto;background:var(--mid);color:var(--text);border:1px solid var(--bord);padding:5px 8px;font-family:inherit;font-size:14px;">
+            ${ESTADOS_ITEM.map(e=>`<option ${e===i.estado?'selected':''}>${e}</option>`).join('')}</select>`}
+        ${fechas?`<div style="font-size:12px;color:var(--muted);margin-top:3px;">${fechas}</div>`:''}</td>
+      <td style="white-space:nowrap;">${bloqueado?'':`
+        ${sig?`<button class="btn btn-ghost btn-sm" onclick="cambiarEstadoItem(${i.id}, '${sig}')" title="Pasar a: ${sig}">→ ${sig}</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="abrirEdicionItem(${i.id})">Editar</button>
+        ${i.estado!=='Entregado'?`<button class="btn btn-ghost btn-sm" onclick="cancelarItem(${i.id})">Cancelar</button>`:''}`}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7" class="empty-state">Sin prendas</td></tr>';
+  document.getElementById('pdd-btn-entregar-todo').style.display = (!cancelado && recibidas.length) ? '' : 'none';
+  document.getElementById('pdd-edit-item').style.display = 'none';
+
+  // Agregar prenda
+  document.getElementById('pdd-add-card').style.display = cancelado ? 'none' : '';
+  if(!cancelado) ctxRender('pda');
+
+  // Pagos
+  document.getElementById('pdd-pago-card').style.display = cancelado ? 'none' : '';
+  document.getElementById('pdd-pago-fecha').value = HOY;
+  document.getElementById('pdd-pago-monto').value = c.saldo>0 ? c.saldo : '';
+  const pagosTodos = DB.pagos.filter(x=>x.pedidoId===p.id).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)) || a.id-b.id);
+  document.getElementById('pdd-pagos').innerHTML = pagosTodos.length ? pagosTodos.map(x=>{
+    if(x.anulado){
+      return `<tr style="opacity:.55;cursor:default;"><td>${fechaAR(x.fecha)}</td><td><s>${money(x.monto)}</s></td><td>${esc(x.metodo)}</td>
+        <td><span class="pill pill-bad" title="${esc(x.anuladoMotivo)}">Anulado</span> <span style="font-size:13px;">${esc(x.anuladoMotivo)}</span></td><td></td></tr>`;
+    }
+    return `<tr style="cursor:default;"><td>${fechaAR(x.fecha)}</td><td>${money(x.monto)}</td><td>${esc(x.metodo)}</td><td><span class="pill pill-ok">Pago</span></td>
+      <td style="white-space:nowrap;"><button class="btn btn-ghost btn-sm" onclick="verComprobante(${x.id})">Comprobante</button>
+        <button class="btn btn-ghost btn-sm" onclick="anularPago(${x.id})">Anular</button></td></tr>`;
+  }).join('') : '<tr><td colspan="5" class="empty-state">Todavía no hay pagos</td></tr>';
+
+  // Historial de cambios (prendas)
+  const hist = c.items.filter(i=>i.observaciones).map(i=>
+    `<div style="margin-bottom:10px;"><div style="font-size:13px;color:var(--orange);letter-spacing:1px;">${esc(i.nombre)} · T.${esc(i.talle)}</div><div style="font-size:14px;white-space:pre-line;color:var(--muted);">${esc(i.observaciones)}</div></div>`).join('');
+  document.getElementById('pdd-hist-card').style.display = hist ? '' : 'none';
+  document.getElementById('pdd-hist').innerHTML = hist;
+}
+
+async function guardarDatosPedido(){
+  const p = DB.pedidos.find(x=>x.id===pedidoActualId); if(!p) return;
+  const entrega = document.getElementById('pdd-entrega').value || null;
+  const obs = document.getElementById('pdd-obs').value.trim() || null;
+  const { error } = await supa.from('pedidos').update({ fecha_entrega_estimada: entrega, observaciones: obs }).eq('id', p.id);
+  if(error){ alert('No se pudo guardar:\n'+error.message); return; }
+  p.fechaEntrega = entrega||''; p.observaciones = obs||'';
+  refrescarVistasPedidos();
+}
+
+// Cambia el estado de UNA prenda. Se puede ir también hacia atrás (para
+// corregir un error); cada cambio queda anotado con fecha en la prenda.
+async function cambiarEstadoItem(itemId, nuevo){
+  const it = DB.pedidosItems.find(x=>x.id===itemId);
+  if(!it || it.estado===nuevo){ refrescarVistasPedidos(); return; }
+  const ped = DB.pedidos.find(x=>x.id===it.pedidoId);
+  if(nuevo==='Entregado'){
+    const c = calcPedido(ped);
+    if(c.saldo>0 && !confirm(`Este pedido todavía tiene un saldo de ${money(c.saldo)}.\n¿Marcar la prenda como entregada igual?`)){ refrescarVistasPedidos(); return; }
+  }
+  const idx = ESTADOS_ITEM.indexOf(nuevo);
+  const cambios = {
+    estado: nuevo,
+    observaciones: auditLinea(it.observaciones, `Estado: ${it.estado} → ${nuevo}`),
+    fecha_pedido_fabricante: idx>=1 ? (it.fechaPedidoFab || HOY) : null,
+    pedido_fabricante_id: idx>=1 ? (it.loteId || null) : null,
+    fecha_recibido: idx>=3 ? (it.fechaRecibido || HOY) : null,
+    fecha_entregado: idx>=4 ? (it.fechaEntregado || HOY) : null,
+  };
+  const { error } = await supa.from('pedidos_items').update(cambios).eq('id', itemId);
+  if(error){ alert('No se pudo cambiar el estado:\n'+error.message); refrescarVistasPedidos(); return; }
+  it.estado = nuevo; it.observaciones = cambios.observaciones;
+  it.fechaPedidoFab = cambios.fecha_pedido_fabricante||''; it.loteId = cambios.pedido_fabricante_id;
+  it.fechaRecibido = cambios.fecha_recibido||''; it.fechaEntregado = cambios.fecha_entregado||'';
+  refrescarVistasPedidos();
+}
+
+async function entregarTodoRecibido(){
+  const p = DB.pedidos.find(x=>x.id===pedidoActualId); if(!p) return;
+  const c = calcPedido(p);
+  const aEntregar = c.vigentes.filter(i=>i.estado==='Recibido');
+  if(!aEntregar.length) return;
+  if(c.saldo>0 && !confirm(`Este pedido todavía tiene un saldo de ${money(c.saldo)}.\n¿Marcar ${aEntregar.length} prenda(s) como entregadas igual?`)) return;
+  for(const it of aEntregar){
+    const obs = auditLinea(it.observaciones, `Estado: ${it.estado} → Entregado`);
+    const { error } = await supa.from('pedidos_items').update({ estado:'Entregado', fecha_entregado:HOY, observaciones:obs }).eq('id', it.id);
+    if(error){ alert('No se pudo marcar una prenda como entregada:\n'+error.message); break; }
+    it.estado = 'Entregado'; it.fechaEntregado = HOY; it.observaciones = obs;
+  }
+  refrescarVistasPedidos();
+}
+
+// ── Editar una prenda ya cargada ──
+// Talle y cantidad solo mientras está "Pendiente de pedir" (después ya se le
+// pidió al fabricante esa cantidad y ese talle). El precio se puede corregir
+// siempre. Todo cambio deja una línea fechada con el motivo.
+function abrirEdicionItem(id){
+  const it = DB.pedidosItems.find(x=>x.id===id); if(!it) return;
+  itemEnEdicion = it;
+  const pendiente = it.estado==='Pendiente de pedir';
+  const talles = it.productoId ? tallesDeProducto(it.productoId) : [];
+  const opciones = talles.some(t=>t.talle===it.talle) ? talles.map(t=>t.talle) : [it.talle, ...talles.map(t=>t.talle)];
+  document.getElementById('pdd-ed-titulo').textContent = `Editar prenda — ${it.nombre}`;
+  const selTalle = document.getElementById('pdd-ed-talle');
+  selTalle.innerHTML = opciones.map(t=>`<option value="${esc(t)}" ${t===it.talle?'selected':''}>${esc(t)}</option>`).join('');
+  selTalle.disabled = !pendiente;
+  document.getElementById('pdd-ed-cantidad').value = it.cantidad;
+  document.getElementById('pdd-ed-cantidad').disabled = !pendiente;
+  document.getElementById('pdd-ed-precio').value = it.precio;
+  document.getElementById('pdd-ed-motivo').value = '';
+  document.getElementById('pdd-ed-nota').textContent = pendiente ? '' : 'Esta prenda ya se pidió al fabricante: solo se puede corregir el precio. Para cambiar talle o cantidad, cancelala y cargá otra.';
+  const panel = document.getElementById('pdd-edit-item');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+function cerrarEdicionItem(){ itemEnEdicion = null; document.getElementById('pdd-edit-item').style.display = 'none'; }
+
+async function guardarEdicionItem(){
+  const it = itemEnEdicion; if(!it) return;
+  const talle = document.getElementById('pdd-ed-talle').value;
+  const cantidad = Number(document.getElementById('pdd-ed-cantidad').value);
+  const precio = Number(document.getElementById('pdd-ed-precio').value);
+  const motivo = document.getElementById('pdd-ed-motivo').value.trim();
+  if(!Number.isInteger(cantidad) || cantidad<1){ alert('La cantidad tiene que ser un número entero de 1 en adelante.'); return; }
+  if(document.getElementById('pdd-ed-precio').value==='' || !(precio>=0)){ alert('Ingresá un precio válido.'); return; }
+  if(!motivo){ alert('Indicá el motivo del cambio (queda registrado).'); return; }
+  const cambios = [];
+  if(talle!==it.talle) cambios.push(`talle ${it.talle}→${talle}`);
+  if(cantidad!==it.cantidad) cambios.push(`cantidad ${it.cantidad}→${cantidad}`);
+  if(precio!==it.precio) cambios.push(`precio ${money(it.precio)}→${money(precio)}`);
+  if(!cambios.length){ cerrarEdicionItem(); return; }
+  const obs = auditLinea(it.observaciones, `Editada: ${cambios.join(', ')} — motivo: ${motivo}`);
+  const { error } = await supa.from('pedidos_items').update({ talle, cantidad, precio_unitario: precio, observaciones: obs }).eq('id', it.id);
+  if(error){ alert('No se pudo guardar:\n'+error.message); return; }
+  it.talle = talle; it.cantidad = cantidad; it.precio = precio; it.observaciones = obs;
+  cerrarEdicionItem();
+  refrescarVistasPedidos();
+}
+
+async function cancelarItem(id){
+  const it = DB.pedidosItems.find(x=>x.id===id); if(!it || it.estado==='Cancelado' || it.estado==='Entregado') return;
+  const yaPedida = ESTADOS_ITEM.indexOf(it.estado)>=1;
+  const motivo = prompt(`Cancelar esta prenda (${it.nombre} T.${it.talle}).` +
+    (yaPedida ? '\nOJO: ya se le pidió al fabricante — avisale.' : '') + '\n\nMotivo (queda registrado):');
+  if(motivo===null) return;
+  if(!motivo.trim()){ alert('Necesitás indicar un motivo.'); return; }
+  const obs = auditLinea(it.observaciones, `Cancelada (estaba "${it.estado}") — motivo: ${motivo.trim()}`);
+  const { error } = await supa.from('pedidos_items').update({ estado:'Cancelado', observaciones:obs }).eq('id', id);
+  if(error){ alert('No se pudo cancelar la prenda:\n'+error.message); return; }
+  it.estado = 'Cancelado'; it.observaciones = obs;
+  refrescarVistasPedidos();
+}
+
+async function pedAgregarItems(){
+  const p = DB.pedidos.find(x=>x.id===pedidoActualId); if(!p) return;
+  const v = ctxValidar('pda');
+  if(v.error){ alert(v.error); return; }
+  const { error } = await supa.from('pedidos_items').insert(v.filas.map(f=>({
+    pedido_id: p.id, producto_id: f.producto.id, producto_nombre: f.producto.nombre,
+    modelo: f.producto.modelo || null, talle: f.talle, cantidad: f.cantidad,
+    precio_unitario: f.precio, costo_unitario: f.costo,
+    observaciones: auditLinea('', 'Agregada al pedido después de cargarlo'),
+  })));
+  if(error){ alert('No se pudo agregar la prenda:\n'+error.message); return; }
+  await cargarIndumentaria();
+  ITEM_CTX.pda.items = [ctxFilaNueva()];
+  refrescarVistasPedidos();
+}
+
+async function cancelarPedido(){
+  const p = DB.pedidos.find(x=>x.id===pedidoActualId); if(!p || p.estado==='Cancelado') return;
+  const c = calcPedido(p);
+  if(c.vigentes.some(i=>i.estado==='Entregado')){ alert('Este pedido ya tiene prendas entregadas, no se puede cancelar entero. Cancelá solo las prendas que faltan.'); return; }
+  if(c.pagado>0){ alert(`Este pedido tiene ${money(c.pagado)} pagados. Antes de cancelarlo anulá esos pagos (abajo, en Pagos) — así queda registrado qué pasó con la plata.`); return; }
+  const yaPedidas = c.vigentes.filter(i=>ESTADOS_ITEM.indexOf(i.estado)>=1).length;
+  const motivo = prompt(`Cancelar el pedido ${pedNumero(p)} completo.` + (yaPedidas ? `\nOJO: ${yaPedidas} prenda(s) ya se pidieron al fabricante — avisale.` : '') + '\n\nMotivo (queda registrado):');
+  if(motivo===null) return;
+  if(!motivo.trim()){ alert('Necesitás indicar un motivo.'); return; }
+  const { error } = await supa.from('pedidos').update({ estado:'Cancelado', cancelado_motivo:motivo.trim(), cancelado_at:new Date().toISOString() }).eq('id', p.id);
+  if(error){ alert('No se pudo cancelar el pedido:\n'+error.message); return; }
+  for(const it of c.vigentes){
+    const obs = auditLinea(it.observaciones, `Cancelada con el pedido (estaba "${it.estado}") — motivo: ${motivo.trim()}`);
+    const r = await supa.from('pedidos_items').update({ estado:'Cancelado', observaciones:obs }).eq('id', it.id);
+    if(r.error){ alert('El pedido quedó cancelado pero una prenda no se pudo marcar:\n'+r.error.message); break; }
+  }
+  await cargarIndumentaria();
+  refrescarVistasPedidos();
+}
+
+// ── Pagos del pedido (van a la tabla "pagos": cuentan en Ingresos y Economía) ──
+async function registrarPagoPedido(){
+  const p = DB.pedidos.find(x=>x.id===pedidoActualId); if(!p) return;
+  const monto = Number(document.getElementById('pdd-pago-monto').value);
+  if(!(monto>0)){ alert('Ingresá el monto del pago.'); return; }
+  const c = calcPedido(p);
+  if(monto>c.saldo && !confirm(`El pago (${money(monto)}) es mayor que el saldo pendiente (${money(Math.max(0,c.saldo))}). ¿Registrarlo igual?`)) return;
+  const etiqueta = c.pagos.length===0 ? 'seña' : 'pago';
+  const { data, error } = await supa.from('pagos').insert({
+    alumno_id: p.alumnoId, monto, metodo_pago: document.getElementById('pdd-pago-metodo').value,
+    tipo_ingreso: 'Indumentaria', detalle: `Pedido #${p.id} — ${etiqueta}`,
+    fecha: document.getElementById('pdd-pago-fecha').value || HOY, estado_pago: 'Pagado', pedido_id: p.id,
+  }).select().single();
+  if(error){ alert('No se pudo registrar el pago:\n'+error.message); return; }
+  DB.pagos.push(mapPagoFila(data));
+  refrescarVistasPedidos();
+}
+
+// ═══════════════════════════════════════
+// PEDIDO AL FABRICANTE (consolidado)
+// ═══════════════════════════════════════
+let fabGruposActuales = [];
+let fabLotesAbiertos = {};
+
+function fabPendientes(){
+  return DB.pedidosItems.filter(i=>i.estado==='Pendiente de pedir').map(i=>{
+    const ped = DB.pedidos.find(x=>x.id===i.pedidoId);
+    const prod = DB.productos.find(x=>x.id===i.productoId);
+    return { i, ped, proveedor: (prod && prod.proveedor) || '' };
+  }).filter(x=>x.ped && x.ped.estado!=='Cancelado');
+}
+
+function fabOrdenTalle(productoId, talle){
+  const t = DB.productosTalles.find(x=>x.productoId===productoId && x.talle===talle);
+  return t ? t.orden : 9999;
+}
+
+function fabCostoItem(i){
+  if(i.costo!==null && i.costo!==undefined) return i.costo;
+  const t = DB.productosTalles.find(x=>x.productoId===i.productoId && x.talle===i.talle);
+  return t && t.costo!==null ? t.costo : null;
+}
+
+// proveedor → producto → talle (con quién lo encargó)
+function fabAgrupar(pend){
+  const porProv = new Map();
+  pend.forEach(x=>{
+    if(!porProv.has(x.proveedor)) porProv.set(x.proveedor, { proveedor:x.proveedor, productos:new Map(), items:[] });
+    const g = porProv.get(x.proveedor);
+    g.items.push(x.i);
+    const claveProd = (x.i.productoId||'') + '|' + x.i.nombre + '|' + x.i.modelo;
+    if(!g.productos.has(claveProd)) g.productos.set(claveProd, { nombre:x.i.nombre, modelo:x.i.modelo, productoId:x.i.productoId, talles:new Map() });
+    const pr = g.productos.get(claveProd);
+    if(!pr.talles.has(x.i.talle)) pr.talles.set(x.i.talle, { talle:x.i.talle, cantidad:0, personas:[], costoTotal:0, sinCosto:0 });
+    const t = pr.talles.get(x.i.talle);
+    t.cantidad += x.i.cantidad;
+    t.personas.push({ pedidoId:x.ped.id, nombre:pedClienteNombre(x.ped), cant:x.i.cantidad });
+    const costo = fabCostoItem(x.i);
+    if(costo===null) t.sinCosto += x.i.cantidad; else t.costoTotal += costo * x.i.cantidad;
+  });
+  return [...porProv.values()].sort((a,b)=>(a.proveedor||'￿').localeCompare(b.proveedor||'￿')).map(g=>({
+    proveedor:g.proveedor, items:g.items,
+    productos:[...g.productos.values()].map(pr=>({
+      ...pr,
+      talles:[...pr.talles.values()].sort((a,b)=> fabOrdenTalle(pr.productoId,a.talle)-fabOrdenTalle(pr.productoId,b.talle) || a.talle.localeCompare(b.talle,'es',{numeric:true})),
+    })),
+  }));
+}
+
+function fabUnidades(n){ return n===1 ? '1 unidad' : `${n} unidades`; }
+
+function fabTexto(g, conNombres){
+  const l = [];
+  l.push(`PEDIDO IKAI DOJO — ${fechaAR(HOY)}`);
+  if(g.proveedor) l.push(`Para: ${g.proveedor}`);
+  let totalPrendas = 0;
+  g.productos.forEach(pr=>{
+    l.push('');
+    l.push(pr.nombre + (pr.modelo ? ` (${pr.modelo})` : ''));
+    let sub = 0;
+    pr.talles.forEach(t=>{
+      sub += t.cantidad;
+      let linea = `- Talle ${t.talle}: ${fabUnidades(t.cantidad)}`;
+      if(conNombres) linea += ' — ' + t.personas.map(x=>x.nombre + (x.cant>1 ? ` (x${x.cant})` : '')).join(', ');
+      l.push(linea);
+    });
+    l.push(`  Subtotal: ${sub}`);
+    totalPrendas += sub;
+  });
+  l.push('');
+  l.push(`TOTAL: ${totalPrendas} prendas`);
+  return l.join('\n');
+}
+
+function fabCSV(g, conNombres){
+  const q = v=>{ const s=String(v==null?'':v); return /[";\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+  const filas = [['Producto','Modelo','Talle','Cantidad', ...(conNombres?['Encargado por']:[])]];
+  g.productos.forEach(pr=>pr.talles.forEach(t=>{
+    filas.push([pr.nombre, pr.modelo, t.talle, t.cantidad, ...(conNombres?[t.personas.map(x=>x.nombre+(x.cant>1?` (x${x.cant})`:'')).join(', ')]:[])]);
+  }));
+  // ";" como separador: es lo que espera Excel en español
+  return '﻿' + filas.map(f=>f.map(q).join(';')).join('\r\n');
+}
+
+function fabNombresActivado(){ return document.getElementById('fab-con-nombres').checked; }
+
+function renderFabricante(){
+  const pend = fabPendientes();
+  fabGruposActuales = fabAgrupar(pend);
+  const cont = document.getElementById('fab-pendientes');
+  if(!fabGruposActuales.length){
+    cont.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state">No hay prendas pendientes de pedir al fabricante 🎉</div></div></div>';
+  } else {
+    cont.innerHTML = fabGruposActuales.map((g,gi)=>{
+      const totalPrendas = g.productos.reduce((s,pr)=>s+pr.talles.reduce((s2,t)=>s2+t.cantidad,0),0);
+      let costoTotal = 0, sinCosto = 0;
+      g.productos.forEach(pr=>pr.talles.forEach(t=>{ costoTotal += t.costoTotal; sinCosto += t.sinCosto; }));
+      return `<div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-t">Fabricante: ${g.proveedor?esc(g.proveedor):'<span style="color:var(--amber);">(sin fabricante asignado)</span>'}</span>
+          <span class="card-hdr-s">${totalPrendas} prenda(s)</span>
+        </div>
+        <div class="card-body">
+          ${g.productos.map(pr=>`
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;margin:6px 0;">${esc(pr.nombre)}${pr.modelo?` <span style="color:var(--muted);">(${esc(pr.modelo)})</span>`:''}</div>
+            <div style="overflow-x:auto;"><table class="tbl" style="margin-bottom:12px;"><thead><tr><th>Talle</th><th>Cantidad</th><th>Quién lo encargó</th><th>Costo</th></tr></thead><tbody>
+              ${pr.talles.map(t=>`<tr style="cursor:default;"><td><b>${esc(t.talle)}</b></td><td>${t.cantidad}</td>
+                <td style="font-size:14px;">${t.personas.map(x=>`<a href="#" onclick="verPedido(${x.pedidoId});return false;">${esc(x.nombre)}</a>${x.cant>1?' (x'+x.cant+')':''}`).join(', ')}</td>
+                <td>${t.sinCosto?'<span style="color:var(--dim);">s/d</span>':money(t.costoTotal)}</td></tr>`).join('')}
+            </tbody></table></div>`).join('')}
+          <div style="color:var(--muted);font-size:14px;margin-bottom:12px;">
+            Costo estimado: ${costoTotal?money(costoTotal):'—'}${sinCosto?` (faltan costos de ${sinCosto} prenda(s): cargalos en Productos)`:''}
+          </div>
+          <div class="form-actions" style="flex-wrap:wrap;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="fabCopiar(${gi})">📋 Copiar texto</button>
+            <button class="btn btn-ghost btn-sm" onclick="fabWhatsApp(${gi})">💬 WhatsApp</button>
+            <button class="btn btn-ghost btn-sm" onclick="fabDescargarCSV(${gi})">📊 Excel (CSV)</button>
+            <button class="btn btn-ghost btn-sm" onclick="fabImprimir(${gi})">🖨 Imprimir / PDF</button>
+            <button class="btn btn-fill btn-sm" onclick="fabMarcarPedido(${gi})">✔ Ya se lo pedí</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  renderFabLotes();
+}
+
+async function fabCopiar(gi){
+  const texto = fabTexto(fabGruposActuales[gi], fabNombresActivado());
+  try{ await navigator.clipboard.writeText(texto); alert('Texto copiado. Ya podés pegarlo en WhatsApp o donde quieras.'); }
+  catch(e){
+    const ta = document.createElement('textarea'); ta.value = texto; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); alert('Texto copiado.'); }catch(e2){ prompt('Copiá el texto de acá:', texto); }
+    ta.remove();
+  }
+}
+function fabWhatsApp(gi){
+  window.open('https://wa.me/?text=' + encodeURIComponent(fabTexto(fabGruposActuales[gi], fabNombresActivado())), '_blank');
+}
+function fabDescargarCSV(gi){
+  const g = fabGruposActuales[gi];
+  const blob = new Blob([fabCSV(g, fabNombresActivado())], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `pedido_fabricante_${(g.proveedor||'sin-fabricante').replace(/[^\w-]+/g,'_')}_${HOY}.csv`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+function fabImprimir(gi){
+  const g = fabGruposActuales[gi];
+  const conNombres = fabNombresActivado();
+  const w = window.open('', '_blank');
+  if(!w){ alert('El navegador bloqueó la ventana. Permití las ventanas emergentes para este sitio e intentá de nuevo.'); return; }
+  const cuerpo = g.productos.map(pr=>`
+    <h2>${esc(pr.nombre)}${pr.modelo?` (${esc(pr.modelo)})`:''}</h2>
+    <table><thead><tr><th>Talle</th><th>Cantidad</th>${conNombres?'<th>Encargado por</th>':''}</tr></thead><tbody>
+    ${pr.talles.map(t=>`<tr><td>${esc(t.talle)}</td><td>${t.cantidad}</td>${conNombres?`<td>${esc(t.personas.map(x=>x.nombre+(x.cant>1?` (x${x.cant})`:'')).join(', '))}</td>`:''}</tr>`).join('')}
+    </tbody></table>`).join('');
+  const total = g.productos.reduce((s,pr)=>s+pr.talles.reduce((s2,t)=>s2+t.cantidad,0),0);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Pedido Ikai Dojo ${fechaAR(HOY)}</title>
+    <style>body{font-family:Arial,sans-serif;padding:24px;color:#000;}h1{font-size:20px;margin:0 0 4px;}h2{font-size:16px;margin:18px 0 6px;}
+    table{border-collapse:collapse;width:100%;}th,td{border:1px solid #999;padding:6px 10px;text-align:left;font-size:14px;}th{background:#eee;}</style></head>
+    <body><h1>PEDIDO IKAI DOJO — ${fechaAR(HOY)}</h1>${g.proveedor?`<div>Para: ${esc(g.proveedor)}</div>`:''}${cuerpo}<p><b>TOTAL: ${total} prendas</b></p>
+    <script>window.onload=function(){window.print();}<\/script></body></html>`);
+  w.document.close();
+}
+
+async function fabMarcarPedido(gi){
+  const g = fabGruposActuales[gi]; if(!g) return;
+  const total = g.items.reduce((s,i)=>s+i.cantidad,0);
+  if(!confirm(`Vas a registrar que ya le pediste ${total} prenda(s) al fabricante${g.proveedor?' "'+g.proveedor+'"':''}.\n\nPasan a "Pedido al fabricante" y queda guardada una copia de este pedido.\n¿Confirmás?`)) return;
+  const { data:lote, error:e1 } = await supa.from('pedidos_fabricante').insert({
+    fecha: HOY, proveedor: g.proveedor || null, resumen: fabTexto(g, true),
+  }).select().single();
+  if(e1){ alert('No se pudo registrar el pedido al fabricante:\n'+e1.message); return; }
+  const ids = g.items.map(i=>i.id);
+  const { error:e2 } = await supa.from('pedidos_items').update({
+    estado:'Pedido al fabricante', pedido_fabricante_id: lote.id, fecha_pedido_fabricante: HOY,
+  }).in('id', ids);
+  if(e2){
+    await supa.from('pedidos_fabricante').delete().eq('id', lote.id);
+    alert('No se pudieron actualizar las prendas (no se registró nada):\n'+e2.message); return;
+  }
+  await cargarIndumentaria();
+  refrescarVistasPedidos();
+}
+
+// Pedidos ya enviados: seguimiento por tanda
+function renderFabLotes(){
+  const cont = document.getElementById('fab-lotes');
+  if(!DB.pedidosFabricante.length){ cont.innerHTML = '<div class="empty-state">Todavía no registraste pedidos al fabricante.</div>'; return; }
+  cont.innerHTML = DB.pedidosFabricante.map(f=>{
+    const items = DB.pedidosItems.filter(i=>i.loteId===f.id);
+    const cuenta = {};
+    items.forEach(i=>{ cuenta[i.estado] = (cuenta[i.estado]||0) + i.cantidad; });
+    const resumen = Object.entries(cuenta).map(([e,n])=>`${n} ${e.toLowerCase()}`).join(' · ') || 'sin prendas';
+    const abierto = !!fabLotesAbiertos[f.id];
+    const activos = items.filter(i=>i.estado!=='Entregado' && i.estado!=='Cancelado');
+    return `<div class="card" style="margin-bottom:10px;">
+      <div class="card-hdr">
+        <span class="card-hdr-t">Pedido del ${fechaAR(f.fecha)}${f.proveedor?' — '+esc(f.proveedor):''} <span class="mono" style="font-size:13px;color:var(--muted);">#${f.id}</span></span>
+        <span class="card-hdr-s">${resumen}</span>
+      </div>
+      <div class="card-body">
+        <div class="form-actions" style="flex-wrap:wrap;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="fabLoteAlternar(${f.id})">${abierto?'Ocultar detalle':'Ver detalle'}</button>
+          ${activos.some(i=>i.estado==='Pedido al fabricante')?`<button class="btn btn-ghost btn-sm" onclick="fabLoteMarcar(${f.id},'En fabricación')">Todo en fabricación</button>`:''}
+          ${activos.some(i=>i.estado!=='Recibido')?`<button class="btn btn-fill btn-sm" onclick="fabLoteMarcar(${f.id},'Recibido')">✔ Recibí todo</button>`:''}
+        </div>
+        ${abierto?`
+          <div style="overflow-x:auto;margin-top:10px;"><table class="tbl"><thead><tr><th>Prenda</th><th>Talle</th><th>Cant.</th><th>Cliente</th><th>Estado</th></tr></thead><tbody>
+          ${items.map(i=>{ const ped=DB.pedidos.find(x=>x.id===i.pedidoId); const bloq = i.estado==='Entregado'||i.estado==='Cancelado';
+            return `<tr style="cursor:default;"><td>${esc(i.nombre)}</td><td>${esc(i.talle)}</td><td>${i.cantidad}</td>
+              <td>${ped?`<a href="#" onclick="verPedido(${ped.id});return false;">${esc(pedClienteNombre(ped))}</a>`:'—'}</td>
+              <td>${bloq?`<span class="pill ${pillEstadoItem(i.estado)}">${i.estado}</span>`:`<select onchange="cambiarEstadoItem(${i.id}, this.value)" style="width:auto;background:var(--mid);color:var(--text);border:1px solid var(--bord);padding:5px 8px;font-family:inherit;font-size:14px;">${ESTADOS_ITEM.map(e=>`<option ${e===i.estado?'selected':''}>${e}</option>`).join('')}</select>`}</td></tr>`; }).join('')}
+          </tbody></table></div>
+          <details style="margin-top:10px;"><summary style="cursor:pointer;color:var(--muted);font-size:14px;">Ver el texto que se envió</summary>
+            <pre style="white-space:pre-wrap;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);margin-top:8px;">${esc(f.resumen)}</pre></details>`:''}
+      </div></div>`;
+  }).join('');
+}
+function fabLoteAlternar(id){ fabLotesAbiertos[id] = !fabLotesAbiertos[id]; renderFabLotes(); }
+
+// Marca de una vez todas las prendas de la tanda que todavía no llegaron a ese estado
+async function fabLoteMarcar(loteId, nuevo){
+  const idxNuevo = ESTADOS_ITEM.indexOf(nuevo);
+  const items = DB.pedidosItems.filter(i=>i.loteId===loteId && i.estado!=='Entregado' && i.estado!=='Cancelado' && ESTADOS_ITEM.indexOf(i.estado)<idxNuevo);
+  if(!items.length) return;
+  if(!confirm(`Se van a marcar ${items.length} prenda(s) como "${nuevo}". ¿Confirmás?`)) return;
+  for(const it of items){
+    const obs = auditLinea(it.observaciones, `Estado: ${it.estado} → ${nuevo} (desde el pedido al fabricante #${loteId})`);
+    const cambios = { estado:nuevo, observaciones:obs };
+    if(idxNuevo>=3) cambios.fecha_recibido = it.fechaRecibido || HOY;
+    const { error } = await supa.from('pedidos_items').update(cambios).eq('id', it.id);
+    if(error){ alert('No se pudo actualizar una prenda:\n'+error.message); break; }
+    it.estado = nuevo; it.observaciones = obs; if(idxNuevo>=3) it.fechaRecibido = cambios.fecha_recibido;
+  }
+  refrescarVistasPedidos();
+}
+
+// ═══════════════════════════════════════
+// PRODUCTOS — lista
+// ═══════════════════════════════════════
+function productoResumenPrecios(id){
+  const talles = tallesDeProducto(id);
+  const grupos = [];
+  talles.forEach(t=>{
+    let g = grupos.find(x=>x.nombre===t.grupo);
+    if(!g){ g = { nombre:t.grupo, talles:[], precios:[] }; grupos.push(g); }
+    g.talles.push(t.talle); g.precios.push(t.precio);
+  });
+  return grupos.map(g=>{
+    const min = Math.min(...g.precios), max = Math.max(...g.precios);
+    const rango = g.talles.length>1 ? `${g.talles[0]}–${g.talles[g.talles.length-1]}` : g.talles[0];
+    return `${g.nombre?g.nombre+' ':''}(${rango}): ${min===max?money(min):money(min)+' a '+money(max)}`;
+  });
+}
+
+function renderProductosList(){
+  const fEstado = document.getElementById('prod-filtro-estado').value;
+  const cats = [...new Set([...CATEGORIAS_PRODUCTO, ...DB.productos.map(p=>p.categoria).filter(Boolean)])];
+  const selCat = document.getElementById('prod-filtro-categoria');
+  const catPrevia = selCat.value;
+  selCat.innerHTML = '<option value="">Todas</option>' + cats.map(c=>`<option>${esc(c)}</option>`).join('');
+  selCat.value = catPrevia;
+  const fCat = selCat.value;
+
+  let lista = DB.productos.filter(p=> fEstado==='todos' || (fEstado==='inactivos' ? !p.activo : p.activo));
+  if(fCat) lista = lista.filter(p=>p.categoria===fCat);
+  document.getElementById('prod-grid').innerHTML = lista.length ? lista.map(p=>{
+    const precios = productoResumenPrecios(p.id);
+    return `<div class="prod-card ${p.activo?'':'inactivo'}">
+      <div class="prod-img">${p.imagen?`<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" onerror="this.parentNode.innerHTML='<span class=&quot;sin-img&quot;>Sin imagen</span>'">`:'<span class="sin-img">Sin imagen</span>'}</div>
+      <div class="prod-info">
+        <div class="prod-nombre">${esc(p.nombre)}</div>
+        <div class="prod-meta">${p.modelo?'Modelo '+esc(p.modelo)+' · ':''}${esc(p.categoria)||'Sin categoría'}${p.proveedor?' · '+esc(p.proveedor):''}</div>
+        ${p.descripcion?`<div style="font-size:14px;color:var(--muted);">${esc(p.descripcion)}</div>`:''}
+        <div style="margin-top:6px;">${precios.length?precios.map(x=>`<div class="prod-precios">${esc(x)}</div>`).join(''):'<div class="prod-precios" style="color:var(--red);">Sin talles ni precios cargados</div>'}</div>
+        <div style="margin-top:6px;"><span class="pill ${p.activo?'pill-ok':'pill-warn'}">${p.activo?'Activo':'Inactivo'}</span></div>
+      </div>
+      <div class="prod-actions">
+        <button class="btn btn-ghost btn-sm" onclick="prdAbrirForm(${p.id})">✏ Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="prdToggleActivo(${p.id})">${p.activo?'Desactivar':'Activar'}</button>
+      </div></div>`;
+  }).join('') : '<div class="empty-state" style="grid-column:1/-1;">No hay productos para este filtro</div>';
+}
+
+async function prdToggleActivo(id){
+  const p = DB.productos.find(x=>x.id===id); if(!p) return;
+  const { error } = await supa.from('productos').update({ activo: !p.activo }).eq('id', id);
+  if(error){ alert('No se pudo cambiar el estado:\n'+error.message); return; }
+  p.activo = !p.activo;
+  renderProductosList();
+}
+
+// ═══════════════════════════════════════
+// PRODUCTOS — alta / edición (con precio por talle)
+// ═══════════════════════════════════════
+let prdEditId = null;
+let prdGrupos = [];
+let prdImagen = '';
+
+function prdGruposDesdeProducto(id){
+  const grupos = [];
+  tallesDeProducto(id).forEach(t=>{
+    const clave = `${t.grupo}|${t.precio}|${t.costo}`;
+    let g = grupos.find(x=>x.clave===clave);
+    if(!g){ g = { clave, nombre:t.grupo, talles:[], precio:t.precio, costo:t.costo===null?'':t.costo }; grupos.push(g); }
+    g.talles.push(t.talle);
+  });
+  return grupos.map(g=>({ nombre:g.nombre, talles:g.talles.join(', '), precio:g.precio, costo:g.costo }));
+}
+
+function prdAbrirForm(id){
+  if(DB.indError){ alert('Primero hay que correr migracion_012 en Supabase.'); return; }
+  prdEditId = id || null;
+  const p = id ? DB.productos.find(x=>x.id===id) : null;
+  document.getElementById('prd-title').textContent = p ? 'Editar Producto' : 'Nuevo Producto';
+  document.getElementById('prd-nombre').value = p ? p.nombre : '';
+  document.getElementById('prd-modelo').value = p ? p.modelo : '';
+  document.getElementById('prd-categoria').value = p ? p.categoria : '';
+  document.getElementById('prd-proveedor').value = p ? p.proveedor : '';
+  document.getElementById('prd-descripcion').value = p ? p.descripcion : '';
+  document.getElementById('prd-activo').value = (!p || p.activo) ? 'si' : 'no';
+  document.getElementById('dl-categorias').innerHTML = [...new Set([...CATEGORIAS_PRODUCTO, ...DB.productos.map(x=>x.categoria).filter(Boolean)])].map(c=>`<option value="${esc(c)}">`).join('');
+  document.getElementById('dl-proveedores').innerHTML = [...new Set(DB.productos.map(x=>x.proveedor).filter(Boolean))].map(c=>`<option value="${esc(c)}">`).join('');
+  prdImagen = p ? p.imagen : '';
+  prdGrupos = p ? prdGruposDesdeProducto(p.id) : [];
+  if(!prdGrupos.length) prdGrupos.push({ nombre:'', talles:'', precio:'', costo:'' });
+  document.getElementById('prd-btn-eliminar').style.display = p ? '' : 'none';
+  prdRenderImagen(); prdRenderGrupos();
+  showPage('producto-form');
+}
+
+function prdRenderImagen(){
+  document.getElementById('prd-img-preview').innerHTML = prdImagen
+    ? `<img src="${esc(prdImagen)}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;" onerror="this.parentNode.innerHTML='<span class=&quot;sin-img&quot;>No se encuentra la imagen</span>'">`
+    : '<span class="sin-img">Sin imagen</span>';
+  document.getElementById('prd-btn-quitar-img').style.display = prdImagen ? '' : 'none';
+}
+function prdQuitarImagen(){ prdImagen = ''; prdRenderImagen(); }
+
+// La imagen se achica en el navegador (máx. 640 px) y se guarda con el producto
+function prdCargarImagen(input){
+  const f = input.files && input.files[0];
+  input.value = '';
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const k = Math.min(1, 640/Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      let url = c.toDataURL('image/webp', 0.85);
+      if(!url.startsWith('data:image/webp')) url = c.toDataURL('image/png');
+      prdImagen = url;
+      prdRenderImagen();
+    };
+    img.onerror = ()=>alert('No se pudo leer esa imagen.');
+    img.src = r.result;
+  };
+  r.readAsDataURL(f);
+}
+
+function prdRenderGrupos(){
+  document.getElementById('prd-grupos').innerHTML = prdGrupos.map((g,i)=>`
+    <div class="bloque-item">
+      <div class="form-grid">
+        <div class="form-item"><label>Nombre del grupo</label><input type="text" value="${esc(g.nombre)}" placeholder="Ej: Talles menores" oninput="prdSetGrupo(${i},'nombre',this.value)"></div>
+        <div class="form-item"><label>Talles (separados por coma)</label><input type="text" value="${esc(g.talles)}" placeholder="Ej: 4, 6, 8, 10, 12, 14, 16" oninput="prdSetGrupo(${i},'talles',this.value)"></div>
+        <div class="form-item"><label>Precio de venta ($ c/u)</label><input type="number" min="0" value="${esc(g.precio)}" oninput="prdSetGrupo(${i},'precio',this.value)"></div>
+        <div class="form-item"><label>Costo ($ c/u, opcional)</label><input type="number" min="0" value="${esc(g.costo)}" oninput="prdSetGrupo(${i},'costo',this.value)"></div>
+      </div>
+      ${prdGrupos.length>1?`<div style="margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="prdQuitarGrupo(${i})">Quitar este grupo</button></div>`:''}
+    </div>`).join('');
+}
+function prdSetGrupo(i, campo, v){ prdGrupos[i][campo] = v; }
+function prdAgregarGrupo(){ prdGrupos.push({ nombre:'', talles:'', precio:'', costo:'' }); prdRenderGrupos(); }
+function prdQuitarGrupo(i){ prdGrupos.splice(i,1); prdRenderGrupos(); }
+
+async function guardarProducto(){
+  const nombre = document.getElementById('prd-nombre').value.trim();
+  if(!nombre){ alert('El producto necesita un nombre.'); return; }
+
+  // Talles deseados (uno por talle, con el precio y costo de su grupo)
+  const deseados = [];
+  const vistos = new Set();
+  for(const [gi,g] of prdGrupos.entries()){
+    const talles = String(g.talles).split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);
+    if(!talles.length){ alert(`Grupo ${gi+1}: escribí al menos un talle (separados por coma).`); return; }
+    if(String(g.precio)==='' || !(Number(g.precio)>=0)){ alert(`Grupo ${gi+1}: falta el precio de venta.`); return; }
+    if(String(g.costo)!=='' && !(Number(g.costo)>=0)){ alert(`Grupo ${gi+1}: el costo no es válido.`); return; }
+    for(const t of talles){
+      if(vistos.has(t.toLowerCase())){ alert(`El talle "${t}" está repetido. Cada talle tiene que aparecer una sola vez.`); return; }
+      vistos.add(t.toLowerCase());
+      deseados.push({ talle:t, grupo:(g.nombre||'').trim()||null, precio_venta:Number(g.precio), costo:String(g.costo)===''?null:Number(g.costo), orden:deseados.length+1, activo:true });
+    }
+  }
+  if(!deseados.length){ alert('Cargá al menos un talle con su precio (si el producto no tiene talles, usá "Único").'); return; }
+
+  const campos = {
+    articulo: nombre, modelo: document.getElementById('prd-modelo').value.trim() || null,
+    categoria: document.getElementById('prd-categoria').value.trim() || null,
+    proveedor: document.getElementById('prd-proveedor').value.trim() || null,
+    descripcion: document.getElementById('prd-descripcion').value.trim() || null,
+    imagen_url: prdImagen || null, activo: document.getElementById('prd-activo').value==='si',
+  };
+  const btn = document.getElementById('prd-btn-guardar');
+  btn.disabled = true; btn.textContent = 'Guardando…';
+  const fin = ()=>{ btn.disabled = false; btn.textContent = 'Guardar'; };
+
+  let id = prdEditId;
+  if(id){
+    const { error } = await supa.from('productos').update(campos).eq('id', id);
+    if(error){ fin(); alert('No se pudo guardar el producto:\n'+error.message); return; }
+  } else {
+    const { data, error } = await supa.from('productos').insert(campos).select().single();
+    if(error){ fin(); alert('No se pudo guardar el producto:\n'+error.message); return; }
+    id = data.id;
+  }
+
+  // Precios por talle: los existentes se actualizan, los nuevos se agregan y
+  // los que se sacaron quedan inactivos (no se borran: pueden estar en pedidos viejos).
+  const { error:eT } = await supa.from('productos_talles').upsert(
+    deseados.map(d=>({ ...d, producto_id:id })), { onConflict:'producto_id,talle' });
+  if(eT){ fin(); alert('El producto se guardó, pero NO los talles y precios:\n'+eT.message); await cargarIndumentaria(); renderIndumentaria(); return; }
+  const aDesactivar = DB.productosTalles.filter(t=>t.productoId===id && t.activo && !deseados.some(d=>d.talle===t.talle)).map(t=>t.id);
+  if(aDesactivar.length){
+    const { error:eD } = await supa.from('productos_talles').update({ activo:false }).in('id', aDesactivar);
+    if(eD) alert('No se pudieron quitar algunos talles:\n'+eD.message);
+  }
+
+  fin();
+  await cargarIndumentaria();
+  prdEditId = null;
+  showPage('indumentaria'); indShowTab('productos');
+}
+
+async function prdEliminar(){
+  const p = DB.productos.find(x=>x.id===prdEditId); if(!p) return;
+  const usado = DB.pedidosItems.filter(i=>i.productoId===p.id).length;
+  if(usado){ alert(`No se puede eliminar "${p.nombre}": aparece en ${usado} prenda(s) de pedidos. Desactivalo en su lugar (queda en el historial pero no se puede elegir en pedidos nuevos).`); return; }
+  if(!confirm(`¿Eliminar "${p.nombre}" y todos sus talles y precios? No se puede deshacer.`)) return;
+  const { error } = await supa.from('productos').delete().eq('id', p.id);
+  if(error){ alert('No se pudo eliminar:\n'+error.message); return; }
+  await cargarIndumentaria();
+  prdEditId = null;
+  showPage('indumentaria'); indShowTab('productos');
+}
+
+// nombre del cliente de un pago que no es de un alumno (pagos de pedidos)
+function pedNombrePorPago(p){
+  const ped = p.pedidoId ? DB.pedidos.find(x=>x.id===p.pedidoId) : null;
+  return ped ? esc(pedClienteNombre(ped)) : '—';
 }
 
 // INIT
