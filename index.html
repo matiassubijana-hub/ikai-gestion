@@ -273,6 +273,39 @@ main a{color:var(--blue);}
 .prod-meta{font-size:13px;color:var(--muted);letter-spacing:1px;}
 .prod-precios{font-size:14px;color:var(--amber);}
 .prod-actions{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--bord);flex-wrap:wrap;}
+/* EVENTOS:CSS:START */
+/* ── EVENTOS / TORNEOS (expediente) ── */
+.ev-meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+.ev-meta-grid label{display:block;font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.ev-meta-grid span{font-size:16px;}
+.ev-muted{color:var(--muted);}
+.ev-recordatorio{background:rgba(255,178,0,.08);border:1px solid rgba(255,178,0,.4);color:var(--amber);padding:8px 12px;font-size:15px;letter-spacing:.5px;}
+.ev-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.ev-stat{background:var(--surf);border:1px solid var(--bord);padding:14px 16px;position:relative;}
+.ev-stat::before{content:'';position:absolute;top:0;left:0;width:14px;height:14px;border-left:2px solid var(--orange);border-top:2px solid var(--orange);}
+.ev-stat-v{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;}
+.ev-stat-l{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+.ev-aviso-fila{padding:7px 10px;border-left:3px solid var(--amber);background:rgba(255,178,0,.06);margin-bottom:6px;cursor:pointer;font-size:15px;}
+.ev-ok-fila{padding:7px 10px;border-left:3px solid var(--green);background:rgba(62,207,110,.06);font-size:15px;}
+.ev-falta{font-size:13px;color:var(--amber);letter-spacing:.5px;}
+.ev-num{width:74px;background:var(--mid);border:1px solid var(--bord);color:var(--text);padding:5px 7px;font-family:inherit;font-size:15px;}
+.ev-num:focus{outline:none;border-color:var(--orange);}
+.ev-hijo td{background:rgba(255,255,255,.02);}
+.ev-baja{opacity:.5;}
+.ev-insc{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bord);margin-bottom:8px;}
+.ev-insc-aviso{border-color:var(--amber);}
+.ev-sug{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:8px 12px;border:1px dashed var(--bord);margin-bottom:6px;}
+.ev-sub{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:16px;margin:16px 0 8px;color:var(--orange);font-weight:400;}
+.ev-kata{width:100%;max-width:340px;background:var(--mid);border:1px solid var(--bord);color:var(--text);padding:6px 9px;font-family:inherit;font-size:15px;}
+.ev-export{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--bord);}
+.ev-export:last-child{border-bottom:0;}
+.ev-export>div:first-child{flex:1 1 320px;}
+.ev-export-t{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:17px;}
+.ev-summary{cursor:pointer;color:var(--orange);letter-spacing:1px;font-size:14px;text-transform:uppercase;}
+.btn-peligro{border-color:var(--red);color:var(--red);}
+.btn-peligro:hover{background:rgba(255,59,59,.1);color:var(--red);border-color:var(--red);}
+@media(max-width:700px){ .ev-export{flex-direction:column;} .ev-num{width:62px;} }
+/* EVENTOS:CSS:END */
 </style>
 </head>
 <body>
@@ -374,6 +407,8 @@ main a{color:var(--blue);}
     <div class="page active" id="page-home">
       <div class="demo-banner" id="home-banner">⚠ Todavía no hay alumnos cargados en la base — empezá dando de alta desde "Alumnos".</div>
       <div class="hud-row" id="hud-stats"></div>
+
+      <div id="home-evento"></div>
 
       <!-- Acceso rápido: Panel → Entrenamiento → App de clases Ikai Dojo -->
       <div class="card">
@@ -494,6 +529,12 @@ main a{color:var(--blue);}
             <div class="form-item"><label>WhatsApp</label><input id="f-whatsapp" type="text" placeholder="Si es distinto al teléfono"></div>
             <div class="form-item"><label>Email</label><input id="f-email" type="email" placeholder="opcional"></div>
             <div class="form-item"><label>Fecha de Nacimiento</label><input id="f-fnac" type="date"></div>
+            <div id="f-eventos-campos" style="display:contents;">
+              <div class="form-item"><label>Sexo (para categorías de torneo)</label>
+                <select id="f-sexo"><option value="">—</option><option value="F">Femenino</option><option value="M">Masculino</option></select></div>
+              <div class="form-item"><label>Grado actual (cinturón)</label>
+                <select id="f-grado"><option value="">—</option><option>Blanco</option><option>Celeste</option><option>Amarillo</option><option>Naranja</option><option>Verde</option><option>Azul</option><option>Marrón</option><option>Shodan Ho</option><option>1º Dan</option><option>2º Dan</option><option>3º Dan</option><option>4º Dan</option><option>5º Dan</option><option>6º Dan</option></select></div>
+            </div>
             <div class="form-item"><label>Categoría</label>
               <select id="f-categoria"><option>Infantil</option><option>Cadetes</option><option>Juveniles</option><option>Adultos</option></select>
             </div>
@@ -1468,6 +1509,20 @@ main a{color:var(--blue);}
             <div class="form-item"><label>Costo</label><input id="cf-costo" type="number" placeholder="Opcional"></div>
             <div class="form-item"><label>Inscripción</label><input id="cf-inscripcion" type="text" placeholder="Opcional"></div>
             <div class="form-item"><label>Transporte</label><input id="cf-transporte" type="text" placeholder="Opcional"></div>
+            <div id="cf-expediente-aviso" class="form-item full" style="display:none;"><div class="demo-banner">⚠ Para usar el expediente de eventos (participantes, categorías, cobros) falta correr migracion_013_eventos_torneos.sql en Supabase. Los campos aparecen cuando se corra.</div></div>
+            <div id="cf-expediente-campos" style="display:contents;">
+              <div class="form-item full"><label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:16px;color:var(--text);">
+                <input id="cf-tiene-expediente" type="checkbox" style="width:auto;"> Activar expediente del evento (participantes, categorías, cobros y planillas)</label></div>
+              <div class="form-item"><label>Cierre de inscripción (fecha y hora)</label><input id="cf-cierre" type="datetime-local"></div>
+              <div class="form-item"><label>Cómo se inscribe</label>
+                <select id="cf-via"><option value="">—</option><option>Mail</option><option>WhatsApp</option><option>Formulario</option><option>Otra</option></select></div>
+              <div class="form-item"><label>Link o contacto de inscripción</label><input id="cf-via-url" type="text" placeholder="Ej: link del formulario, mail o teléfono"></div>
+              <div class="form-item"><label>Institución (como va en la planilla)</label><input id="cf-institucion" type="text" placeholder="Ej: inoue - ha Calamuchita - Ikai Dojo"></div>
+              <div class="form-item"><label>Profesor a cargo (como va en la planilla)</label><input id="cf-profesor" type="text" placeholder="Ej: Matías Subijana"></div>
+              <div class="form-item"><label>Tarifa 1ª modalidad (opcional)</label><input id="cf-tarifa1" type="number" min="0" placeholder="Solo para proponer el importe"></div>
+              <div class="form-item"><label>Tarifa 2ª modalidad (opcional)</label><input id="cf-tarifa2" type="number" min="0" placeholder="Solo si compite en dos"></div>
+              <div class="form-item full"><label>Recordatorios del evento</label><textarea id="cf-recordatorios" rows="2" placeholder="Ej: Curso de arbitraje 9 hs, llegar 8:30 — protecciones obligatorias"></textarea></div>
+            </div>
             <div class="form-item full"><label>Observaciones</label><textarea id="cf-observaciones" rows="2"></textarea></div>
           </div>
           <div class="form-actions">
@@ -1491,9 +1546,52 @@ main a{color:var(--blue);}
         </div>
         <div class="card-body">
           <div class="detail-grid" id="cd-fields"></div>
+          <div id="cd-expediente-box"></div>
         </div>
       </div>
     </div>
+
+    <!-- EVENTOS:HTML:START -->
+    <!-- EVENTO: expediente (participantes, categorías, cobros, exportar) -->
+    <div class="page" id="page-evento">
+      <div class="detail-back" onclick="evtVolver()">← Volver a la ficha del evento</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t" id="ev-titulo">—</span></div>
+        <div class="card-body" id="ev-meta"></div>
+      </div>
+      <div class="subnav" id="ev-tabs" style="margin-bottom:0;"></div>
+      <div id="ev-contenido" style="display:flex;flex-direction:column;gap:18px;"></div>
+    </div>
+
+    <!-- EVENTO: agregar alumnos -->
+    <div class="page" id="page-evento-agregar">
+      <div class="detail-back" onclick="evtVolverParticipantes()">← Cancelar</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t" id="ea-titulo">Agregar alumnos</span><span class="card-hdr-s" id="ea-contador"></span></div>
+        <div class="card-body">
+          <div class="form-grid" style="margin-bottom:10px;">
+            <div class="form-item"><label>Buscar</label><input id="ea-txt" type="text" placeholder="Nombre, apellido o DNI" oninput="EV.agregar.txt=this.value;evtRenderAgregar()"></div>
+            <div class="form-item"><label>&nbsp;</label>
+              <label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:15px;color:var(--text);">
+                <input id="ea-inactivos" type="checkbox" style="width:auto;" onchange="EV.agregar.inactivos=this.checked;evtRenderAgregar()"> Mostrar también alumnos inactivos</label></div>
+          </div>
+          <div id="ea-lista" style="overflow-x:auto;"></div>
+          <div class="form-actions" style="margin-top:12px;">
+            <button class="btn btn-fill" onclick="evtAgregarSeleccionados()">Agregar seleccionados</button>
+            <button class="btn btn-ghost" onclick="evtVolverParticipantes()">Cancelar</button>
+          </div>
+          <div class="ev-muted" style="font-size:13px;margin-top:8px;">▲ Si falta sexo o grado, se completan desde la ficha del alumno: se necesitan para sugerir categorías.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENTO: participante (datos, categorías, pagos) -->
+    <div class="page" id="page-evento-participante">
+      <div class="detail-back" onclick="evtVolverParticipantes()">← Volver a participantes</div>
+      <div class="section-hero"><h1 id="pp-titulo">—</h1></div>
+      <div id="pp-contenido" style="display:flex;flex-direction:column;gap:18px;"></div>
+    </div>
+<!-- EVENTOS:HTML:END -->
 
     <!-- CONFIG -->
     <div class="page" id="page-config">
@@ -1666,6 +1764,12 @@ async function cargarDatos(){
     costo:(e.costo===null||e.costo===undefined)?null:Number(e.costo),
     infoInscripcion:e.info_inscripcion||'', infoTransporte:e.info_transporte||'',
     estado:e.estado||'Confirmado',
+    // expediente de eventos (migracion_013): si no se corrió, quedan en su valor vacío
+    tieneExpediente:e.tiene_expediente===true, rolDojo:e.rol_dojo||'Participante', cierreInscripcion:e.cierre_inscripcion||'',
+    inscripcionVia:e.inscripcion_via||'', inscripcionUrl:e.inscripcion_url||'', institucionPlanilla:e.institucion_planilla||'',
+    profesorPlanilla:e.profesor_planilla||'', recordatorios:e.recordatorios||'',
+    tarifa1:(e.tarifa_modalidad_1===null||e.tarifa_modalidad_1===undefined)?null:Number(e.tarifa_modalidad_1),
+    tarifa2:(e.tarifa_modalidad_2===null||e.tarifa_modalidad_2===undefined)?null:Number(e.tarifa_modalidad_2),
   }));
 
   DB.profesores = (profR.data||[]).map(p=>({
@@ -1753,6 +1857,7 @@ async function cargarDatos(){
       contactoEmergenciaParentesco:s.contacto_emergencia_parentesco||'',
       grupoFamiliarId:a.grupo_familiar_id||null, grupoFamiliarNombre:a.grupo_familiar_id?(nombreGrupoPorId[a.grupo_familiar_id]||''):'',
       pagaCuotaCompleta: a.paga_cuota_completa!==false,
+      sexo:a.sexo||'', gradoActual:a.grado_actual||'',
       responsable:{
         nombre:t.nombre||'', apellido:t.apellido||'', dni:t.dni||'',
         telefono:t.telefono_principal||'', telefonoAlt:t.telefono_alt||'',
@@ -1763,7 +1868,7 @@ async function cargarDatos(){
 
   DB.pagos = (pagR.data||[]).map(p=>({
     id:p.id, alumnoId:p.alumno_id, fecha:p.fecha, concepto:p.tipo_ingreso, detalle:p.detalle||'',
-    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null, pedidoId:p.pedido_id||null,
+    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null, pedidoId:p.pedido_id||null, eventoParticipanteId:p.evento_participante_id||null,
     anulado:p.anulado===true, anuladoMotivo:p.anulado_motivo||'', anuladoAt:p.anulado_at||'',
   }));
 
@@ -1789,6 +1894,7 @@ async function cargarDatos(){
 
   // Productos y pedidos: si todavía no se corrió migracion_012, el resto de la app sigue andando
   await cargarIndumentaria();
+  await cargarEventos();
 
   document.getElementById('home-banner').style.display = DB.alumnos.length ? 'none' : 'flex';
   refreshAll();
@@ -1819,7 +1925,8 @@ function showPage(id, btn){
       profesores:'profesores', 'profesor-form':'profesores', 'profesor-detail':'profesores',
       economia:'economia',
       calendario:'calendario', 'calendario-form':'calendario', 'calendario-detail':'calendario',
-      'pedido-form':'indumentaria', 'pedido-detail':'indumentaria', 'producto-form':'indumentaria'};
+      'pedido-form':'indumentaria', 'pedido-detail':'indumentaria', 'producto-form':'indumentaria',
+      evento:'calendario', 'evento-agregar':'calendario', 'evento-participante':'calendario'};
     const nb = document.querySelector(`.nav-btn[data-page="${navMap[id]||id}"]`);
     if(nb) nb.classList.add('active');
   }
@@ -2232,6 +2339,7 @@ function renderHome(){
         <td>$${saldo.toLocaleString('es-AR')} ${linkRecordatorioWhatsAppProfesor(p, saldo)}</td>
       </tr>`;
   }).join('') : '<tr><td colspan="5" class="empty-state">Sin convenios pendientes 🎉</td></tr>';
+  renderHomeEvento();
 }
 
 // Link de recordatorio por WhatsApp para un profesor externo, mismo
@@ -2308,6 +2416,7 @@ function openAlumnoForm(){
   document.getElementById('f-estado').value='Activo';
   document.getElementById('f-condicion').value='No';
   document.getElementById('f-paga-completa').value='si';
+  evtCamposAlumnoVisibles(); document.getElementById('f-sexo').value=''; document.getElementById('f-grado').value='';
   poblarDatalistGruposFamiliares();
   showPage('alumno-form');
 }
@@ -2335,6 +2444,7 @@ function editAlumno(){
   document.getElementById('f-domicilio').value=a.domicilio;
   document.getElementById('f-grupo-familiar').value=a.grupoFamiliarNombre||'';
   document.getElementById('f-paga-completa').value = a.pagaCuotaCompleta ? 'si' : 'no';
+  evtCamposAlumnoVisibles(); document.getElementById('f-sexo').value = a.sexo||''; document.getElementById('f-grado').value = gradoCanon(a.gradoActual)||'';
   document.getElementById('f-resp-nombre').value=a.responsable.nombre;
   document.getElementById('f-resp-dni').value=a.responsable.dni;
   document.getElementById('f-resp-telefono').value=a.responsable.telefono;
@@ -2442,6 +2552,15 @@ async function saveAlumno(){
     }).eq('alumno_id', nuevoId);
     if(errEmerg) throw errEmerg;
 
+    // Sexo y grado actual (migracion_013): se guardan solo si ya se corrió la migración
+    if(DBE.migrado){
+      const { error: errSexoGrado } = await supa.from('alumnos').update({
+        sexo: document.getElementById('f-sexo').value || null,
+        grado_actual: document.getElementById('f-grado').value || null,
+      }).eq('id', nuevoId);
+      if(errSexoGrado) throw errSexoGrado;
+    }
+
     // Responsable (tutores) — un registro por alumno. Se actualiza si ya
     // existe, se crea si es la primera vez que se carga algún dato.
     const hayDatosResponsable = data.respNombre || data.respDni || data.respTelefono || data.respTelefonoAlt || data.respEmail || data.respParentesco || data.respAutorizaciones;
@@ -2509,6 +2628,8 @@ function viewAlumno(id){
     <div class="detail-item"><label>Fecha de Nacimiento</label><span>${a.fnac||'—'}</span></div>
     <div class="detail-item"><label>Domicilio</label><span>${a.domicilio||'—'}</span></div>
     <div class="detail-item"><label>Grupo Familiar</label><span>${a.grupoFamiliarNombre||'—'}</span></div>
+    ${DBE.migrado?`<div class="detail-item"><label>Sexo</label><span>${a.sexo==='F'?'Femenino':(a.sexo==='M'?'Masculino':'—')}</span></div>
+    <div class="detail-item"><label>Grado actual</label><span>${esc(gradoCanon(a.gradoActual)||'—')}${a.gradoActual?` <span class="ev-muted">${nivelDeGrado(a.gradoActual)}</span>`:''}</span></div>`:''}
   `;
   const btnEstado = document.getElementById('ad-btn-estado');
   if(btnEstado) btnEstado.textContent = a.estado==='Activo' ? '⏸ Marcar Inactivo' : '▶ Reactivar';
@@ -3243,6 +3364,7 @@ async function anularPago(pagoId){
   p.anulado = true; p.anuladoMotivo = motivo.trim();
   renderCuotas(); renderHome();
   if(p.pedidoId) refrescarVistasPedidos();
+  if(p.eventoParticipanteId) evtRefrescarVistas();
 }
 
 function verComprobante(pagoId){
@@ -3438,7 +3560,7 @@ function renderCalendarioList(){
       const rango = e.fechaFin && e.fechaFin!==e.fecha ? `${e.fecha.slice(8,10)} al ${e.fechaFin.slice(8,10)}` : e.fecha.slice(8,10);
       return `<tr onclick="viewCalendarioEvento(${e.id})">
         <td class="mono" style="white-space:nowrap;">${rango}${proximo?' <span class="pill pill-warn" style="margin-left:6px;">Próximo</span>':''}</td>
-        <td>${e.evento}</td>
+        <td>${e.evento}${evtChipsLista(e)}</td>
         <td>${e.organizacion||'—'}</td>
         <td>${e.tipoActividad||'—'}</td>
         <td>${e.lugar||'—'}</td>
@@ -3463,6 +3585,7 @@ function openCalendarioForm(){
   document.getElementById('cf-organizacion').value='';
   document.getElementById('cf-tipo').value='';
   document.getElementById('cf-estado').value='Confirmado';
+  evtLimpiarCamposCalendario();
   showPage('calendario-form');
 }
 
@@ -3484,6 +3607,7 @@ function editCalendarioEvento(){
   document.getElementById('cf-inscripcion').value = e.infoInscripcion||'';
   document.getElementById('cf-transporte').value = e.infoTransporte||'';
   document.getElementById('cf-observaciones').value = e.observaciones||'';
+  evtCargarCamposCalendario(e);
   showPage('calendario-form');
 }
 
@@ -3504,6 +3628,7 @@ async function saveCalendarioEvento(){
     infoTransporte: document.getElementById('cf-transporte').value.trim(),
     observaciones: document.getElementById('cf-observaciones').value.trim(),
   };
+  Object.assign(data, evtLeerCamposCalendario(editingCalendarioId ? DB.eventosCalendario.find(x=>x.id===editingCalendarioId) : null));
   if(!data.evento){ alert('El nombre del evento es obligatorio.'); return; }
   if(!data.fecha){ alert('La fecha es obligatoria.'); return; }
   if(data.fechaFin && data.fechaFin<data.fecha){ alert('La fecha de fin no puede ser anterior a la fecha de inicio.'); return; }
@@ -3519,6 +3644,7 @@ async function saveCalendarioEvento(){
     documentacion_url: data.documentacionUrl||null, costo: data.costo,
     info_inscripcion: data.infoInscripcion||null, info_transporte: data.infoTransporte||null,
     observaciones: data.observaciones||null,
+    ...evtPayloadCalendario(data),
   };
 
   let result;
@@ -3539,6 +3665,7 @@ async function saveCalendarioEvento(){
     DB.eventosCalendario.push(data);
   }
 
+  if(EV.volverAExpediente){ EV.volverAExpediente = false; abrirExpediente(data.id); return; }
   showPage('calendario');
 }
 
@@ -3561,6 +3688,7 @@ function viewCalendarioEvento(id){
     <div class="detail-item"><label>Inscripción</label><span>${e.infoInscripcion||'—'}</span></div>
     <div class="detail-item"><label>Transporte</label><span>${e.infoTransporte||'—'}</span></div>
     <div class="detail-item" style="grid-column:1/-1;"><label>Observaciones</label><span>${e.observaciones||'—'}</span></div>
+    ${evtDetalleCalendario(e)}
   `;
   showPage('calendario-detail');
 }
@@ -3568,6 +3696,7 @@ function viewCalendarioEvento(id){
 async function eliminarCalendarioEvento(){
   const e = DB.eventosCalendario.find(x=>x.id===editingCalendarioId);
   if(!e) return;
+  if(!evtPuedeEliminarEvento(e)) return;
   if(!confirm(`¿Eliminar el evento "${e.evento}"? No se puede deshacer.`)) return;
   const { error } = await supa.from('eventos_calendario').delete().eq('id', e.id);
   if(error){ alert('No se pudo eliminar el evento:\n'+error.message); return; }
@@ -4999,7 +5128,7 @@ async function guardarPedido(){
 
 function mapPagoFila(p){
   return { id:p.id, alumnoId:p.alumno_id, fecha:p.fecha, concepto:p.tipo_ingreso, detalle:p.detalle||'',
-    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null, pedidoId:p.pedido_id||null,
+    monto:p.monto, metodo:p.metodo_pago, cuotaId:p.cuota_id||null, pedidoId:p.pedido_id||null, eventoParticipanteId:p.evento_participante_id||null,
     anulado:p.anulado===true, anuladoMotivo:p.anulado_motivo||'', anuladoAt:p.anulado_at||'' };
 }
 
@@ -5738,8 +5867,1306 @@ async function prdEliminar(){
 // nombre del cliente de un pago que no es de un alumno (pagos de pedidos)
 function pedNombrePorPago(p){
   const ped = p.pedidoId ? DB.pedidos.find(x=>x.id===p.pedidoId) : null;
-  return ped ? esc(pedClienteNombre(ped)) : '—';
+  if(ped) return esc(pedClienteNombre(ped));
+  const part = p.eventoParticipanteId ? DBE.participantes.find(x=>x.id===p.eventoParticipanteId) : null;
+  return part ? esc(evtNombre(part)) : '—';
 }
+
+// EVENTOS:JS:START
+const CATALOGO_UCKF = [{"numero":"C1","nombre":"KATA FEMENINO INFANTILES (10 - 11 años)","modalidad":"Kata","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C2","nombre":"KATA MASCULINO INFANTILES (10 - 11 años)","modalidad":"Kata","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C3","nombre":"KATA FEMENINO NIÑAS (12 - 13 años)","modalidad":"Kata","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C4","nombre":"KATA MASCULINO NIÑOS (12 - 13 años)","modalidad":"Kata","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C5","nombre":"KATA FEMENINO CADETES (14 - 15 años)","modalidad":"Kata","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C6","nombre":"KATA MASCULINO CADETES (14 - 15 años)","modalidad":"Kata","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C7","nombre":"KATA FEMENINO JUNIOR (16 - 17 años)","modalidad":"Kata","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C8","nombre":"KATA MASCULINO JUNIOR (16 - 17 años)","modalidad":"Kata","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C9","nombre":"KATA FEMENINO U21 (18 - 20 años)","modalidad":"Kata","sexo":"F","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C10","nombre":"KATA MASCULINO U21 (18 - 20 años)","modalidad":"Kata","sexo":"M","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C11","nombre":"KATA FEMENINO MAYORES (+16 años)","modalidad":"Kata","sexo":"F","rama":"Mayores","edad_min":16,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C12","nombre":"KATA MASCULINO MAYORES (+16 años)","modalidad":"Kata","sexo":"M","rama":"Mayores","edad_min":16,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C13","nombre":"KUMITE FEMENINO INFANTILES (10 - 11 años) - 37 Kg","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":37,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C14","nombre":"KUMITE FEMENINO INFANTILES (10 - 11 años) - 42 Kg","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":42,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C15","nombre":"KUMITE FEMENINO INFANTILES (10 - 11 años) - 47 Kg","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":47,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C16","nombre":"KUMITE FEMENINO INFANTILES (10 - 11 años) + 47 Kg","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":47,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C17","nombre":"KUMITE MASCULINO INFANTILES (10 - 11 años) - 35 Kg","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":35,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C18","nombre":"KUMITE MASCULINO INFANTILES (10 - 11 años) - 40 Kg","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":40,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C19","nombre":"KUMITE MASCULINO INFANTILES (10 - 11 años) - 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":45,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C20","nombre":"KUMITE MASCULINO INFANTILES (10 - 11 años) + 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":45,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C21","nombre":"KUMITE FEMENINO NIÑAS (12 - 13 años) - 42 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":42,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C22","nombre":"KUMITE FEMENINO NIÑAS (12 - 13 años) - 47 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":47,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C23","nombre":"KUMITE FEMENINO NIÑAS (12 - 13 años) - 52 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":52,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C24","nombre":"KUMITE FEMENINO NIÑAS (12 - 13 años) + 52 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":52,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C25","nombre":"KUMITE MASCULINO NIÑOS (12 - 13 años) - 40 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":40,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C26","nombre":"KUMITE MASCULINO NIÑOS (12 - 13 años) - 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":45,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C27","nombre":"KUMITE MASCULINO NIÑOS (12 - 13 años) - 50 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":50,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C28","nombre":"KUMITE MASCULINO NIÑOS (12 - 13 años) - 55 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":55,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C29","nombre":"KUMITE MASCULINO NIÑOS (12 - 13 años) + 55 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":55,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C30","nombre":"KUMITE FEMENINO CADETES (14 - 15 años) - 47 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":47,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C31","nombre":"KUMITE FEMENINO CADETES (14 - 15 años) - 54 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":54,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C32","nombre":"KUMITE FEMENINO CADETES (14 - 15 años) - 61 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":61,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C33","nombre":"KUMITE FEMENINO CADETES (14 - 15 años) + 61 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":61,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C34","nombre":"KUMITE MASCULINO CADETES (14 - 15 años) - 52 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":52,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C35","nombre":"KUMITE MASCULINO CADETES (14 - 15 años) - 57 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":57,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C36","nombre":"KUMITE MASCULINO CADETES (14 - 15 años) - 63 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":63,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C37","nombre":"KUMITE MASCULINO CADETES (14 - 15 años) - 70 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":70,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C38","nombre":"KUMITE MASCULINO CADETES (14 - 15 años) + 70 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":70,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C39","nombre":"KUMITE FEMENINO JUNIOR (16 - 17 años) - 48 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":48,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C40","nombre":"KUMITE FEMENINO JUNIOR (16 - 17 años) - 53 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":53,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C41","nombre":"KUMITE FEMENINO JUNIOR (16 - 17 años) - 59 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":59,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C42","nombre":"KUMITE FEMENINO JUNIOR (16 - 17 años) - 66 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":66,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C43","nombre":"KUMITE FEMENINO JUNIOR (16 - 17 años) + 66 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":66,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C44","nombre":"KUMITE MASCULINO JUNIOR (16 - 17 años) - 55 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":55,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C45","nombre":"KUMITE MASCULINO JUNIOR (16 - 17 años) - 61 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":61,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C46","nombre":"KUMITE MASCULINO JUNIOR (16 - 17 años) - 68 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":68,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C47","nombre":"KUMITE MASCULINO JUNIOR (16 - 17 años) - 76 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":76,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C48","nombre":"KUMITE MASCULINO JUNIOR (16 - 17 años) + 76 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":76,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C49","nombre":"KUMITE FEMENINO U21 (18 - 20 años) - 50 Kg","modalidad":"Kumite","sexo":"F","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":50,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C50","nombre":"KUMITE FEMENINO U21 (18 - 20 años) - 55 Kg","modalidad":"Kumite","sexo":"F","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":55,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C51","nombre":"KUMITE FEMENINO U21 (18 - 20 años) - 61 Kg","modalidad":"Kumite","sexo":"F","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":61,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C52","nombre":"KUMITE FEMENINO U21 (18 - 20 años) - 68 Kg","modalidad":"Kumite","sexo":"F","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":68,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C53","nombre":"KUMITE FEMENINO U21 (18 - 20 años) + 68 Kg","modalidad":"Kumite","sexo":"F","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":68,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C54","nombre":"KUMITE MASCULINO U21 (18 - 20 años) - 60 Kg","modalidad":"Kumite","sexo":"M","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":60,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C55","nombre":"KUMITE MASCULINO U21 (18 - 20 años) - 67 Kg","modalidad":"Kumite","sexo":"M","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":67,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C56","nombre":"KUMITE MASCULINO U21 (18 - 20 años) - 75 Kg","modalidad":"Kumite","sexo":"M","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":75,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C57","nombre":"KUMITE MASCULINO U21 (18 - 20 años) - 84 Kg","modalidad":"Kumite","sexo":"M","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":84,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C58","nombre":"KUMITE MASCULINO U21 (18 - 20 años) + 84 Kg","modalidad":"Kumite","sexo":"M","rama":"U21","edad_min":18,"edad_max":20,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":84,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C59","nombre":"KUMITE FEMENINO MAYORES (+18 años) - 50 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":50,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C60","nombre":"KUMITE FEMENINO MAYORES (+18 años) - 55 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":55,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C61","nombre":"KUMITE FEMENINO MAYORES (+18 años) - 61 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":61,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C62","nombre":"KUMITE FEMENINO MAYORES (+18 años) - 68 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":68,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C63","nombre":"KUMITE FEMENINO MAYORES (+18 años) + 68 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":68,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C64","nombre":"KUMITE MASCULINO MAYORES (+18 años) - 60 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":60,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C65","nombre":"KUMITE MASCULINO MAYORES (+18 años) - 67 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":67,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C66","nombre":"KUMITE MASCULINO MAYORES (+18 años) - 75 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":75,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C67","nombre":"KUMITE MASCULINO MAYORES (+18 años) - 84 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":84,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C68","nombre":"KUMITE MASCULINO MAYORES (+18 años) + 84 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":84,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C69","nombre":"KATA MIXTO Pre INFANTILES Blancos (hasta 7 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"X","rama":"Pre-infantiles","edad_min":null,"edad_max":7,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C70","nombre":"KATA MIXTO Pre INFANTILES Blancos (8 - 9 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"X","rama":"Pre-infantiles","edad_min":8,"edad_max":9,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C71","nombre":"KATA MASCULINO INFANTILES Blancos (10 - 11 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C72","nombre":"KATA FEMENINO INFANTILES Blancos (10 - 11 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C73","nombre":"KATA MASCULINO NIÑOS Blancos (12 - 13 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C74","nombre":"KATA FEMENINO NIÑAS Blancos (12 - 13 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C75","nombre":"KUMITE MASCULINO SENIOR Libre (+35 años)","modalidad":"Kumite","sexo":"M","rama":"Senior","edad_min":35,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Libre","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C76","nombre":"KUMITE FEMENINO SENIOR Libre (+35 años)","modalidad":"Kumite","sexo":"F","rama":"Senior","edad_min":35,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Libre","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C77","nombre":"KATA MIXTO Pre INFANTILES Kyu A (hasta 7 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"X","rama":"Pre-infantiles","edad_min":null,"edad_max":7,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C78","nombre":"KATA MIXTO Pre INFANTILES Kyu A (8 - 9 años) PUEDE REPETIR (todos ganan)","modalidad":"Kata","sexo":"X","rama":"Pre-infantiles","edad_min":8,"edad_max":9,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir (todos ganan)","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C79","nombre":"KATA MASCULINO INFANTILES Kyu A (10 - 11 años) PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C80","nombre":"KATA FEMENINO INFANTILES Kyu A (10 - 11 años) PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C81","nombre":"KATA MASCULINO NIÑOS Kyu A (12 - 13 años) PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C82","nombre":"KATA FEMENINO NIÑAS Kyu A (12 - 13 años) PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C83","nombre":"KATA MASCULINO CADETES Kyu A (14 - 15 años) PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C84","nombre":"KATA FEMENINO CADETES Kyu A (14 - 15 años) PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C85","nombre":"KATA MASCULINO JUNIOR Kyu A (16 - 17 años) PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C86","nombre":"KATA FEMENINO JUNIOR Kyu A (16 - 17 años) PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C87","nombre":"KATA MASCULINO MAYORES Kyu A (+18 años) PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C88","nombre":"KATA FEMENINO MAYORES Kyu A (+18 años) PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C89","nombre":"KATA MASCULINO SENIOR Kyu A (+35 años) PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Senior","edad_min":35,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C90","nombre":"KATA FEMENINO SENIOR Kyu A (+35 años) PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Senior","edad_min":35,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":"Puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C91","nombre":"KATA MASCULINO NIÑOS Kyu B (8 - 9 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Niños","edad_min":8,"edad_max":9,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C92","nombre":"KATA FEMENINO NIÑAS Kyu B (8 - 9 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Niños","edad_min":8,"edad_max":9,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C93","nombre":"KATA MASCULINO NIÑOS Kyu B (10 - 11 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Niños","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C94","nombre":"KATA FEMENINO NIÑAS Kyu B (10 - 11 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Niños","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C95","nombre":"KATA MASCULINO NIÑOS Kyu B (12 - 13 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C96","nombre":"KATA FEMENINO NIÑAS Kyu B (12 - 13 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C97","nombre":"KATA MASCULINO CADETES Kyu B (14 - 15 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C98","nombre":"KATA FEMENINO CADETES Kyu B (14 - 15 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C99","nombre":"KATA MASCULINO JUNIOR Kyu B (16 - 17 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C100","nombre":"KATA FEMENINO JUNIOR Kyu B (16 - 17 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C101","nombre":"KATA MASCULINO MAYORES Kyu B (+18 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C102","nombre":"KATA FEMENINO MAYORES Kyu B (+18 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C103","nombre":"KATA MASCULINO SENIOR Kyu B (+35 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"M","rama":"Senior","edad_min":35,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C104","nombre":"KATA FEMENINO SENIOR Kyu B (+35 años) NO PUEDE REPETIR","modalidad":"Kata","sexo":"F","rama":"Senior","edad_min":35,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":"No puede repetir","discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C105","nombre":"KUMITE MASCULINO INFANTILES Kyu A (10 - 11 años) ALTO (+1.38 m)","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Alto","estatura_corte_cm":138,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C106","nombre":"KUMITE MASCULINO INFANTILES Kyu A (10 - 11 años) BAJO (-1.38 m)","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Bajo","estatura_corte_cm":138,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C107","nombre":"KUMITE FEMENINO INFANTILES Kyu A (10 - 11 años) ALTO (+1.38 m)","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Alto","estatura_corte_cm":138,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C108","nombre":"KUMITE FEMENINO INFANTILES Kyu A (10 - 11 años) BAJO (-1.38 m)","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Bajo","estatura_corte_cm":138,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C109","nombre":"KUMITE MASCULINO NIÑOS Kyu A (12 - 13 años) - 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":45,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C110","nombre":"KUMITE MASCULINO NIÑOS Kyu A (12 - 13 años) + 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":45,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C111","nombre":"KUMITE FEMENINO NIÑAS Kyu A (12 - 13 años) - 40 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":40,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C112","nombre":"KUMITE FEMENINO NIÑAS Kyu A (12 - 13 años) + 40 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":40,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C113","nombre":"KUMITE MASCULINO CADETES Kyu A (14 - 15 años) - 60 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":60,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C114","nombre":"KUMITE MASCULINO CADETES Kyu A (14 - 15 años) + 60 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":60,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C115","nombre":"KUMITE FEMENINO CADETES Kyu A (14 - 15 años) - 48 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":48,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C116","nombre":"KUMITE FEMENINO CADETES Kyu A (14 - 15 años) + 48 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":48,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C117","nombre":"KUMITE MASCULINO JUNIOR Kyu A (16 - 17 años) - 65 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":65,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C118","nombre":"KUMITE MASCULINO JUNIOR Kyu A (16 - 17 años) + 65 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":65,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C119","nombre":"KUMITE FEMENINO JUNIOR Kyu A (16 - 17 años) - 52 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":52,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C120","nombre":"KUMITE FEMENINO JUNIOR Kyu A (16 - 17 años) + 52 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":52,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C121","nombre":"KUMITE MASCULINO MAYORES Kyu A (+18 años) - 75 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":75,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C122","nombre":"KUMITE MASCULINO MAYORES Kyu A (+18 años) - 84 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":84,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C123","nombre":"KUMITE MASCULINO MAYORES Kyu A (+18 años) + 84 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":84,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C124","nombre":"KUMITE FEMENINO MAYORES Kyu A (+18 años) - 65 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":65,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C125","nombre":"KUMITE FEMENINO MAYORES Kyu A (+18 años) + 65 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":65,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu A","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C126","nombre":"KUMITE MASCULINO INFANTILES Kyu B (10 - 11 años) ALTO (+1.38 m)","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Alto","estatura_corte_cm":138,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C127","nombre":"KUMITE MASCULINO INFANTILES Kyu B (10 - 11 años) BAJO (-1.38 m)","modalidad":"Kumite","sexo":"M","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Bajo","estatura_corte_cm":138,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C128","nombre":"KUMITE FEMENINO INFANTILES Kyu B (10 - 11 años) ALTO (+1.38 m)","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Alto","estatura_corte_cm":138,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C129","nombre":"KUMITE FEMENINO INFANTILES Kyu B (10 - 11 años) BAJO (-1.38 m)","modalidad":"Kumite","sexo":"F","rama":"Infantiles","edad_min":10,"edad_max":11,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":"Bajo","estatura_corte_cm":138,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C130","nombre":"KUMITE MASCULINO NIÑOS Kyu B (12 - 13 años) - 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":45,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C131","nombre":"KUMITE MASCULINO NIÑOS Kyu B (12 - 13 años) + 45 Kg","modalidad":"Kumite","sexo":"M","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":45,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C132","nombre":"KUMITE FEMENINO NIÑAS Kyu B (12 - 13 años) - 40 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":40,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C133","nombre":"KUMITE FEMENINO NIÑAS Kyu B (12 - 13 años) + 40 Kg","modalidad":"Kumite","sexo":"F","rama":"Niños","edad_min":12,"edad_max":13,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":40,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C134","nombre":"KUMITE MASCULINO CADETES Kyu B (14 - 15 años) - 60 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":60,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C135","nombre":"KUMITE MASCULINO CADETES Kyu B (14 - 15 años) + 60 Kg","modalidad":"Kumite","sexo":"M","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":60,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C136","nombre":"KUMITE FEMENINO CADETES Kyu B (14 - 15 años) - 48 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":48,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C137","nombre":"KUMITE FEMENINO CADETES Kyu B (14 - 15 años) + 48 Kg","modalidad":"Kumite","sexo":"F","rama":"Cadetes","edad_min":14,"edad_max":15,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":48,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C138","nombre":"KUMITE MASCULINO JUNIOR Kyu B (16 - 17 años) - 65 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":65,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C139","nombre":"KUMITE MASCULINO JUNIOR Kyu B (16 - 17 años) + 65 Kg","modalidad":"Kumite","sexo":"M","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":65,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C140","nombre":"KUMITE FEMENINO JUNIOR Kyu B (16 - 17 años) - 52 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":52,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C141","nombre":"KUMITE FEMENINO JUNIOR Kyu B (16 - 17 años) + 52 Kg","modalidad":"Kumite","sexo":"F","rama":"Junior","edad_min":16,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":52,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C142","nombre":"KUMITE MASCULINO MAYORES Kyu B (+18 años) - 75 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":75,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C143","nombre":"KUMITE MASCULINO MAYORES Kyu B (+18 años) - 84 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":84,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C144","nombre":"KUMITE MASCULINO MAYORES Kyu B (+18 años) + 84 Kg","modalidad":"Kumite","sexo":"M","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":84,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C145","nombre":"KUMITE FEMENINO MAYORES Kyu B (+18 años) - 65 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":65,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C146","nombre":"KUMITE FEMENINO MAYORES Kyu B (+18 años) + 65 Kg","modalidad":"Kumite","sexo":"F","rama":"Mayores","edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":65,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Kyu B","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":null},{"numero":"C147","nombre":"PARA KARATE FEMENINO (DISCAPACIDAD VISUAL)","modalidad":"Para-Karate","sexo":"F","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Visual","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C148","nombre":"PARA KARATE MASCULINO (DISCAPACIDAD VISUAL)","modalidad":"Para-Karate","sexo":"M","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Visual","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C149","nombre":"PARA KARATE FEMENINO (DISCAPACIDAD MOTRIZ)","modalidad":"Para-Karate","sexo":"F","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Motriz","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C150","nombre":"PARA KARATE MASCULINO (DISCAPACIDAD MOTRIZ)","modalidad":"Para-Karate","sexo":"M","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Motriz","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C151","nombre":"PARA KARATE FEMENINO (DISCAPACIDAD INTELECTUAL)","modalidad":"Para-Karate","sexo":"F","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Intelectual","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C152","nombre":"PARA KARATE MASCULINO (DISCAPACIDAD INTELECTUAL)","modalidad":"Para-Karate","sexo":"M","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Intelectual","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C153","nombre":"PARA KARATE FEMENINO (SINDROME DE DOWN)","modalidad":"Para-Karate","sexo":"F","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Síndrome de Down","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C154","nombre":"PARA KARATE MASCULINO (SINDROME DE DOWN)","modalidad":"Para-Karate","sexo":"M","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Síndrome de Down","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C155","nombre":"PARA KARATE (EXHIBICIÓN)","modalidad":"Para-Karate","sexo":"X","rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":"Exhibición","sugerible":false,"origen":"Catálogo UCKF 2025 (imágenes)","observaciones":"Categoría especial: se elige a mano (puede requerir certificado de discapacidad)"},{"numero":"C156","nombre":"Kata Sordos","modalidad":"Kata","sexo":null,"rama":null,"edad_min":null,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Agregada en agosto 2025 (captura de chat)","observaciones":"Sin sexo/edad/nivel en el texto original"},{"numero":"C157","nombre":"Kumite niños hasta 9 años (división en el torneo)","modalidad":"Kumite","sexo":null,"rama":null,"edad_min":null,"edad_max":9,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Agregada en agosto 2025 (captura de chat)","observaciones":"Se divide en el torneo; sin sexo ni peso en el texto original"},{"numero":"C158","nombre":"Kata Femenino 14 a 17 años blancos","modalidad":"Kata","sexo":"F","rama":null,"edad_min":14,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Agregada en agosto 2025 (captura de chat)","observaciones":null},{"numero":"C159","nombre":"Kata Masculino 14 a 17 años blancos","modalidad":"Kata","sexo":"M","rama":null,"edad_min":14,"edad_max":17,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Agregada en agosto 2025 (captura de chat)","observaciones":null},{"numero":"C160","nombre":"Kata Femenino + 18 años blancos","modalidad":"Kata","sexo":"F","rama":null,"edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Agregada en agosto 2025 (captura de chat)","observaciones":null},{"numero":"C161","nombre":"Kata Masculino + 18 años blancos","modalidad":"Kata","sexo":"M","rama":null,"edad_min":18,"edad_max":null,"definida_por":"edad","anio_nac_desde":null,"anio_nac_hasta":null,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":"Blancos","regla_kata":null,"discapacidad":null,"sugerible":true,"origen":"Agregada en agosto 2025 (captura de chat)","observaciones":null},{"numero":"CJ-F1","nombre":"Córdoba Juega (nacidos 2010-2011): Kata Femenino Individual","modalidad":"Kata","sexo":"F","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-F2","nombre":"Córdoba Juega (nacidos 2010-2011): Kumite Femenino -54 Kg","modalidad":"Kumite","sexo":"F","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":54,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-F3","nombre":"Córdoba Juega (nacidos 2010-2011): Kumite Femenino -61 Kg","modalidad":"Kumite","sexo":"F","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":61,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-F4","nombre":"Córdoba Juega (nacidos 2010-2011): Kumite Femenino +61 Kg","modalidad":"Kumite","sexo":"F","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":null,"peso_min":61,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-M1","nombre":"Córdoba Juega (nacidos 2010-2011): Kata Masculino Individual","modalidad":"Kata","sexo":"M","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":null,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-M2","nombre":"Córdoba Juega (nacidos 2010-2011): Kumite Masculino -63 Kg","modalidad":"Kumite","sexo":"M","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":63,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-M3","nombre":"Córdoba Juega (nacidos 2010-2011): Kumite Masculino -70 Kg","modalidad":"Kumite","sexo":"M","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":70,"peso_min":null,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."},{"numero":"CJ-M4","nombre":"Córdoba Juega (nacidos 2010-2011): Kumite Masculino +70 Kg","modalidad":"Kumite","sexo":"M","rama":"Córdoba Juega","edad_min":null,"edad_max":null,"definida_por":"anio_nacimiento","anio_nac_desde":2010,"anio_nac_hasta":2011,"peso_max":null,"peso_min":70,"estatura_lado":null,"estatura_corte_cm":null,"nivel":null,"regla_kata":null,"discapacidad":null,"sugerible":false,"origen":"Córdoba Juega 2025 (imagen)","observaciones":"Se define por AÑO DE NACIMIENTO (2010-2011), no por edad. Gratuita."}];
+
+// ═══════════════════════════════════════════════════════════════════════
+// EVENTOS / TORNEOS — expediente del evento (octubre 2026, migracion_013)
+// ═══════════════════════════════════════════════════════════════════════
+// Diseño: DISENO_FASE1_EVENTOS.md (v2) · Catálogo: VERIFICACION_CATALOGO_UCKF.md
+// - Un evento del Calendario puede "activar expediente": participantes
+//   (alumnos o personas externas), categorías, cobros y exportables.
+// - El sistema SUGIERE y AVISA; nunca asigna una categoría solo ni bloquea.
+// - Los cobros van a la tabla "pagos" (tipo 'Evento') y cuentan en Ingresos y
+//   Economía. El estado de pago se CALCULA, nunca se guarda.
+// - Si todavía no se corrió migracion_013, el resto de la app sigue
+//   funcionando y este módulo avisa qué falta.
+
+const GRADOS = ['Blanco','Celeste','Amarillo','Naranja','Verde','Azul','Marrón','Shodan Ho','1º Dan','2º Dan','3º Dan','4º Dan','5º Dan','6º Dan'];
+const CONCEPTOS_PAGO_EVENTO = ['Inscripción','Seminario','Albergue','Comida','Otro'];
+const ROLES_EVENTO = ['Atleta','Acompañante','Instructor','Otro'];
+
+const EV = { eventoId:null, tab:'resumen', partId:null, volverAExpediente:false,
+  filtroCat:{ txt:'', mod:'' }, agregar:{ txt:'', inactivos:false, sel:new Set() } };
+const DBE = { migrado:false, error:'', categorias:[], participantes:[], inscripciones:[] };
+
+// ── utilidades ──
+function normTxt(s){ return String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase(); }
+function gradoCanon(g){ const n = normTxt(g); return GRADOS.find(x=>normTxt(x)===n) || (g||''); }
+// Kyu A: Blanco, Celeste, Amarillo, Naranja · Kyu B: Verde, Azul, Marrón y negros (Shodan Ho / Dan)
+function nivelDeGrado(g){
+  const n = normTxt(g); if(!n) return '';
+  if(['blanco','celeste','amarillo','naranja'].includes(n)) return 'Kyu A';
+  if(['verde','azul','marron','shodan ho'].includes(n) || /dan$/.test(n)) return 'Kyu B';
+  return '';
+}
+// Edad exacta el día del evento (no "año − año")
+function edadAl(fnac, fechaISO){
+  if(!fnac || !fechaISO) return null;
+  const [y,m,d] = String(fnac).slice(0,10).split('-').map(Number);
+  const [Y,M,D] = String(fechaISO).slice(0,10).split('-').map(Number);
+  if(!y || !Y) return null;
+  let e = Y - y; if(M < m || (M === m && D < d)) e--; return e;
+}
+function numOrNull(v){ if(v===''||v===null||v===undefined) return null; const n = Number(String(v).replace(',','.')); return isFinite(n) ? n : null; }
+function fechaHoraAR(iso){
+  if(!iso) return '—'; const d = new Date(iso); if(isNaN(d)) return '—'; const p = n=>String(n).padStart(2,'0');
+  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function isoALocalInput(iso){
+  if(!iso) return ''; const d = new Date(iso); if(isNaN(d)) return ''; const p = n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function localInputAISO(v){ if(!v) return null; const d = new Date(v); return isNaN(d) ? null : d.toISOString(); }
+function evtNumCat(c){ const m = String(c.numero||'').match(/\d+/); return m ? Number(m[0]) : 99999; }
+function evtOrdenCat(a,b){ return evtNumCat(a)-evtNumCat(b) || String(a.numero||'').localeCompare(String(b.numero||'')) || a.nombre.localeCompare(b.nombre); }
+
+// ── carga (con paginación: Supabase devuelve como máximo 1000 filas por consulta) ──
+async function evtTraerTodo(tabla, orden){
+  let desde = 0, filas = [];
+  for(;;){
+    const r = await supa.from(tabla).select('*').order(orden).range(desde, desde+999);
+    if(r.error) return { error:r.error };
+    filas = filas.concat(r.data||[]);
+    if((r.data||[]).length < 1000) break;
+    desde += 1000;
+  }
+  return { data:filas };
+}
+function evtMapCategoria(c){
+  return { id:c.id, eventoId:c.evento_id, numero:c.numero||'', nombre:c.nombre||'', modalidad:c.modalidad||'', sexo:c.sexo||'',
+    rama:c.rama||'', edadMin:c.edad_min==null?null:Number(c.edad_min), edadMax:c.edad_max==null?null:Number(c.edad_max),
+    definidaPor:c.definida_por||'edad', anioDesde:c.anio_nac_desde||null, anioHasta:c.anio_nac_hasta||null,
+    pesoMax:c.peso_max==null?null:Number(c.peso_max), pesoMin:c.peso_min==null?null:Number(c.peso_min),
+    estLado:c.estatura_lado||'', estCorte:c.estatura_corte_cm==null?null:Number(c.estatura_corte_cm),
+    nivel:c.nivel||'', reglaKata:c.regla_kata||'', discapacidad:c.discapacidad||'', sugerible:c.sugerible!==false,
+    origen:c.origen||'', obs:c.observaciones||'' };
+}
+function evtMapParticipante(p){
+  return { id:p.id, eventoId:p.evento_id, alumnoId:p.alumno_id||null, nombre:p.nombre||'', apellido:p.apellido||'', dni:p.dni||'',
+    fnac:p.fecha_nacimiento||'', sexo:p.sexo||'', telefono:p.telefono||'', rol:p.rol||'Atleta', acompanaAId:p.acompana_a_id||null,
+    relacion:p.relacion||'', grado:p.grado||'', peso:p.peso==null?null:Number(p.peso), estatura:p.estatura_cm==null?null:Number(p.estatura_cm),
+    alojamiento:p.alojamiento||'', importe:p.importe_a_cobrar==null?null:Number(p.importe_a_cobrar), estado:p.estado||'Inscripto',
+    cubreDojo:p.cubre_dojo===true, fechaInscripcion:p.fecha_inscripcion||'', obs:p.observaciones||'' };
+}
+function evtMapInscripcion(i){
+  return { id:i.id, participanteId:i.participante_id, categoriaId:i.categoria_id, kata:i.kata_presentada||'', puesto:i.puesto==null?null:i.puesto, obs:i.resultado_obs||'' };
+}
+// Si todavía no se corrió migracion_013, el resto de la app sigue andando: acá
+// solo se marca el estado y el módulo avisa qué falta.
+async function cargarEventos(){
+  const [c, p, i] = await Promise.all([ evtTraerTodo('evento_categorias','id'), evtTraerTodo('evento_participantes','id'), evtTraerTodo('evento_inscripciones','id') ]);
+  const fallo = [c,p,i].find(r=>r.error);
+  if(fallo){
+    DBE.migrado = false; DBE.error = fallo.error.message || String(fallo.error);
+    DBE.categorias = []; DBE.participantes = []; DBE.inscripciones = [];
+    return;
+  }
+  DBE.migrado = true; DBE.error = '';
+  DBE.categorias = c.data.map(evtMapCategoria);
+  DBE.participantes = p.data.map(evtMapParticipante);
+  DBE.inscripciones = i.data.map(evtMapInscripcion);
+}
+function evtEvento(id){ return DB.eventosCalendario.find(e=>e.id===(id==null?EV.eventoId:id)); }
+function evtCategoriasDe(eventoId){ return DBE.categorias.filter(c=>c.eventoId===eventoId).sort(evtOrdenCat); }
+function evtParticipantesDe(eventoId){ return DBE.participantes.filter(p=>p.eventoId===eventoId); }
+
+// ── personas ──
+function evtDatosPersona(p){
+  if(p.alumnoId){
+    const a = DB.alumnos.find(x=>x.id===p.alumnoId) || {};
+    const r = a.responsable || {};
+    return { esAlumno:true, nombre:a.nombre||'', apellido:a.apellido||'', dni:a.dni||'', fnac:a.fnac||'', sexo:a.sexo||'',
+      telefono:a.whatsapp||a.telefono||r.telefonoAlt||r.telefono||'', gradoFicha:a.gradoActual||'' };
+  }
+  return { esAlumno:false, nombre:p.nombre, apellido:p.apellido, dni:p.dni, fnac:p.fnac, sexo:p.sexo, telefono:p.telefono, gradoFicha:'' };
+}
+function evtNombre(p){ const d = evtDatosPersona(p); return (`${d.apellido} ${d.nombre}`).trim() || '(sin nombre)'; }
+function evtGradoDe(p){ return gradoCanon(p.grado || evtDatosPersona(p).gradoFicha); }
+function evtEsAtleta(p){ return p.rol==='Atleta' || p.rol==='Instructor'; }
+
+// ── grupos (atleta + sus acompañantes) y cobros ──
+function evtRaiz(p){
+  const vistos = new Set(); let x = p;
+  while(x.acompanaAId && !vistos.has(x.id)){
+    vistos.add(x.id);
+    const padre = DBE.participantes.find(y=>y.id===x.acompanaAId);
+    if(!padre) break; x = padre;
+  }
+  return x;
+}
+function evtGrupo(raiz){ return DBE.participantes.filter(p=>p.eventoId===raiz.eventoId && evtRaiz(p).id===raiz.id); }
+function evtCalcGrupo(raiz){
+  const miembros = evtGrupo(raiz);
+  const vigentes = miembros.filter(m=>m.estado!=='Baja');
+  const conImporte = vigentes.some(m=>m.importe!=null);
+  const aCobrar = vigentes.filter(m=>!m.cubreDojo).reduce((s,m)=>s+(m.importe||0),0);
+  const ids = new Set(miembros.map(m=>m.id));
+  const pagos = DB.pagos.filter(x=>x.eventoParticipanteId && ids.has(x.eventoParticipanteId) && !x.anulado);
+  const pagado = pagos.reduce((s,x)=>s+Number(x.monto),0);
+  const todosCubre = vigentes.length>0 && vigentes.every(m=>m.cubreDojo);
+  let estado;
+  if(todosCubre) estado = 'Cubre el dojo';
+  else if(!conImporte) estado = pagado>0 ? 'Pagó' : 'Sin pago';
+  else if(aCobrar<=0 && pagado<=0) estado = 'Sin cargo';
+  else if(pagado<=0) estado = 'Sin pago';
+  else estado = (aCobrar-pagado)>0 ? 'Parcial' : 'Pagado';
+  return { miembros, vigentes, conImporte, aCobrar, pagado, saldo: conImporte ? Math.round((aCobrar-pagado)*100)/100 : null, estado, pagos };
+}
+function evtPillPago(estado){
+  return { 'Pagado':'pill-ok', 'Pagó':'pill-ok', 'Parcial':'pill-warn', 'Sin pago':'pill-bad', 'Cubre el dojo':'pill-ghost', 'Sin cargo':'pill-ghost' }[estado] || 'pill-ghost';
+}
+
+// ═══════════════════════════════════════
+// MOTOR DE CATEGORÍAS: SUGIERE Y AVISA (nunca asigna ni bloquea)
+// ═══════════════════════════════════════
+function evtContexto(p, evento){
+  const d = evtDatosPersona(p), grado = evtGradoDe(p);
+  return { sexo:d.sexo, edad:edadAl(d.fnac, evento.fecha), peso:p.peso, estatura:p.estatura, grado, nivel:nivelDeGrado(grado), anioNac: d.fnac ? Number(String(d.fnac).slice(0,4)) : null };
+}
+function evtCompatibleBase(c, ctx, modalidad){
+  if(c.modalidad!==modalidad || !c.sugerible) return false;
+  if(c.definidaPor==='anio_nacimiento') return false;
+  if(!ctx.sexo || ctx.edad==null) return false;
+  if(c.sexo && c.sexo!=='X' && c.sexo!==ctx.sexo) return false;
+  if(c.edadMin!=null && ctx.edad<c.edadMin) return false;
+  if(c.edadMax!=null && ctx.edad>c.edadMax) return false;
+  if(c.nivel==='Blancos' && normTxt(ctx.grado)!=='blanco') return false;
+  if((c.nivel==='Kyu A'||c.nivel==='Kyu B') && c.nivel!==ctx.nivel) return false;
+  return true;
+}
+// Entre las categorías de un mismo grupo (sexo, rama, nivel, edad) por peso, la
+// ÚNICA que corresponde es la más ajustada: "−" = hasta e incluyendo ese peso,
+// "+" = más de ese peso. En las de estatura (infantiles Kyu): alto/bajo.
+function evtFiltrarPesoYEstatura(cands, ctx){
+  const grupos = new Map();
+  cands.forEach(c=>{ const k = [c.sexo,c.rama,c.nivel,c.edadMin,c.edadMax].join('|'); if(!grupos.has(k)) grupos.set(k,[]); grupos.get(k).push(c); });
+  const res = [];
+  grupos.forEach(items=>{
+    const porEst = items.filter(i=>i.estLado);
+    const porPeso = items.filter(i=>i.pesoMax!=null || i.pesoMin!=null);
+    const libres = items.filter(i=>!i.estLado && i.pesoMax==null && i.pesoMin==null);
+    res.push(...libres);
+    if(porEst.length){
+      if(ctx.estatura==null) res.push(...porEst);
+      else porEst.forEach(i=>{ const corte = i.estCorte||138; if((i.estLado==='Alto' && ctx.estatura>corte) || (i.estLado==='Bajo' && ctx.estatura<corte) || ctx.estatura===corte) res.push(i); });
+    }
+    if(porPeso.length && ctx.peso!=null){
+      const maxs = porPeso.filter(i=>i.pesoMax!=null).sort((a,b)=>a.pesoMax-b.pesoMax);
+      let ant = -Infinity;
+      maxs.forEach(i=>{ if(ant<ctx.peso && ctx.peso<=i.pesoMax) res.push(i); ant = i.pesoMax; });
+      porPeso.filter(i=>i.pesoMin!=null).forEach(i=>{ if(ctx.peso>i.pesoMin) res.push(i); });
+    }
+  });
+  return res.sort(evtOrdenCat);
+}
+// → { kata:[cat], kumite:[cat], faltan:[texto] }
+function evtSugeridas(p, evento){
+  const ctx = evtContexto(p, evento);
+  const cats = evtCategoriasDe(evento.id);
+  const faltan = [];
+  if(!ctx.sexo) faltan.push('sexo');
+  if(ctx.edad==null) faltan.push('fecha de nacimiento');
+  if(!ctx.grado) faltan.push('grado');
+  const kata = cats.filter(c=>evtCompatibleBase(c, ctx, 'Kata'));
+  let kumite = cats.filter(c=>evtCompatibleBase(c, ctx, 'Kumite'));
+  const hayPorPeso = kumite.some(c=>c.pesoMax!=null||c.pesoMin!=null);
+  const hayPorEst = kumite.some(c=>c.estLado);
+  if(ctx.peso==null && hayPorPeso) faltan.push('peso (para kumite)');
+  if(ctx.estatura==null && hayPorEst) faltan.push('estatura (infantiles Kyu A/B: más o menos de 1,38 m)');
+  kumite = evtFiltrarPesoYEstatura(kumite, ctx);
+  return { kata, kumite, faltan, ctx };
+}
+// Avisos de UNA categoría elegida (no bloquean): [texto]
+function evtAvisosInscripcion(p, cat, evento){
+  const av = [];
+  if(!cat.sugerible) return av;          // Para-Karate, Kata Sordos, Córdoba Juega: elección manual
+  const ctx = evtContexto(p, evento);
+  if(ctx.edad!=null){
+    if((cat.edadMin!=null && ctx.edad<cat.edadMin) || (cat.edadMax!=null && ctx.edad>cat.edadMax)){
+      const r = cat.edadMin!=null && cat.edadMax!=null ? `${cat.edadMin}-${cat.edadMax}` : (cat.edadMin!=null ? `+${cat.edadMin}` : `hasta ${cat.edadMax}`);
+      av.push(`Edad ${ctx.edad} fuera del rango de la categoría (${r} años)`);
+    }
+  } else av.push('Falta la fecha de nacimiento');
+  if(!ctx.sexo) av.push('Falta el sexo');
+  else if(cat.sexo && cat.sexo!=='X' && cat.sexo!==ctx.sexo) av.push('La categoría es de otro sexo');
+  if(cat.nivel==='Blancos' && ctx.grado && normTxt(ctx.grado)!=='blanco') av.push(`Categoría "Blancos" y el grado es ${ctx.grado}`);
+  else if((cat.nivel==='Kyu A'||cat.nivel==='Kyu B')){
+    if(!ctx.grado) av.push('Falta el grado');
+    else if(cat.nivel!==ctx.nivel) av.push(`${ctx.grado} es ${ctx.nivel||'nivel desconocido'} y la categoría es ${cat.nivel}`);
+  }
+  // peso / estatura: ¿es la categoría que corresponde dentro de su grupo?
+  if(cat.pesoMax!=null || cat.pesoMin!=null){
+    if(ctx.peso==null) av.push('Falta el peso');
+    else {
+      const grupo = evtCategoriasDe(evento.id).filter(c=>c.modalidad===cat.modalidad && c.sexo===cat.sexo && c.rama===cat.rama && c.nivel===cat.nivel && c.edadMin===cat.edadMin && c.edadMax===cat.edadMax && (c.pesoMax!=null||c.pesoMin!=null));
+      const ok = evtFiltrarPesoYEstatura(grupo, ctx).some(c=>c.id===cat.id);
+      if(!ok){
+        const corresp = evtFiltrarPesoYEstatura(grupo, ctx).map(c=>c.numero||c.nombre).join(', ');
+        av.push(`Con ${ctx.peso} kg no corresponde${corresp?` (correspondería ${corresp})`:''}`);
+      }
+    }
+  }
+  if(cat.estLado){
+    if(ctx.estatura==null) av.push('Falta la estatura');
+    else { const corte = cat.estCorte||138; const ok = ctx.estatura===corte || (cat.estLado==='Alto' ? ctx.estatura>corte : ctx.estatura<corte); if(!ok) av.push(`Con ${ctx.estatura} cm no corresponde a "${cat.estLado}"`); }
+  }
+  return av;
+}
+function evtInscripcionesDe(p){
+  return DBE.inscripciones.filter(i=>i.participanteId===p.id)
+    .map(i=>({ i, cat:DBE.categorias.find(c=>c.id===i.categoriaId) })).filter(x=>x.cat)
+    .sort((a,b)=>evtOrdenCat(a.cat,b.cat));
+}
+function evtFaltantes(p, evento){
+  if(!evtEsAtleta(p) || p.estado==='Baja') return [];
+  const ctx = evtContexto(p, evento), f = [];
+  if(!ctx.sexo) f.push('sexo');
+  if(ctx.edad==null) f.push('fecha de nacimiento');
+  if(!ctx.grado) f.push('grado');
+  const insc = evtInscripcionesDe(p);
+  if(ctx.peso==null && insc.some(x=>x.cat.pesoMax!=null||x.cat.pesoMin!=null)) f.push('peso');
+  if(ctx.estatura==null && insc.some(x=>x.cat.estLado)) f.push('estatura');
+  return f;
+}
+
+
+// ═══════════════════════════════════════
+// PANTALLAS
+// ═══════════════════════════════════════
+const evg = id => document.getElementById(id);
+const AVISO_MIGRACION = 'Falta correr migracion_013_eventos_torneos.sql en Supabase para usar el expediente de eventos. El resto de la app sigue funcionando.';
+
+// ── Calendario: etiquetas y cierre de inscripción ──
+function evtCierreInfo(e){
+  if(!e.cierreInscripcion) return null;
+  const ms = new Date(e.cierreInscripcion).getTime() - Date.now();
+  if(isNaN(ms)) return null;
+  const txt = fechaHoraAR(e.cierreInscripcion);
+  if(ms<0) return { vencido:true, txt, etiqueta:'Inscripción cerrada', pill:'pill-ghost' };
+  const dias = Math.ceil(ms/86400000);
+  const etiqueta = ms<86400000 ? 'Cierra en menos de 24 hs' : (dias===1 ? 'Cierra mañana' : `Cierra en ${dias} días`);
+  return { vencido:false, txt, etiqueta, pill: dias<=3 ? 'pill-bad' : (dias<=7 ? 'pill-warn' : 'pill-ok') };
+}
+function evtChipsLista(e){
+  if(!e.tieneExpediente) return '';
+  let h = ' <span class="pill pill-ok" style="margin-left:6px;">Expediente</span>';
+  const c = evtCierreInfo(e);
+  if(c && !c.vencido && (e.fechaFin||e.fecha)>=HOY) h += ` <span class="pill ${c.pill}" style="margin-left:4px;">${c.etiqueta}</span>`;
+  return h;
+}
+function evtCamposCalendarioVisibles(){
+  const el = evg('cf-expediente-campos'); if(el) el.style.display = DBE.migrado ? '' : 'none';
+  const av = evg('cf-expediente-aviso'); if(av) av.style.display = DBE.migrado ? 'none' : '';
+}
+function evtLimpiarCamposCalendario(){
+  ['cf-cierre','cf-via-url','cf-institucion','cf-profesor','cf-recordatorios','cf-tarifa1','cf-tarifa2'].forEach(id=>evg(id).value='');
+  evg('cf-via').value=''; evg('cf-tiene-expediente').checked=false; evtCamposCalendarioVisibles();
+}
+function evtCargarCamposCalendario(e){
+  evg('cf-cierre').value = isoALocalInput(e.cierreInscripcion);
+  evg('cf-via').value = e.inscripcionVia||'';
+  evg('cf-via-url').value = e.inscripcionUrl||'';
+  evg('cf-institucion').value = e.institucionPlanilla||'';
+  evg('cf-profesor').value = e.profesorPlanilla||'';
+  evg('cf-recordatorios').value = e.recordatorios||'';
+  evg('cf-tarifa1').value = e.tarifa1==null?'':e.tarifa1;
+  evg('cf-tarifa2').value = e.tarifa2==null?'':e.tarifa2;
+  evg('cf-tiene-expediente').checked = !!e.tieneExpediente;
+  evtCamposCalendarioVisibles();
+}
+// Devuelve los campos del expediente leídos del formulario (en formato de memoria)
+function evtLeerCamposCalendario(previo){
+  if(!DBE.migrado){                          // sin migración: solo se conservan los campos del expediente, NO se tocan los del formulario
+    const o = {};
+    if(previo) ['tieneExpediente','rolDojo','cierreInscripcion','inscripcionVia','inscripcionUrl','institucionPlanilla','profesorPlanilla','recordatorios','tarifa1','tarifa2'].forEach(k=>{ o[k] = previo[k]; });
+    return o;
+  }
+  return {
+    tieneExpediente: evg('cf-tiene-expediente').checked, rolDojo:(previo&&previo.rolDojo)||'Participante',
+    cierreInscripcion: localInputAISO(evg('cf-cierre').value)||'', inscripcionVia: evg('cf-via').value,
+    inscripcionUrl: evg('cf-via-url').value.trim(), institucionPlanilla: evg('cf-institucion').value.trim(),
+    profesorPlanilla: evg('cf-profesor').value.trim(), recordatorios: evg('cf-recordatorios').value.trim(),
+    tarifa1: numOrNull(evg('cf-tarifa1').value), tarifa2: numOrNull(evg('cf-tarifa2').value),
+  };
+}
+function evtPayloadCalendario(x){
+  if(!DBE.migrado) return {};
+  return { tiene_expediente:!!x.tieneExpediente, cierre_inscripcion:x.cierreInscripcion||null, inscripcion_via:x.inscripcionVia||null,
+    inscripcion_url:x.inscripcionUrl||null, institucion_planilla:x.institucionPlanilla||null, profesor_planilla:x.profesorPlanilla||null,
+    recordatorios:x.recordatorios||null, tarifa_modalidad_1:x.tarifa1==null?null:x.tarifa1, tarifa_modalidad_2:x.tarifa2==null?null:x.tarifa2 };
+}
+// Ficha del evento en el Calendario: datos extra + botón del expediente
+function evtDetalleCalendario(e){
+  let extra = '';
+  if(DBE.migrado && (e.tieneExpediente || e.cierreInscripcion || e.recordatorios || e.institucionPlanilla)){
+    const c = evtCierreInfo(e);
+    extra = `
+      <div class="detail-item"><label>Cierre de inscripción</label><span>${e.cierreInscripcion?esc(fechaHoraAR(e.cierreInscripcion))+(c?` <span class="pill ${c.pill}">${c.etiqueta}</span>`:''):'—'}</span></div>
+      <div class="detail-item"><label>Cómo se inscribe</label><span>${esc(e.inscripcionVia||'—')}${e.inscripcionUrl?` · <a href="${esc(e.inscripcionUrl)}" target="_blank">abrir</a>`:''}</span></div>
+      <div class="detail-item"><label>Institución (planilla)</label><span>${esc(e.institucionPlanilla||'—')}</span></div>
+      <div class="detail-item"><label>Profesor a cargo (planilla)</label><span>${esc(e.profesorPlanilla||'—')}</span></div>
+      ${e.recordatorios?`<div class="detail-item" style="grid-column:1/-1;"><label>Recordatorios</label><span class="ev-recordatorio">⚑ ${esc(e.recordatorios)}</span></div>`:''}`;
+  }
+  const box = evg('cd-expediente-box'); if(!box) return extra;
+  if(!DBE.migrado){
+    box.innerHTML = `<div class="demo-banner" style="margin-top:14px;">⚠ ${esc(AVISO_MIGRACION)}</div>`;
+  } else if(e.tieneExpediente){
+    const n = evtParticipantesDe(e.id).length;
+    box.innerHTML = `<div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-fill" onclick="abrirExpediente(${e.id})">Abrir expediente</button>
+      <span class="ev-muted">${n} participante${n===1?'':'s'} · ${evtCategoriasDe(e.id).length} categorías en el catálogo</span></div>`;
+  } else {
+    box.innerHTML = `<div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-ghost" onclick="evtActivarExpediente(${e.id})">Activar expediente</button>
+      <span class="ev-muted">Para llevar participantes, categorías, cobros y planillas de este evento.</span></div>`;
+  }
+  return extra;
+}
+async function evtActivarExpediente(id){
+  if(!DBE.migrado){ alert(AVISO_MIGRACION); return; }
+  const e = evtEvento(id); if(!e) return;
+  const { error } = await supa.from('eventos_calendario').update({ tiene_expediente:true }).eq('id', id);
+  if(error){ alert('No se pudo activar el expediente:\n'+error.message); return; }
+  e.tieneExpediente = true;
+  abrirExpediente(id);
+}
+
+// ═══════════════════════════════════════
+// EXPEDIENTE
+// ═══════════════════════════════════════
+function abrirExpediente(id){
+  if(!DBE.migrado){ alert(AVISO_MIGRACION); return; }
+  EV.eventoId = id; EV.tab = 'resumen'; EV.filtroCat = { txt:'', mod:'' };
+  showPage('evento'); renderEvento();
+}
+function evtVolver(){ showPage('calendario-detail'); viewCalendarioEvento(EV.eventoId); }
+function evtEditarEvento(){ editingCalendarioId = EV.eventoId; EV.volverAExpediente = true; editCalendarioEvento(); }
+function evtTab(t){ EV.tab = t; renderEvento(); }
+
+function renderEvento(){
+  const e = evtEvento(); if(!e){ showPage('calendario'); return; }
+  evg('ev-titulo').textContent = e.evento;
+  const c = evtCierreInfo(e);
+  evg('ev-meta').innerHTML = `
+    <div class="ev-meta-grid">
+      <div><label>Fecha</label><span>${fechaAR(e.fecha)}${e.fechaFin&&e.fechaFin!==e.fecha?' al '+fechaAR(e.fechaFin):''}${e.horario?' · '+esc(e.horario):''}</span></div>
+      <div><label>Lugar</label><span>${esc(e.lugar||'—')}</span></div>
+      <div><label>Organiza</label><span>${esc(e.organizacion||'—')}</span></div>
+      <div><label>Estado</label><span><span class="pill ${pillEstadoEvento(e.estado)}">${esc(e.estado)}</span></span></div>
+      <div><label>Cierre de inscripción</label><span>${c?esc(c.txt)+' <span class="pill '+c.pill+'">'+c.etiqueta+'</span>':'<span class="ev-muted">sin cargar</span>'}</span></div>
+    </div>
+    ${e.recordatorios?`<div class="ev-recordatorio" style="margin-top:10px;">⚑ ${esc(e.recordatorios)}</div>`:''}`;
+  const np = evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja').length;
+  const tabs = [['resumen','Resumen'],['participantes',`Participantes (${np})`],['categorias',`Categorías (${evtCategoriasDe(e.id).length})`],['cobros','Cobros'],['exportar','Exportar']];
+  evg('ev-tabs').innerHTML = tabs.map(([k,t])=>`<button class="btn ${EV.tab===k?'btn-fill':'btn-ghost'}" onclick="evtTab('${k}')">${t}</button>`).join('');
+  const fn = { resumen:evtHtmlResumen, participantes:evtHtmlParticipantes, categorias:evtHtmlCategorias, cobros:evtHtmlCobros, exportar:evtHtmlExportar }[EV.tab];
+  evg('ev-contenido').innerHTML = fn(e);
+  if(EV.tab==='categorias') evtRenderListaCategorias();
+}
+function evtRefrescarVistas(){
+  if(!EV.eventoId) return;
+  if(evg('page-evento').classList.contains('active')) renderEvento();
+  if(evg('page-evento-participante').classList.contains('active')) evtRenderParticipante();
+  renderHomeEvento();
+}
+
+// ── Resumen ──
+function evtAvisosGenerales(e){
+  const out = [];
+  evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja' && evtEsAtleta(p)).forEach(p=>{
+    const nombre = evtNombre(p), insc = evtInscripcionesDe(p);
+    const f = evtFaltantes(p, e);
+    if(f.length) out.push({ pid:p.id, txt:`${nombre}: falta ${f.join(', ')}` });
+    if(!insc.length && evtCategoriasDe(e.id).length) out.push({ pid:p.id, txt:`${nombre}: todavía no tiene categoría` });
+    insc.forEach(x=>evtAvisosInscripcion(p, x.cat, e).forEach(a=>out.push({ pid:p.id, txt:`${nombre} — ${x.cat.numero||x.cat.nombre}: ${a}` })));
+  });
+  return out;
+}
+function evtHtmlResumen(e){
+  const parts = evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja');
+  const atletas = parts.filter(evtEsAtleta), acomp = parts.filter(p=>!evtEsAtleta(p));
+  const nInsc = atletas.reduce((s,p)=>s+evtInscripcionesDe(p).length,0);
+  const raices = parts.filter(p=>evtRaiz(p).id===p.id);
+  const grupos = raices.map(r=>evtCalcGrupo(r));
+  const cobrado = grupos.reduce((s,g)=>s+g.pagado,0);
+  const hayImporte = grupos.some(g=>g.conImporte);
+  const falta = grupos.reduce((s,g)=>s+(g.conImporte?Math.max(0,g.saldo):0),0);
+  const avisos = evtAvisosGenerales(e);
+  const tiles = [
+    ['Atletas', atletas.length], ['Acompañantes', acomp.length], ['Inscripciones a categorías', nInsc],
+    ['Cobrado', money(cobrado)], ...(hayImporte ? [['Falta cobrar', money(falta)]] : []),
+  ];
+  const sinCat = !evtCategoriasDe(e.id).length;
+  return `
+    <div class="ev-stats">${tiles.map(([l,v])=>`<div class="ev-stat"><div class="ev-stat-v">${v}</div><div class="ev-stat-l">${l}</div></div>`).join('')}</div>
+    <div class="card"><div class="card-hdr"><span class="card-hdr-t">Para revisar</span><span class="card-hdr-s">${avisos.length} aviso${avisos.length===1?'':'s'}</span></div>
+      <div class="card-body">
+        ${sinCat?`<div class="ev-aviso-fila">▲ Este evento todavía no tiene catálogo de categorías. <a href="#" onclick="evtTab('categorias');return false;">Cargarlo</a></div>`:''}
+        ${avisos.length ? avisos.slice(0,60).map(a=>`<div class="ev-aviso-fila" onclick="evtAbrirParticipante(${a.pid})">▲ ${esc(a.txt)}</div>`).join('') + (avisos.length>60?`<div class="ev-muted">… y ${avisos.length-60} más</div>`:'')
+          : (sinCat?'':'<div class="ev-ok-fila">✔ Sin avisos: todos los atletas tienen sus datos y categorías coherentes.</div>')}
+        <div class="ev-muted" style="margin-top:8px;">Los avisos no bloquean nada: la decisión de las categorías es tuya.</div>
+      </div></div>
+    <div class="card"><div class="card-hdr"><span class="card-hdr-t">Datos del evento</span>
+      <button class="btn btn-ghost btn-sm" onclick="evtEditarEvento()">✏ Editar evento</button></div>
+      <div class="card-body"><div class="detail-grid">
+        <div class="detail-item"><label>Cómo se inscribe</label><span>${esc(e.inscripcionVia||'—')}${e.inscripcionUrl?` · <a href="${esc(e.inscripcionUrl)}" target="_blank">abrir</a>`:''}</span></div>
+        <div class="detail-item"><label>Institución (planilla)</label><span>${esc(e.institucionPlanilla||'—')}</span></div>
+        <div class="detail-item"><label>Profesor a cargo (planilla)</label><span>${esc(e.profesorPlanilla||'—')}</span></div>
+        <div class="detail-item"><label>Tarifas (opcional)</label><span>${e.tarifa1!=null?'1ª modalidad '+money(e.tarifa1):'—'}${e.tarifa2!=null?' · 2ª '+money(e.tarifa2):''}</span></div>
+        <div class="detail-item"><label>Documentación</label><span>${e.documentacionUrl?`<a href="${esc(e.documentacionUrl)}" target="_blank">Ver</a>`:'—'}</span></div>
+        <div class="detail-item" style="grid-column:1/-1;"><label>Observaciones</label><span>${esc(e.observaciones||'—')}</span></div>
+      </div></div></div>`;
+}
+
+// ── Participantes ──
+function evtChipsCategorias(p, e){
+  const insc = evtInscripcionesDe(p);
+  if(!evtEsAtleta(p)) return '<span class="ev-muted">—</span>';
+  if(!insc.length) return '<span class="pill pill-ghost">sin categoría</span>';
+  return insc.map(({cat})=>{
+    const av = evtAvisosInscripcion(p, cat, e);
+    return `<span class="pill ${av.length?'pill-warn':'pill-ok'}" title="${esc(av.length?av.join(' · '):cat.nombre)}" style="margin:0 3px 3px 0;">${esc(cat.numero||cat.nombre.slice(0,18))}${av.length?' ▲':''}</span>`;
+  }).join('');
+}
+function evtFilaParticipante(p, e, hijo){
+  const d = evtDatosPersona(p), edad = edadAl(d.fnac, e.fecha), grado = evtGradoDe(p), nivel = nivelDeGrado(grado);
+  const falt = evtFaltantes(p, e);
+  const atl = evtEsAtleta(p);
+  const raiz = evtRaiz(p).id===p.id;
+  const g = raiz ? evtCalcGrupo(p) : null;
+  const pagoCelda = raiz
+    ? `<span class="pill ${evtPillPago(g.estado)}">${g.estado}</span> <span class="ev-muted">${g.pagado?money(g.pagado):''}${g.saldo>0?' · debe '+money(g.saldo):''}</span>`
+    : '<span class="ev-muted">(en el grupo)</span>';
+  return `<tr class="${hijo?'ev-hijo':''}${p.estado==='Baja'?' ev-baja':''}">
+    <td onclick="evtAbrirParticipante(${p.id})" style="cursor:pointer;">${hijo?'↳ ':''}${esc(evtNombre(p))}${p.estado==='Baja'?' <span class="pill pill-ghost">Baja</span>':''}${p.estado==='Preinscripto'?' <span class="pill pill-warn">Preinscripto</span>':''}
+      ${falt.length?`<div class="ev-falta">▲ falta ${esc(falt.join(', '))}</div>`:''}</td>
+    <td>${esc(p.rol)}${p.relacion?` <span class="ev-muted">(${esc(p.relacion)})</span>`:''}</td>
+    <td>${edad==null?'—':edad}</td>
+    <td>${atl?(esc(grado)||'—')+(nivel?` <span class="ev-muted">${nivel}</span>`:''):'—'}</td>
+    <td>${atl?`<input class="ev-num" type="number" step="0.1" min="0" value="${p.peso==null?'':p.peso}" onchange="evtGuardarNum(${p.id},'peso',this.value)">`:'—'}</td>
+    <td>${atl?`<input class="ev-num" type="number" step="1" min="0" value="${p.estatura==null?'':p.estatura}" onchange="evtGuardarNum(${p.id},'estatura',this.value)">`:'—'}</td>
+    <td>${evtChipsCategorias(p, e)}</td>
+    <td>${pagoCelda}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="evtAbrirParticipante(${p.id})">Abrir</button></td></tr>`;
+}
+function evtHtmlParticipantes(e){
+  const todos = evtParticipantesDe(e.id);
+  const raices = todos.filter(p=>evtRaiz(p).id===p.id).sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es'));
+  const filas = [];
+  raices.forEach(r=>{
+    filas.push(evtFilaParticipante(r, e, false));
+    todos.filter(x=>x.id!==r.id && evtRaiz(x).id===r.id).sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es')).forEach(h=>filas.push(evtFilaParticipante(h, e, true)));
+  });
+  return `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Participantes</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-fill btn-sm" onclick="evtAbrirAgregar()">+ Agregar alumnos</button>
+        <button class="btn btn-ghost btn-sm" onclick="evtNuevoExterno()">+ Acompañante / persona externa</button></div></div>
+    <div class="card-body" style="padding:0;overflow-x:auto;">
+      ${todos.length ? `<table class="tbl"><thead><tr><th>Nombre</th><th>Rol</th><th>Edad</th><th>Grado</th><th>Peso (kg)</th><th>Estatura (cm)</th><th>Categorías</th><th>Pagó</th><th></th></tr></thead><tbody>${filas.join('')}</tbody></table>`
+        : '<div class="empty-state">Todavía no hay participantes. Empezá con "+ Agregar alumnos".</div>'}
+    </div>
+    <div class="card-body ev-muted" style="font-size:13px;">La edad se calcula al día del evento (${fechaAR(e.fecha)}). Peso y estatura se guardan para este evento. ▲ = revisar (pasá el mouse por la etiqueta para ver el motivo).</div></div>`;
+}
+async function evtGuardarNum(id, campo, valor){
+  const p = DBE.participantes.find(x=>x.id===id); if(!p) return;
+  const v = numOrNull(valor);
+  const col = campo==='peso' ? 'peso' : 'estatura_cm';
+  const { error } = await supa.from('evento_participantes').update({ [col]:v }).eq('id', id);
+  if(error){ alert('No se pudo guardar:\n'+error.message); return; }
+  p[campo] = v; renderEvento();
+}
+
+// ── Agregar alumnos ──
+function evtAbrirAgregar(){ EV.agregar = { txt:'', inactivos:false, sel:new Set() }; evg('ea-txt').value=''; evg('ea-inactivos').checked=false; showPage('evento-agregar'); evtRenderAgregar(); }
+function evtRenderAgregar(){
+  const e = evtEvento(); if(!e) return;
+  evg('ea-titulo').textContent = 'Agregar alumnos — ' + e.evento;
+  const ya = new Set(evtParticipantesDe(e.id).filter(p=>p.alumnoId).map(p=>p.alumnoId));
+  const t = normTxt(EV.agregar.txt);
+  const lista = DB.alumnos.filter(a=>!ya.has(a.id) && (EV.agregar.inactivos || a.estado==='Activo'))
+    .filter(a=>!t || normTxt(a.nombre+' '+a.apellido+' '+a.dni).includes(t))
+    .sort((a,b)=>(a.apellido+a.nombre).localeCompare(b.apellido+b.nombre,'es'));
+  evg('ea-lista').innerHTML = lista.length ? `<table class="tbl"><thead><tr><th style="width:36px;"></th><th>Alumno</th><th>Edad al evento</th><th>Grado</th><th>Sexo</th><th>Datos</th></tr></thead><tbody>${
+    lista.map(a=>{
+      const edad = edadAl(a.fnac, e.fecha), falta = [];
+      if(!a.sexo) falta.push('sexo'); if(!a.gradoActual) falta.push('grado'); if(!a.fnac) falta.push('fecha de nac.');
+      return `<tr onclick="evtToggleSel(${a.id})" style="cursor:pointer;">
+        <td><input type="checkbox" ${EV.agregar.sel.has(a.id)?'checked':''} onclick="event.stopPropagation();evtToggleSel(${a.id})"></td>
+        <td>${esc(a.apellido+' '+a.nombre)}${a.estado!=='Activo'?` <span class="pill pill-ghost">${esc(a.estado)}</span>`:''}</td>
+        <td>${edad==null?'—':edad}</td><td>${esc(a.gradoActual||'—')}</td><td>${a.sexo==='F'?'F':(a.sexo==='M'?'M':'—')}</td>
+        <td>${falta.length?`<span class="ev-falta">▲ falta ${falta.join(', ')}</span>`:'<span class="ev-ok-fila" style="padding:0;border:0;">✔</span>'}</td></tr>`;
+    }).join('')}</tbody></table>` : '<div class="empty-state">No hay alumnos para agregar con ese filtro.</div>';
+  evg('ea-contador').textContent = EV.agregar.sel.size + ' seleccionado' + (EV.agregar.sel.size===1?'':'s');
+}
+function evtToggleSel(id){ if(EV.agregar.sel.has(id)) EV.agregar.sel.delete(id); else EV.agregar.sel.add(id); evtRenderAgregar(); }
+async function evtAgregarSeleccionados(){
+  const e = evtEvento(); const ids = [...EV.agregar.sel];
+  if(!ids.length){ alert('Marcá al menos un alumno.'); return; }
+  const filas = ids.map(id=>{ const a = DB.alumnos.find(x=>x.id===id);
+    return { evento_id:e.id, alumno_id:id, rol:'Atleta', grado:(a&&a.gradoActual)||null, estado:'Inscripto', fecha_inscripcion:HOY }; });
+  const { data, error } = await supa.from('evento_participantes').insert(filas).select();
+  if(error){ alert('No se pudieron agregar los alumnos:\n'+error.message); return; }
+  (data||[]).forEach(r=>DBE.participantes.push(evtMapParticipante(r)));
+  EV.tab = 'participantes'; showPage('evento'); renderEvento();
+}
+
+// ── Participante ──
+function evtAbrirParticipante(id){ EV.partId = id; showPage('evento-participante'); evtRenderParticipante(); }
+function evtNuevoExterno(){ EV.partId = null; showPage('evento-participante'); evtRenderParticipante(); }
+function evtVolverParticipantes(){ EV.tab = 'participantes'; showPage('evento'); renderEvento(); }
+function evtOpcionesAcompana(actual, propioId){
+  const e = evtEvento();
+  const lista = evtParticipantesDe(e.id).filter(x=>x.id!==propioId && x.estado!=='Baja').sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es'));
+  return '<option value="">— nadie (cobra por su cuenta) —</option>' + lista.map(x=>`<option value="${x.id}" ${actual===x.id?'selected':''}>${esc(evtNombre(x))} (${esc(x.rol)})</option>`).join('');
+}
+function evtRenderParticipante(){
+  const e = evtEvento(), cont = evg('pp-contenido'); if(!e || !cont) return;
+  const p = EV.partId ? DBE.participantes.find(x=>x.id===EV.partId) : null;
+  const nuevo = !p;
+  if(!nuevo && !p){ evtVolverParticipantes(); return; }
+  evg('pp-titulo').textContent = nuevo ? 'Nueva persona (acompañante / externa)' : evtNombre(p);
+  const d = nuevo ? { esAlumno:false } : evtDatosPersona(p);
+  const atl = nuevo ? false : evtEsAtleta(p);
+  const grado = nuevo ? '' : evtGradoDe(p);
+  const edad = nuevo ? null : edadAl(d.fnac, e.fecha);
+  const val = (x)=>x==null?'':esc(x);
+  // — Datos —
+  let datos = `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Datos</span>
+      ${!nuevo&&d.esAlumno?`<button class="btn btn-ghost btn-sm" onclick="viewAlumno(${p.alumnoId})">Ver ficha del alumno</button>`:''}</div><div class="card-body">`;
+  if(!nuevo && d.esAlumno){
+    datos += `<div class="detail-grid" style="margin-bottom:12px;">
+      <div class="detail-item"><label>DNI</label><span>${esc(d.dni||'—')}</span></div>
+      <div class="detail-item"><label>Edad el día del evento</label><span>${edad==null?'<span class="ev-falta">▲ falta fecha de nacimiento</span>':edad+' años'}</span></div>
+      <div class="detail-item"><label>Sexo (ficha)</label><span>${d.sexo?(d.sexo==='F'?'Femenino':'Masculino'):'<span class="ev-falta">▲ falta — cargalo en la ficha del alumno</span>'}</span></div>
+      <div class="detail-item"><label>Grado en la ficha</label><span>${esc(d.gradoFicha||'—')}</span></div></div>`;
+  }
+  datos += `<div class="form-grid">`;
+  if(nuevo || !d.esAlumno){
+    datos += `<div class="form-item"><label>Nombre</label><input id="pp-nombre" type="text" value="${val(nuevo?'':p.nombre)}"></div>
+      <div class="form-item"><label>Apellido</label><input id="pp-apellido" type="text" value="${val(nuevo?'':p.apellido)}"></div>
+      <div class="form-item"><label>DNI</label><input id="pp-dni" type="text" placeholder="Sin puntos" value="${val(nuevo?'':p.dni)}"></div>
+      <div class="form-item"><label>Fecha de nacimiento</label><input id="pp-fnac" type="date" value="${val(nuevo?'':p.fnac)}"></div>
+      <div class="form-item"><label>Sexo</label><select id="pp-sexo"><option value="">—</option><option value="F" ${!nuevo&&p.sexo==='F'?'selected':''}>Femenino</option><option value="M" ${!nuevo&&p.sexo==='M'?'selected':''}>Masculino</option></select></div>
+      <div class="form-item"><label>Teléfono</label><input id="pp-tel" type="text" value="${val(nuevo?'':p.telefono)}"></div>`;
+  }
+  datos += `<div class="form-item"><label>Rol en el evento</label><select id="pp-rol">${ROLES_EVENTO.map(r=>`<option ${(!nuevo?p.rol:'Acompañante')===r?'selected':''}>${r}</option>`).join('')}</select></div>
+      <div class="form-item"><label>Acompaña a (cobra con su grupo)</label><select id="pp-acompana">${evtOpcionesAcompana(nuevo?null:p.acompanaAId, nuevo?0:p.id)}</select></div>
+      <div class="form-item"><label>Relación (mamá, papá, hermano…)</label><input id="pp-relacion" type="text" value="${val(nuevo?'':p.relacion)}"></div>
+      <div class="form-item"><label>Alojamiento</label><input id="pp-aloj" type="text" list="dl-aloj" placeholder="Ej: Albergue, Hotel (vacío si no aplica)" value="${val(nuevo?'':p.alojamiento)}"><datalist id="dl-aloj"><option value="Albergue"><option value="Hotel"></datalist></div>
+      <div class="form-item"><label>Grado en este evento</label><select id="pp-grado"><option value="">—</option>${GRADOS.map(g=>`<option ${grado===g?'selected':''}>${g}</option>`).join('')}</select></div>
+      <div class="form-item"><label>Peso (kg)</label><input id="pp-peso" type="number" step="0.1" min="0" value="${val(nuevo?'':p.peso)}"></div>
+      <div class="form-item"><label>Estatura (cm)</label><input id="pp-est" type="number" step="1" min="0" value="${val(nuevo?'':p.estatura)}"></div>
+      <div class="form-item"><label>Importe a cobrar (opcional)</label><div style="display:flex;gap:6px;"><input id="pp-importe" type="number" min="0" value="${val(nuevo?'':p.importe)}" placeholder="Vacío = solo se registra lo que pagó">${(e.tarifa1!=null&&!nuevo)?`<button class="btn btn-ghost btn-sm" type="button" onclick="evtProponerImporte()" title="Según las tarifas del evento y las modalidades en las que compite">Proponer</button>`:''}</div></div>
+      <div class="form-item"><label>Estado</label><select id="pp-estado">${['Preinscripto','Inscripto','Baja'].map(s=>`<option ${(!nuevo?p.estado:'Inscripto')===s?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="form-item"><label>¿Cubre el dojo?</label><select id="pp-cubre"><option value="no">No — paga la familia</option><option value="si" ${!nuevo&&p.cubreDojo?'selected':''}>Sí — no se le cobra</option></select></div>
+      <div class="form-item full"><label>Observaciones</label><textarea id="pp-obs" rows="2">${val(nuevo?'':p.obs)}</textarea></div></div>
+    <div class="form-actions"><button class="btn btn-fill" onclick="evtGuardarParticipante()">${nuevo?'Agregar':'Guardar datos'}</button>
+      <button class="btn btn-ghost" onclick="evtVolverParticipantes()">${nuevo?'Cancelar':'Volver'}</button>
+      ${nuevo?'':`<button class="btn btn-danger" style="margin-left:auto;" onclick="evtQuitarParticipante()">Quitar del evento</button>`}</div>
+    </div></div>`;
+  let html = datos;
+  if(!nuevo){
+    if(atl) html += evtHtmlCategoriasParticipante(p, e);
+    html += evtHtmlPagosParticipante(p, e);
+  } else {
+    html += `<div class="ev-muted">Después de agregarla vas a poder registrar pagos y, si es atleta, elegir categorías.</div>`;
+  }
+  cont.innerHTML = html;
+}
+async function evtGuardarParticipante(){
+  const e = evtEvento(); const p = EV.partId ? DBE.participantes.find(x=>x.id===EV.partId) : null; const nuevo = !p;
+  const rol = evg('pp-rol').value;
+  const acompanaA = evg('pp-acompana').value ? Number(evg('pp-acompana').value) : null;
+  if(!nuevo && acompanaA){   // evitar ciclos: A acompaña a B que acompaña a A
+    let x = DBE.participantes.find(y=>y.id===acompanaA);
+    const vistos = new Set();
+    while(x && !vistos.has(x.id)){ if(x.id===p.id){ alert('Eso crearía un círculo: esa persona ya depende de ésta.'); return; } vistos.add(x.id); x = x.acompanaAId ? DBE.participantes.find(y=>y.id===x.acompanaAId) : null; }
+  }
+  const payload = {
+    rol, acompana_a_id:acompanaA, relacion:evg('pp-relacion').value.trim()||null, alojamiento:evg('pp-aloj').value.trim()||null,
+    grado:evg('pp-grado').value||null, peso:numOrNull(evg('pp-peso').value), estatura_cm:numOrNull(evg('pp-est').value),
+    importe_a_cobrar:numOrNull(evg('pp-importe').value), estado:evg('pp-estado').value, cubre_dojo:evg('pp-cubre').value==='si',
+    observaciones:evg('pp-obs').value.trim()||null,
+  };
+  if(nuevo || !p.alumnoId){
+    payload.nombre = evg('pp-nombre').value.trim()||null; payload.apellido = evg('pp-apellido').value.trim()||null;
+    payload.dni = evg('pp-dni').value.trim()||null; payload.fecha_nacimiento = evg('pp-fnac').value||null;
+    payload.sexo = evg('pp-sexo').value||null; payload.telefono = evg('pp-tel').value.trim()||null;
+    if(!payload.nombre && !payload.apellido){ alert('Cargá al menos el nombre o el apellido.'); return; }
+  }
+  if(payload.importe_a_cobrar!=null && payload.importe_a_cobrar<0){ alert('El importe no puede ser negativo.'); return; }
+  if(nuevo){
+    const { data, error } = await supa.from('evento_participantes').insert({ ...payload, evento_id:e.id, fecha_inscripcion:HOY }).select().single();
+    if(error){ alert('No se pudo agregar:\n'+error.message); return; }
+    DBE.participantes.push(evtMapParticipante(data)); EV.partId = data.id;
+  } else {
+    const { error } = await supa.from('evento_participantes').update(payload).eq('id', p.id);
+    if(error){ alert('No se pudo guardar:\n'+error.message); return; }
+    Object.assign(p, evtMapParticipante({ ...evtParticipanteAFila(p), ...payload }));
+  }
+  evtRenderParticipante(); renderHomeEvento();
+}
+function evtParticipanteAFila(p){
+  return { id:p.id, evento_id:p.eventoId, alumno_id:p.alumnoId, nombre:p.nombre, apellido:p.apellido, dni:p.dni, fecha_nacimiento:p.fnac||null, sexo:p.sexo||null,
+    telefono:p.telefono, rol:p.rol, acompana_a_id:p.acompanaAId, relacion:p.relacion, grado:p.grado, peso:p.peso, estatura_cm:p.estatura, alojamiento:p.alojamiento,
+    importe_a_cobrar:p.importe, estado:p.estado, cubre_dojo:p.cubreDojo, fecha_inscripcion:p.fechaInscripcion, observaciones:p.obs };
+}
+function evtModalidadesDe(p){ return [...new Set(evtInscripcionesDe(p).map(x=>x.cat.modalidad).filter(Boolean))]; }
+function evtProponerImporte(){
+  const e = evtEvento(), p = DBE.participantes.find(x=>x.id===EV.partId); if(!p) return;
+  const n = evtModalidadesDe(p).length;
+  if(!n){ alert('Primero elegí sus categorías: el importe se propone según la cantidad de modalidades (Kata / Kumite).'); return; }
+  const v = (e.tarifa1||0) + (n>=2 ? (e.tarifa2!=null ? e.tarifa2 : e.tarifa1||0) : 0);
+  evg('pp-importe').value = v;
+}
+async function evtQuitarParticipante(){
+  const p = DBE.participantes.find(x=>x.id===EV.partId); if(!p) return;
+  const conPagos = DB.pagos.some(x=>x.eventoParticipanteId===p.id);
+  if(conPagos){
+    if(!confirm(`${evtNombre(p)} tiene pagos registrados (aunque estén anulados), por eso no se puede quitar del todo.\n\n¿Marcarlo como "Baja"? Queda en el historial y deja de contar en el total a cobrar.`)) return;
+    const { error } = await supa.from('evento_participantes').update({ estado:'Baja' }).eq('id', p.id);
+    if(error){ alert('No se pudo:\n'+error.message); return; }
+    p.estado = 'Baja'; evtRenderParticipante(); return;
+  }
+  if(!confirm(`¿Quitar a ${evtNombre(p)} del evento? Se borran también sus categorías en este evento.`)) return;
+  const { error } = await supa.from('evento_participantes').delete().eq('id', p.id);
+  if(error){ alert('No se pudo quitar:\n'+error.message); return; }
+  DBE.participantes = DBE.participantes.filter(x=>x.id!==p.id);
+  DBE.participantes.forEach(x=>{ if(x.acompanaAId===p.id) x.acompanaAId = null; });
+  DBE.inscripciones = DBE.inscripciones.filter(i=>i.participanteId!==p.id);
+  evtVolverParticipantes();
+}
+
+// — categorías del participante —
+function evtHtmlCategoriasParticipante(p, e){
+  const cats = evtCategoriasDe(e.id);
+  let h = `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Categorías</span><span class="card-hdr-s">El sistema sugiere; elegís vos</span></div><div class="card-body">`;
+  if(!cats.length){
+    return h + `<div class="empty-state">Este evento no tiene catálogo de categorías. <a href="#" onclick="evtTab('categorias');showPage('evento');renderEvento();return false;">Cargarlo</a></div></div></div>`;
+  }
+  const insc = evtInscripcionesDe(p), ya = new Set(insc.map(x=>x.cat.id));
+  h += `<h4 class="ev-sub">Inscripto en</h4>`;
+  h += insc.length ? insc.map(({i,cat})=>{
+    const av = evtAvisosInscripcion(p, cat, e);
+    return `<div class="ev-insc ${av.length?'ev-insc-aviso':''}">
+      <div style="flex:1;"><b>${esc(cat.numero)}</b> ${esc(cat.nombre)} ${cat.reglaKata?`<span class="ev-muted">· ${esc(cat.reglaKata)}</span>`:''}
+        ${av.map(a=>`<div class="ev-falta">▲ ${esc(a)}</div>`).join('')}
+        ${cat.modalidad==='Kata'?`<div style="margin-top:6px;"><input type="text" class="ev-kata" placeholder="Kata que presenta (opcional)" value="${esc(i.kata)}" onchange="evtGuardarKata(${i.id},this.value)"></div>`:''}</div>
+      <button class="btn btn-ghost btn-sm" onclick="evtQuitarInscripcion(${i.id})">Quitar</button></div>`;
+  }).join('') : '<div class="ev-muted">Todavía no está inscripto en ninguna categoría.</div>';
+  const s = evtSugeridas(p, e);
+  h += `<h4 class="ev-sub">Sugeridas</h4>`;
+  if(s.faltan.length) h += `<div class="ev-aviso-fila" style="cursor:default;">Para sugerir mejor falta: ${esc(s.faltan.join(', '))}.</div>`;
+  const sug = [...s.kata, ...s.kumite].filter(c=>!ya.has(c.id));
+  h += sug.length ? sug.map(c=>`<div class="ev-sug"><span><b>${esc(c.numero)}</b> ${esc(c.nombre)} ${c.reglaKata?`<span class="ev-muted">· ${esc(c.reglaKata)}</span>`:''}</span>
+      <button class="btn btn-fill btn-sm" onclick="evtAgregarInscripcion(${p.id},${c.id})">+ Agregar</button></div>`).join('')
+    : `<div class="ev-muted">${s.faltan.length?'No hay sugerencias hasta completar esos datos.':'No hay más categorías sugeridas.'}</div>`;
+  const otras = cats.filter(c=>!ya.has(c.id));
+  const grupos = [...new Set(otras.map(c=>c.modalidad||'Otras'))];
+  h += `<h4 class="ev-sub">Elegir otra categoría a mano</h4>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;"><select id="pp-cat-otra" style="flex:1;min-width:240px;background:var(--mid);border:1px solid var(--bord);color:var(--text);padding:9px 12px;font-family:inherit;font-size:15px;">
+      <option value="">— elegir —</option>${grupos.map(g=>`<optgroup label="${esc(g)}">${otras.filter(c=>(c.modalidad||'Otras')===g).map(c=>`<option value="${c.id}">${esc((c.numero?c.numero+' · ':'')+c.nombre)}</option>`).join('')}</optgroup>`).join('')}</select>
+      <button class="btn btn-ghost" onclick="evtAgregarOtra(${p.id})">+ Agregar</button></div></div></div>`;
+  return h;
+}
+async function evtAgregarOtra(partId){ const v = evg('pp-cat-otra').value; if(!v){ alert('Elegí una categoría.'); return; } await evtAgregarInscripcion(partId, Number(v)); }
+async function evtAgregarInscripcion(partId, catId){
+  const { data, error } = await supa.from('evento_inscripciones').insert({ participante_id:partId, categoria_id:catId }).select().single();
+  if(error){ alert(error.code==='23505' ? 'Ya está inscripto en esa categoría.' : 'No se pudo agregar la categoría:\n'+error.message); return; }
+  DBE.inscripciones.push(evtMapInscripcion(data)); evtRenderParticipante(); renderHomeEvento();
+}
+async function evtQuitarInscripcion(id){
+  const { error } = await supa.from('evento_inscripciones').delete().eq('id', id);
+  if(error){ alert('No se pudo quitar:\n'+error.message); return; }
+  DBE.inscripciones = DBE.inscripciones.filter(i=>i.id!==id); evtRenderParticipante(); renderHomeEvento();
+}
+async function evtGuardarKata(id, valor){
+  const { error } = await supa.from('evento_inscripciones').update({ kata_presentada: valor.trim()||null }).eq('id', id);
+  if(error){ alert('No se pudo guardar la kata:\n'+error.message); return; }
+  const i = DBE.inscripciones.find(x=>x.id===id); if(i) i.kata = valor.trim();
+}
+
+// — pagos del participante (grupo) —
+function evtHtmlPagosParticipante(p, e){
+  const raiz = evtRaiz(p), g = evtCalcGrupo(raiz);
+  const ids = new Set(g.miembros.map(m=>m.id));
+  const todosPagos = DB.pagos.filter(x=>x.eventoParticipanteId && ids.has(x.eventoParticipanteId)).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))||b.id-a.id);
+  let h = `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Pagos${g.miembros.length>1?' del grupo de '+esc(evtNombre(raiz)):''}</span>
+      <span class="pill ${evtPillPago(g.estado)}">${g.estado}</span></div><div class="card-body">`;
+  if(g.miembros.length>1) h += `<div class="ev-muted" style="margin-bottom:8px;">Grupo: ${g.miembros.map(m=>esc(evtNombre(m))).join(', ')}. El pago se registra una sola vez y cubre a todo el grupo.</div>`;
+  h += `<div class="ev-stats" style="margin-bottom:12px;">
+      <div class="ev-stat"><div class="ev-stat-v">${money(g.pagado)}</div><div class="ev-stat-l">Pagó</div></div>
+      ${g.conImporte?`<div class="ev-stat"><div class="ev-stat-v">${money(g.aCobrar)}</div><div class="ev-stat-l">A cobrar</div></div>
+      <div class="ev-stat"><div class="ev-stat-v" style="color:${g.saldo>0?'var(--red)':'var(--green)'};">${money(Math.max(0,g.saldo))}</div><div class="ev-stat-l">Saldo</div></div>`:''}</div>`;
+  h += todosPagos.length ? `<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Fecha</th><th>Detalle</th><th>Método</th><th>Monto</th><th></th></tr></thead><tbody>${
+    todosPagos.map(x=>`<tr ${x.anulado?'style="opacity:.5;text-decoration:line-through;"':''}><td>${fechaAR(x.fecha)}</td><td>${esc(x.detalle||x.concepto)}</td><td>${esc(x.metodo||'')}</td><td>${money(x.monto)}</td>
+      <td style="white-space:nowrap;">${x.anulado?`<span class="pill pill-bad" title="${esc(x.anuladoMotivo)}">Anulado</span>`:`<button class="btn btn-ghost btn-sm" onclick="verComprobante(${x.id})">Comprobante</button> <button class="btn btn-ghost btn-sm btn-peligro" onclick="anularPago(${x.id})">Anular</button>`}</td></tr>`).join('')}</tbody></table></div>`
+    : '<div class="ev-muted">Todavía no hay pagos registrados.</div>';
+  h += `<h4 class="ev-sub">Registrar un pago</h4><div class="form-grid">
+      <div class="form-item"><label>Qué paga</label><select id="pp-pago-concepto">${CONCEPTOS_PAGO_EVENTO.map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <div class="form-item"><label>Monto</label><input id="pp-pago-monto" type="number" min="0" placeholder="${g.conImporte&&g.saldo>0?'Saldo: '+g.saldo:''}"></div>
+      <div class="form-item"><label>Método</label><select id="pp-pago-metodo"><option>Efectivo</option><option>Transferencia</option><option>Mercado Pago</option><option>Tarjeta</option></select></div>
+      <div class="form-item"><label>Fecha</label><input id="pp-pago-fecha" type="date" value="${HOY}"></div></div>
+    <div class="form-actions"><button class="btn btn-fill" onclick="evtRegistrarPago()">Registrar pago</button></div></div></div>`;
+  return h;
+}
+async function evtRegistrarPago(){
+  const e = evtEvento(), p = DBE.participantes.find(x=>x.id===EV.partId); if(!p) return;
+  const monto = numOrNull(evg('pp-pago-monto').value);
+  if(!(monto>0)){ alert('Ingresá el monto del pago.'); return; }
+  const raiz = evtRaiz(p), g = evtCalcGrupo(raiz);
+  if(g.conImporte && monto>g.saldo && !confirm(`El pago (${money(monto)}) es mayor que el saldo pendiente (${money(Math.max(0,g.saldo))}). ¿Registrarlo igual?`)) return;
+  const concepto = evg('pp-pago-concepto').value;
+  const alumnoId = p.alumnoId || raiz.alumnoId || null;
+  const quien = p.alumnoId ? '' : ` (${evtNombre(p)})`;
+  const { data, error } = await supa.from('pagos').insert({
+    alumno_id: alumnoId, monto, metodo_pago: evg('pp-pago-metodo').value, tipo_ingreso:'Evento',
+    detalle: `${e.evento} — ${concepto}${quien}`, fecha: evg('pp-pago-fecha').value || HOY, estado_pago:'Pagado', evento_participante_id: p.id,
+  }).select().single();
+  if(error){ alert('No se pudo registrar el pago:\n'+error.message); return; }
+  DB.pagos.push(mapPagoFila(data));
+  evtRenderParticipante(); renderHome(); renderTablaPagos && renderTablaPagos();
+}
+
+// ── Agregar alumnos / categorías (catálogo) ──
+function evtHtmlCategorias(e){
+  const cats = evtCategoriasDe(e.id);
+  const otros = DB.eventosCalendario.filter(x=>x.id!==e.id && evtCategoriasDe(x.id).length).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if(!cats.length){
+    return `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Catálogo de categorías</span></div><div class="card-body">
+      <div class="empty-state" style="padding:20px;">Este evento todavía no tiene catálogo de categorías.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;">
+        <button class="btn btn-fill" onclick="evtImportarCatalogoUCKF()">Importar catálogo UCKF (C1–C161 + Córdoba Juega)</button>
+        ${otros.length?`<select id="cat-copiar-de" style="background:var(--mid);border:1px solid var(--bord);color:var(--text);padding:9px 12px;font-family:inherit;font-size:15px;">${otros.map(x=>`<option value="${x.id}">${esc(x.evento)} (${evtCategoriasDe(x.id).length})</option>`).join('')}</select>
+        <button class="btn btn-ghost" onclick="evtCopiarCatalogo()">Copiar de ese evento</button>`:''}
+      </div>
+      <div class="ev-muted" style="text-align:center;margin-top:12px;">Si el evento no usa el catálogo UCKF (por ejemplo, uno de Inoue-Ha con otras categorías), podés cargar las categorías una por una más abajo cuando tengas el catálogo.</div>
+      ${evtHtmlFormCategoria()}</div></div>`;
+  }
+  return `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Catálogo de categorías</span><span class="card-hdr-s">${cats.length} categorías</span></div>
+    <div class="card-body"><div class="form-grid" style="margin-bottom:10px;">
+      <div class="form-item"><label>Buscar</label><input id="cat-txt" type="text" placeholder="Número o texto (ej: C35, cadetes, −57)" value="${esc(EV.filtroCat.txt)}" oninput="EV.filtroCat.txt=this.value;evtRenderListaCategorias()"></div>
+      <div class="form-item"><label>Modalidad</label><select id="cat-mod" onchange="EV.filtroCat.mod=this.value;evtRenderListaCategorias()"><option value="">Todas</option>${[...new Set(cats.map(c=>c.modalidad).filter(Boolean))].map(m=>`<option ${EV.filtroCat.mod===m?'selected':''}>${esc(m)}</option>`).join('')}</select></div></div>
+      <div id="ev-cat-lista" style="overflow-x:auto;"></div>
+      ${evtHtmlFormCategoria()}
+      <div style="margin-top:14px;"><button class="btn btn-ghost btn-sm btn-peligro" onclick="evtVaciarCatalogo()">Vaciar catálogo</button> <span class="ev-muted">(solo si nadie está inscripto en ninguna categoría)</span></div>
+    </div></div>`;
+}
+function evtHtmlFormCategoria(){
+  return `<details style="margin-top:14px;"><summary class="ev-summary">+ Agregar una categoría a mano</summary>
+    <div class="form-grid" style="margin-top:10px;">
+      <div class="form-item"><label>Número (opcional)</label><input id="nc-numero" type="text" placeholder="Ej: C162"></div>
+      <div class="form-item full"><label>Nombre</label><input id="nc-nombre" type="text" placeholder="Ej: KUMITE MASCULINO CADETES (14 - 15 años) - 57 Kg"></div>
+      <div class="form-item"><label>Modalidad</label><select id="nc-mod"><option>Kata</option><option>Kumite</option><option>Para-Karate</option><option>Otra</option></select></div>
+      <div class="form-item"><label>Sexo</label><select id="nc-sexo"><option value="">— (se elige a mano)</option><option value="F">Femenino</option><option value="M">Masculino</option><option value="X">Mixto</option></select></div>
+      <div class="form-item"><label>Edad mínima</label><input id="nc-emin" type="number" min="0"></div>
+      <div class="form-item"><label>Edad máxima</label><input id="nc-emax" type="number" min="0"></div>
+      <div class="form-item"><label>Peso máximo (− kg)</label><input id="nc-pmax" type="number" step="0.1" min="0"></div>
+      <div class="form-item"><label>Peso mínimo (+ kg)</label><input id="nc-pmin" type="number" step="0.1" min="0"></div>
+      <div class="form-item"><label>Nivel</label><select id="nc-nivel"><option value="">Sin nivel</option><option>Blancos</option><option>Kyu A</option><option>Kyu B</option><option>Libre</option></select></div>
+    </div>
+    <div class="ev-muted" style="margin-bottom:8px;">Si no cargás sexo y edad, la categoría no se sugiere sola: se elige a mano.</div>
+    <button class="btn btn-fill btn-sm" onclick="evtAgregarCategoriaManual()">Agregar categoría</button></details>`;
+}
+function evtRenderListaCategorias(){
+  const e = evtEvento(), cont = evg('ev-cat-lista'); if(!e || !cont) return;
+  const t = normTxt(EV.filtroCat.txt);
+  const inscPorCat = {}; DBE.inscripciones.forEach(i=>{ inscPorCat[i.categoriaId] = (inscPorCat[i.categoriaId]||0)+1; });
+  const lista = evtCategoriasDe(e.id).filter(c=>(!EV.filtroCat.mod||c.modalidad===EV.filtroCat.mod) && (!t || normTxt(c.numero+' '+c.nombre).includes(t)));
+  cont.innerHTML = lista.length ? `<table class="tbl"><thead><tr><th>N°</th><th>Categoría</th><th>Modalidad</th><th>Nivel</th><th>Inscriptos</th><th></th></tr></thead><tbody>${
+    lista.map(c=>`<tr style="cursor:default;"><td><b>${esc(c.numero)}</b></td><td>${esc(c.nombre)}${c.sugerible?'':' <span class="pill pill-ghost" title="No se sugiere sola: se elige a mano">manual</span>'}</td>
+      <td>${esc(c.modalidad||'—')}</td><td>${esc(c.nivel||'—')}</td><td>${inscPorCat[c.id]||0}</td>
+      <td>${inscPorCat[c.id]?'':`<button class="btn btn-ghost btn-sm btn-peligro" onclick="evtEliminarCategoria(${c.id})">Quitar</button>`}</td></tr>`).join('')}</tbody></table>`
+    : '<div class="empty-state">Ninguna categoría coincide.</div>';
+}
+async function evtImportarCatalogoUCKF(){
+  const e = evtEvento();
+  const existentes = new Set(evtCategoriasDe(e.id).map(c=>c.numero));
+  const filas = CATALOGO_UCKF.filter(c=>!existentes.has(c.numero)).map(c=>({ ...c, evento_id:e.id }));
+  if(!filas.length){ alert('Ya están todas las categorías del catálogo UCKF.'); return; }
+  if(!confirm(`Se van a cargar ${filas.length} categorías del catálogo UCKF en "${e.evento}".\n\nSon las del torneo provincial 2025 (C1–C155), las 6 agregadas en agosto 2025 y las 8 de Córdoba Juega. Después podés agregar, quitar o ajustar lo que cambie en este torneo.`)) return;
+  for(let i=0;i<filas.length;i+=100){
+    const { error } = await supa.from('evento_categorias').insert(filas.slice(i,i+100));
+    if(error){ alert('La importación se interrumpió:\n'+error.message+'\n\nPodés volver a importar: solo se cargan las que faltan.'); await cargarEventos(); renderEvento(); return; }
+  }
+  await cargarEventos(); renderEvento();
+}
+async function evtCopiarCatalogo(){
+  const e = evtEvento(), origen = Number(evg('cat-copiar-de').value); if(!origen) return;
+  const filas = evtCategoriasDe(origen).map(c=>({ evento_id:e.id, numero:c.numero||null, nombre:c.nombre, modalidad:c.modalidad||null, sexo:c.sexo||null, rama:c.rama||null,
+    edad_min:c.edadMin, edad_max:c.edadMax, definida_por:c.definidaPor, anio_nac_desde:c.anioDesde, anio_nac_hasta:c.anioHasta, peso_max:c.pesoMax, peso_min:c.pesoMin,
+    estatura_lado:c.estLado||null, estatura_corte_cm:c.estCorte, nivel:c.nivel||null, regla_kata:c.reglaKata||null, discapacidad:c.discapacidad||null,
+    sugerible:c.sugerible, origen:c.origen||null, observaciones:c.obs||null }));
+  if(!confirm(`Se copian ${filas.length} categorías de "${evtEvento(origen).evento}" a este evento.`)) return;
+  for(let i=0;i<filas.length;i+=100){
+    const { error } = await supa.from('evento_categorias').insert(filas.slice(i,i+100));
+    if(error){ alert('No se pudo copiar:\n'+error.message); await cargarEventos(); renderEvento(); return; }
+  }
+  await cargarEventos(); renderEvento();
+}
+async function evtAgregarCategoriaManual(){
+  const e = evtEvento(), nombre = evg('nc-nombre').value.trim();
+  if(!nombre){ alert('El nombre de la categoría es obligatorio.'); return; }
+  const sexo = evg('nc-sexo').value||null, emin = numOrNull(evg('nc-emin').value), emax = numOrNull(evg('nc-emax').value);
+  const fila = { evento_id:e.id, numero:evg('nc-numero').value.trim()||null, nombre, modalidad:evg('nc-mod').value, sexo, edad_min:emin, edad_max:emax,
+    peso_max:numOrNull(evg('nc-pmax').value), peso_min:numOrNull(evg('nc-pmin').value), nivel:evg('nc-nivel').value||null,
+    sugerible: !!(sexo && (emin!=null || emax!=null)), origen:'Cargada a mano' };
+  const { data, error } = await supa.from('evento_categorias').insert(fila).select().single();
+  if(error){ alert(error.code==='23505' ? 'Ya existe una categoría con ese número en este evento.' : 'No se pudo agregar:\n'+error.message); return; }
+  DBE.categorias.push(evtMapCategoria(data)); renderEvento();
+}
+async function evtEliminarCategoria(id){
+  if(DBE.inscripciones.some(i=>i.categoriaId===id)){ alert('Hay alguien inscripto en esa categoría.'); return; }
+  const { error } = await supa.from('evento_categorias').delete().eq('id', id);
+  if(error){ alert('No se pudo quitar:\n'+error.message); return; }
+  DBE.categorias = DBE.categorias.filter(c=>c.id!==id); renderEvento();
+}
+async function evtVaciarCatalogo(){
+  const e = evtEvento(), ids = new Set(evtCategoriasDe(e.id).map(c=>c.id));
+  if(DBE.inscripciones.some(i=>ids.has(i.categoriaId))){ alert('No se puede vaciar: hay inscripciones en categorías de este evento. Quitá primero esas inscripciones.'); return; }
+  if(!confirm(`¿Vaciar el catálogo de "${e.evento}"? (${ids.size} categorías). Después podés volver a importarlo.`)) return;
+  const { error } = await supa.from('evento_categorias').delete().eq('evento_id', e.id);
+  if(error){ alert('No se pudo vaciar:\n'+error.message); return; }
+  DBE.categorias = DBE.categorias.filter(c=>c.eventoId!==e.id); renderEvento();
+}
+
+// ── Cobros ──
+function evtLinkWhatsAppGrupo(raiz, e){
+  const d = evtDatosPersona(raiz), num = waNumero(d.telefono); if(!num) return '';
+  const g = evtCalcGrupo(raiz);
+  let msg = `Hola! Te escribo de Ikai Dojo por ${e.evento} (${fechaAR(e.fecha)}). `;
+  if(g.pagado) msg += `Hasta ahora registramos ${money(g.pagado)}. `;
+  if(g.saldo!=null && g.saldo>0) msg += `Queda pendiente ${money(g.saldo)}. `;
+  msg += '¡Gracias!';
+  return `<a class="btn btn-ghost btn-sm" href="https://wa.me/${num}?text=${encodeURIComponent(msg)}" target="_blank" title="Se abre el mensaje listo para enviar; no se manda solo">WhatsApp</a>`;
+}
+function evtHtmlCobros(e){
+  const raices = evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja' && evtRaiz(p).id===p.id).sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es'));
+  const filas = raices.map(r=>({ r, g:evtCalcGrupo(r) }));
+  const tot = filas.reduce((t,x)=>({ cobrar:t.cobrar+x.g.aCobrar, pagado:t.pagado+x.g.pagado, saldo:t.saldo+(x.g.conImporte?Math.max(0,x.g.saldo):0) }), { cobrar:0, pagado:0, saldo:0 });
+  const hayImporte = filas.some(x=>x.g.conImporte);
+  return `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Cobros por grupo</span><span class="card-hdr-s">Cobrado: ${money(tot.pagado)}${hayImporte?' · Falta: '+money(tot.saldo):''}</span></div>
+    <div class="card-body" style="padding:0;overflow-x:auto;">${filas.length ? `<table class="tbl"><thead><tr><th>Grupo</th><th>Integrantes</th><th>A cobrar</th><th>Pagó</th><th>Saldo</th><th>Estado</th><th></th></tr></thead><tbody>${
+      filas.map(({r,g})=>`<tr><td onclick="evtAbrirParticipante(${r.id})" style="cursor:pointer;">${esc(evtNombre(r))}</td>
+        <td class="ev-muted">${g.vigentes.length>1?esc(g.vigentes.filter(m=>m.id!==r.id).map(evtNombre).join(', ')):'—'}</td>
+        <td>${g.conImporte?money(g.aCobrar):'—'}</td><td>${money(g.pagado)}</td><td>${g.saldo==null?'—':money(Math.max(0,g.saldo))}</td>
+        <td><span class="pill ${evtPillPago(g.estado)}">${g.estado}</span></td>
+        <td style="white-space:nowrap;"><button class="btn btn-ghost btn-sm" onclick="evtAbrirParticipante(${r.id})">Registrar pago</button> ${g.saldo!=null&&g.saldo>0||g.estado==='Sin pago'?evtLinkWhatsAppGrupo(r,e):''}</td></tr>`).join('')}</tbody></table>`
+      : '<div class="empty-state">Todavía no hay participantes.</div>'}</div>
+    <div class="card-body ev-muted" style="font-size:13px;">Cada familia se cobra una sola vez (atleta + acompañantes). Si no cargás "importe a cobrar", solo se registra lo que pagó. Los pagos también aparecen en Cuotas y Pagos y cuentan en Economía.</div></div>`;
+}
+
+// ── Panel: tarjeta "Próximo evento" ──
+function evtProximoEvento(){
+  return DB.eventosCalendario.filter(e=>e.tieneExpediente && e.estado!=='Cancelado' && e.estado!=='Finalizado' && (e.fechaFin||e.fecha)>=HOY).sort((a,b)=>a.fecha.localeCompare(b.fecha))[0] || null;
+}
+function renderHomeEvento(){
+  const cont = evg('home-evento'); if(!cont) return;
+  const e = DBE.migrado ? evtProximoEvento() : null;
+  if(!e){ cont.innerHTML = ''; return; }
+  const dias = diasEntre(HOY, e.fecha), c = evtCierreInfo(e);
+  const parts = evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja');
+  const atl = parts.filter(evtEsAtleta).length;
+  const grupos = parts.filter(p=>evtRaiz(p).id===p.id).map(evtCalcGrupo);
+  const cobrado = grupos.reduce((s,g)=>s+g.pagado,0), falta = grupos.reduce((s,g)=>s+(g.conImporte?Math.max(0,g.saldo):0),0);
+  const avisos = evtAvisosGenerales(e).length;
+  cont.innerHTML = `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Próximo evento — ${esc(e.evento)}</span>
+      <button class="btn btn-fill btn-sm" onclick="abrirExpediente(${e.id})">Abrir expediente</button></div>
+    <div class="card-body"><div class="ev-meta-grid">
+      <div><label>Fecha</label><span>${fechaAR(e.fecha)} <span class="ev-muted">${dias===0?'(hoy)':(dias===1?'(mañana)':'(en '+dias+' días)')}</span></span></div>
+      <div><label>Lugar</label><span>${esc(e.lugar||'—')}</span></div>
+      <div><label>Inscripción</label><span>${c?`<span class="pill ${c.pill}">${c.etiqueta}</span> <span class="ev-muted">${esc(c.txt)}</span>`:'<span class="ev-muted">sin fecha de cierre</span>'}</span></div>
+      <div><label>Atletas</label><span>${atl}</span></div>
+      <div><label>Cobrado</label><span>${money(cobrado)}${falta?` <span class="ev-muted">· falta ${money(falta)}</span>`:''}</span></div>
+      <div><label>Para revisar</label><span>${avisos?`<span class="pill pill-warn">${avisos} aviso${avisos===1?'':'s'}</span>`:'<span class="pill pill-ok">sin avisos</span>'}</span></div></div>
+      ${e.recordatorios?`<div class="ev-recordatorio" style="margin-top:10px;">⚑ ${esc(e.recordatorios)}</div>`:''}</div></div>`;
+}
+
+// ── Alumno: campos sexo y grado ──
+function evtCamposAlumnoVisibles(){ const el = evg('f-eventos-campos'); if(el) el.style.display = DBE.migrado ? 'contents' : 'none'; }
+
+// ── Eliminar un evento del Calendario: no perder pagos de torneo por accidente ──
+function evtPuedeEliminarEvento(e){
+  if(!DBE.migrado) return true;
+  const parts = evtParticipantesDe(e.id);
+  if(!parts.length) return true;
+  const ids = new Set(parts.map(p=>p.id));
+  if(DB.pagos.some(x=>x.eventoParticipanteId && ids.has(x.eventoParticipanteId))){
+    alert(`No se puede eliminar "${e.evento}": tiene participantes con pagos registrados (aunque estén anulados).\n\nEn su lugar, cambiá el estado del evento a "Cancelado" o "Finalizado": queda en el historial.`);
+    return false;
+  }
+  return confirm(`"${e.evento}" tiene ${parts.length} participante(s) cargados. Si lo eliminás se borran también sus participantes y categorías. ¿Seguir?`);
+}
+
+
+// ═══════════════════════════════════════
+// EXPORTABLES (Excel + PDF con identidad Ikai Dojo, texto y WhatsApp)
+// ═══════════════════════════════════════
+// Misma idea que el "pedido al fabricante": texto copiable, WhatsApp, Excel e
+// impresión/PDF. Todos los archivos salen de una misma especificación
+// ("spec") para que Excel y PDF digan siempre lo mismo.
+
+// ── Registro de inscripción: quién compite y en qué categorías ──
+function evtRegistro(e){
+  const atletas = evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja' && evtEsAtleta(p));
+  const filas = atletas.map(p=>{
+    const d = evtDatosPersona(p);
+    return { p, nombre:evtNombre(p), dni:d.dni, grado:evtGradoDe(p), edad:edadAl(d.fnac, e.fecha), peso:p.peso, estatura:p.estatura,
+      sexo:d.sexo, insc:evtInscripcionesDe(p).map(x=>({ cat:x.cat, av:evtAvisosInscripcion(p, x.cat, e) })) };
+  }).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  const competidores = filas.filter(f=>f.insc.length);
+  const sinCategoria = filas.filter(f=>!f.insc.length);
+  const nInsc = filas.reduce((s,f)=>s+f.insc.length,0);
+  const porCat = new Map();
+  competidores.forEach(f=>f.insc.forEach(({cat})=>{ if(!porCat.has(cat.id)) porCat.set(cat.id, { cat, alumnos:[] }); porCat.get(cat.id).alumnos.push(f); }));
+  const cats = [...porCat.values()].sort((a,b)=>evtOrdenCat(a.cat,b.cat));
+  return { filas, competidores, sinCategoria, nInsc, cats, totalAlumnos:competidores.length };
+}
+function evtTituloPlanilla(e){
+  const anio = String(e.fecha).slice(0,4);
+  return e.organizacion==='UCKF' ? `PLANILLA DE INSCRIPTOS UCKF ${anio}` : `PLANILLA DE INSCRIPTOS — ${e.evento}`;
+}
+function evtInstitucion(e){ return e.institucionPlanilla || 'Ikai Dojo'; }
+function evtProfesor(e){ return e.profesorPlanilla || 'Matías Subijana'; }
+const evtCatCorta = c => c.numero || c.nombre;
+const evtAv = f => f.insc.some(x=>x.av.length);
+
+// ── Textos (para copiar / WhatsApp / mail) ──
+function evtTextoInterno(e){
+  const r = evtRegistro(e), l = [];
+  l.push(`*IKAI DOJO — Control interno*`);
+  l.push(`${e.evento} — ${fechaAR(e.fecha)}${e.lugar?' — '+e.lugar:''}`);
+  l.push(`Alumnos que participan: ${r.totalAlumnos} · Inscripciones: ${r.nInsc}`);
+  l.push('');
+  r.competidores.forEach((f,i)=>{
+    const dat = [f.grado||null, f.edad!=null?f.edad+' años':null, f.peso!=null?f.peso+' kg':null].filter(Boolean).join(', ');
+    l.push(`${i+1}. ${f.nombre}${dat?' ('+dat+')':''}`);
+    f.insc.forEach(({cat,av})=>l.push(`   • ${evtCatCorta(cat)} — ${cat.nombre}${av.length?' ⚠ '+av.join('; '):''}`));
+  });
+  if(r.sinCategoria.length){ l.push(''); l.push(`Sin categoría todavía: ${r.sinCategoria.map(f=>f.nombre).join(', ')}`); }
+  return l.join('\n');
+}
+function evtTextoFederacion(e){
+  const r = evtRegistro(e), l = [];
+  l.push(`*${evtTituloPlanilla(e)}*`);
+  l.push(`Evento: ${e.evento} — ${fechaAR(e.fecha)}`);
+  l.push(`Institución: ${evtInstitucion(e)}`);
+  l.push(`Profesor a cargo: ${evtProfesor(e)}`);
+  l.push(`*Total de alumnos que participan: ${r.totalAlumnos}* (inscripciones: ${r.nInsc})`);
+  l.push('');
+  r.competidores.forEach(f=>{
+    l.push(`${f.nombre}${f.dni?' — DNI '+f.dni:''} — ${[f.grado||null, f.edad!=null?f.edad+' años':null, f.peso!=null?f.peso+' kg':null].filter(Boolean).join(', ')}`);
+    l.push(`   Categorías: ${f.insc.map(x=>evtCatCorta(x.cat)).join(', ')}`);
+  });
+  if(r.cats.length){ l.push(''); l.push('Cantidad de alumnos por categoría:'); r.cats.forEach(c=>l.push(`   ${evtCatCorta(c.cat)}: ${c.alumnos.length}`)); }
+  return l.join('\n');
+}
+function evtTexto(tipo, e){ return tipo==='fed' ? evtTextoFederacion(e) : (tipo==='fam' ? evtTextoFamilias(e) : evtTextoInterno(e)); }
+function evtTextoFamilias(e){
+  const c = evtCierreInfo(e), l = [];
+  l.push(`*${e.evento}*`);
+  l.push(`📅 ${fechaAR(e.fecha)}${e.fechaFin&&e.fechaFin!==e.fecha?' al '+fechaAR(e.fechaFin):''}${e.horario?' · '+e.horario:''}`);
+  if(e.lugar) l.push(`📍 ${e.lugar}`);
+  if(c && !c.vencido) l.push(`⏰ Cierre de inscripción: ${c.txt}`);
+  if(e.recordatorios){ l.push(''); l.push(`⚑ ${e.recordatorios}`); }
+  l.push(''); l.push('Cualquier duda me escriben. ¡Gracias! — Ikai Dojo');
+  return l.join('\n');
+}
+async function evtCopiarTexto(tipo){
+  const texto = evtTexto(tipo, evtEvento());
+  try{ await navigator.clipboard.writeText(texto); alert('Texto copiado. Ya podés pegarlo en WhatsApp, mail o donde quieras.'); }
+  catch(err){
+    const ta = document.createElement('textarea'); ta.value = texto; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); alert('Texto copiado.'); }catch(e2){ prompt('Copiá el texto de acá:', texto); }
+    ta.remove();
+  }
+}
+// Se abre WhatsApp con el mensaje listo y elegís vos a quién enviarlo (nunca se manda solo)
+function evtWhatsApp(tipo){ window.open('https://wa.me/?text='+encodeURIComponent(evtTexto(tipo, evtEvento())), '_blank'); }
+function evtMail(tipo){
+  const e = evtEvento();
+  const asunto = tipo==='fed' ? `${evtTituloPlanilla(e)} — ${evtInstitucion(e)}` : `${e.evento} — Ikai Dojo`;
+  window.location.href = 'mailto:?subject='+encodeURIComponent(asunto)+'&body='+encodeURIComponent(evtTexto(tipo, e));
+}
+
+// ── Especificaciones de cada exportable ──
+function evtSpecBase(e, titulo, subtitulo){
+  return { titulo, subtitulo, meta:[], columnas:[], filas:[], notas:[], horizontal:true,
+    pie:`Ikai Dojo — Creado por Matías Subijana · Generado el ${fechaAR(HOY)}` };
+}
+function evtNombreArchivo(e, base){
+  const limpio = s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  return `${limpio(base)}_${limpio(e.evento).slice(0,40)}_${String(e.fecha).slice(0,10)}`;
+}
+function evtSpec(tipo, e){
+  const r = evtRegistro(e);
+  if(tipo==='oficial'){
+    const s = evtSpecBase(e, evtTituloPlanilla(e), e.evento+' — '+fechaAR(e.fecha));
+    s.archivo = evtNombreArchivo(e, 'Planilla_inscriptos'); s.hoja = 'Inscriptos'; s.horizontal = false;
+    s.meta = [['Institución', evtInstitucion(e)], ['Profesor a cargo', evtProfesor(e)]];
+    s.columnas = [{t:'Apellido y Nombre',w:34},{t:'DNI',w:14},{t:'Grad.',w:12},{t:'Edad',w:8,a:'center'},{t:'Peso',w:8,a:'center'},{t:'Categoría Nº',w:16,a:'center'}];
+    r.competidores.forEach(f=>f.insc.forEach(({cat})=>s.filas.push([f.nombre, f.dni||'', f.grado||'', f.edad==null?'':f.edad, f.peso==null?'':f.peso, evtCatCorta(cat)])));
+    s.notas = [`Total de alumnos que participan: ${r.totalAlumnos} — Total de inscripciones: ${r.nInsc}`];
+    return s;
+  }
+  if(tipo==='interno'){
+    const s = evtSpecBase(e, 'Resumen de inscripción — control interno', e.evento+' — '+fechaAR(e.fecha));
+    s.archivo = evtNombreArchivo(e, 'Control_interno'); s.hoja = 'Control interno';
+    s.meta = [['Alumnos que participan', r.totalAlumnos], ['Inscripciones', r.nInsc]];
+    s.columnas = [{t:'N°',w:5,a:'center'},{t:'Alumno',w:32},{t:'Grado',w:12},{t:'Edad',w:7,a:'center'},{t:'Peso',w:8,a:'center'},{t:'Categorías en las que participa',w:70},{t:'Avisos',w:36}];
+    r.competidores.forEach((f,i)=>s.filas.push([i+1, f.nombre, f.grado||'', f.edad==null?'':f.edad, f.peso==null?'':f.peso,
+      f.insc.map(x=>`${evtCatCorta(x.cat)} — ${x.cat.nombre}`).join('\n'), f.insc.flatMap(x=>x.av.map(a=>`${evtCatCorta(x.cat)}: ${a}`)).join('\n')]));
+    s.filas.push({ total:['', `Total: ${r.totalAlumnos} alumnos`, '', '', '', `${r.nInsc} inscripciones`, ''] });
+    if(r.sinCategoria.length) s.notas.push('Sin categoría todavía: '+r.sinCategoria.map(f=>f.nombre).join(', '));
+    return s;
+  }
+  if(tipo==='categorias'){
+    const s = evtSpecBase(e, 'Planilla por categorías', e.evento+' — '+fechaAR(e.fecha));
+    s.archivo = evtNombreArchivo(e, 'Por_categorias'); s.hoja = 'Por categorías';
+    s.meta = [['Institución', evtInstitucion(e)], ['Alumnos que participan', r.totalAlumnos]];
+    s.columnas = [{t:'N°',w:5,a:'center'},{t:'Apellido y Nombre',w:34},{t:'Grado',w:12},{t:'Edad',w:7,a:'center'},{t:'Peso',w:8,a:'center'},{t:'Kata que presenta',w:26},{t:'Puesto',w:10,a:'center'},{t:'Observaciones',w:28}];
+    r.cats.forEach(({cat,alumnos})=>{
+      s.filas.push({ seccion:`${evtCatCorta(cat)} — ${cat.nombre}  (${alumnos.length} alumno${alumnos.length===1?'':'s'})` });
+      alumnos.forEach((f,i)=>{ const ins = DBE.inscripciones.find(x=>x.participanteId===f.p.id && x.categoriaId===cat.id);
+        s.filas.push([i+1, f.nombre, f.grado||'', f.edad==null?'':f.edad, f.peso==null?'':f.peso, ins?ins.kata:'', '', '']); });
+    });
+    return s;
+  }
+  if(tipo==='pagos'){
+    const s = evtSpecBase(e, 'Estado de pagos', e.evento+' — '+fechaAR(e.fecha));
+    s.archivo = evtNombreArchivo(e, 'Estado_pagos'); s.hoja = 'Pagos';
+    s.columnas = [{t:'Grupo',w:30},{t:'Integrantes',w:34},{t:'A cobrar',w:14,tipo:'money'},{t:'Pagó',w:14,tipo:'money'},{t:'Saldo',w:14,tipo:'money'},{t:'Estado',w:14,a:'center'},{t:'Detalle de pagos',w:56}];
+    let tc = 0, tp = 0, ts = 0, hay = false;
+    evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja' && evtRaiz(p).id===p.id).sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es')).forEach(raiz=>{
+      const g = evtCalcGrupo(raiz); if(g.conImporte) hay = true;
+      tc += g.aCobrar; tp += g.pagado; ts += g.conImporte?Math.max(0,g.saldo):0;
+      s.filas.push([evtNombre(raiz), g.vigentes.filter(m=>m.id!==raiz.id).map(evtNombre).join(', '), g.conImporte?g.aCobrar:'', g.pagado, g.saldo==null?'':Math.max(0,g.saldo), g.estado,
+        g.pagos.sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha))).map(x=>`${fechaAR(x.fecha)} ${x.detalle?x.detalle.split(' — ').pop():x.concepto} ${money(x.monto)} (${x.metodo||''})`).join('\n')]);
+    });
+    s.filas.push({ total:['Totales', '', hay?tc:'', tp, hay?ts:'', '', ''] });
+    s.notas = ['Cada familia se cobra una sola vez (atleta + acompañantes). Sin "importe a cobrar" cargado solo se muestra lo que pagó.'];
+    return s;
+  }
+  if(tipo==='listado'){
+    const s = evtSpecBase(e, 'Listado general de participantes', e.evento+' — '+fechaAR(e.fecha));
+    s.archivo = evtNombreArchivo(e, 'Listado_participantes'); s.hoja = 'Participantes';
+    s.columnas = [{t:'Apellido y Nombre',w:32},{t:'Rol',w:13},{t:'DNI',w:13},{t:'Edad',w:7,a:'center'},{t:'Sexo',w:6,a:'center'},{t:'Grado',w:12},{t:'Nivel',w:9},{t:'Peso',w:8,a:'center'},{t:'Categorías',w:36},{t:'Alojamiento',w:14},{t:'Observaciones',w:30}];
+    evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja').sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es')).forEach(p=>{
+      const d = evtDatosPersona(p), atl = evtEsAtleta(p);
+      s.filas.push([evtNombre(p), p.rol+(p.relacion?' ('+p.relacion+')':''), d.dni||'', edadAl(d.fnac,e.fecha)==null?'':edadAl(d.fnac,e.fecha), d.sexo||'', atl?evtGradoDe(p):'', atl?nivelDeGrado(evtGradoDe(p)):'',
+        atl&&p.peso!=null?p.peso:'', evtInscripcionesDe(p).map(x=>evtCatCorta(x.cat)).join(', '), p.alojamiento||'', p.obs||'']);
+    });
+    s.notas = ['Este listado no incluye datos de salud.'];
+    return s;
+  }
+  if(tipo==='organizador'){
+    const s = evtSpecBase(e, 'Listado para el organizador / alojamiento', e.evento+' — '+fechaAR(e.fecha));
+    s.archivo = evtNombreArchivo(e, 'Listado_organizador'); s.hoja = 'Organizador'; s.horizontal = false;
+    s.meta = [['Delegación', evtInstitucion(e)], ['Responsable', evtProfesor(e)]];
+    s.columnas = [{t:'N°',w:5,a:'center'},{t:'Apellido y Nombre',w:34},{t:'DNI',w:14},{t:'Edad',w:7,a:'center'},{t:'Rol',w:15},{t:'Alojamiento',w:16}];
+    evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja').sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es')).forEach((p,i)=>{
+      const d = evtDatosPersona(p); s.filas.push([i+1, evtNombre(p), d.dni||'', edadAl(d.fnac,e.fecha)==null?'':edadAl(d.fnac,e.fecha), p.rol, p.alojamiento||'']);
+    });
+    const at = evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja');
+    s.notas = [`Total atletas: ${at.filter(evtEsAtleta).length} — Total acompañantes: ${at.filter(p=>!evtEsAtleta(p)).length} — Total general: ${at.length}`];
+    return s;
+  }
+  return null;
+}
+
+// ── Motor de Excel (ExcelJS) y PDF: identidad Ikai Dojo ──
+const IKAI = { negro:'0F0704', naranja:'FF6A1A', ambar:'FFB200', dorado:'C9A84C', crema:'F5EDE4', marron:'3A2418', zebra:'FBF6F0', borde:'D9C8B8' };
+async function evtCargarExcelJS(){
+  if(window.ExcelJS) return;
+  await new Promise((ok, mal)=>{
+    const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+    s.onload = ok; s.onerror = ()=>mal(new Error('No se pudo cargar la librería de Excel. ¿Hay conexión a internet?')); document.head.appendChild(s);
+  });
+}
+let _logoCache = null;
+// Logo del encabezado de la app, reducido (los archivos no deben pesar de más) y con sus proporciones
+async function evtLogo(){
+  if(_logoCache) return _logoCache;
+  const img0 = document.querySelector('header img');
+  const src = (img0 && img0.getAttribute('src')) || 'icon-192.png';
+  const im = await new Promise((ok, mal)=>{ const i = new Image(); i.onload = ()=>ok(i); i.onerror = ()=>mal(new Error('No se pudo leer el logo')); i.src = src; });
+  const MAX = 220, esc = Math.min(1, MAX / Math.max(im.naturalWidth, im.naturalHeight));
+  const w = Math.round(im.naturalWidth*esc), h = Math.round(im.naturalHeight*esc);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h);
+  const dataUri = c.toDataURL('image/png');
+  _logoCache = { dataUri, base64:dataUri.split(',')[1], ratio:w/h };
+  return _logoCache;
+}
+function descargarBlob(nombre, blob){
+  if(window.__testGuardar){ window.__testGuardar(nombre, blob); return; }      // gancho de pruebas
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+async function evtExcel(tipo){
+  try{
+    const e = evtEvento(), spec = evtSpec(tipo, e); if(!spec){ alert('Exportable no disponible.'); return; }
+    await evtCargarExcelJS(); const logo = await evtLogo();
+    const n = spec.columnas.length, argb = h=>'FF'+h;
+    const wb = new ExcelJS.Workbook(); wb.creator = 'Ikai Dojo'; wb.created = new Date(); wb.title = spec.titulo;
+    const ws = wb.addWorksheet(spec.hoja||'Hoja1', {
+      pageSetup:{ paperSize:9, orientation:spec.horizontal?'landscape':'portrait', fitToPage:true, fitToWidth:1, fitToHeight:0, horizontalCentered:true,
+        margins:{ left:.4, right:.4, top:.55, bottom:.6, header:.3, footer:.3 } },
+      headerFooter:{ oddFooter:'&L&8Ikai Dojo — Creado por Matías Subijana&R&8Página &P de &N' },
+    });
+    ws.columns = spec.columnas.map(c=>({ width:c.w }));
+    const fill = (cell, hex)=>{ cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:argb(hex) } }; };
+    const borde = { top:{style:'thin',color:{argb:argb(IKAI.borde)}}, left:{style:'thin',color:{argb:argb(IKAI.borde)}}, bottom:{style:'thin',color:{argb:argb(IKAI.borde)}}, right:{style:'thin',color:{argb:argb(IKAI.borde)}} };
+    // Banda superior: logo + título (3 filas)
+    for(let r=1;r<=3;r++){ ws.getRow(r).height = r===1 ? 30 : 22; ws.mergeCells(r,1,r,n); for(let c=1;c<=n;c++) fill(ws.getCell(r,c), IKAI.negro); }
+    const t1 = ws.getCell(1,1); t1.value = spec.titulo; t1.font = { name:'Calibri', size:20, bold:true, color:{argb:argb(IKAI.naranja)} }; t1.alignment = { vertical:'middle', horizontal:'left', indent:8 };
+    const t2 = ws.getCell(2,1); t2.value = spec.subtitulo||''; t2.font = { name:'Calibri', size:12, color:{argb:argb(IKAI.crema)} }; t2.alignment = { vertical:'middle', horizontal:'left', indent:8 };
+    const t3 = ws.getCell(3,1); t3.value = 'IKAI DOJO · Inoue-Ha Calamuchita'; t3.font = { name:'Calibri', size:9, bold:true, color:{argb:argb(IKAI.dorado)} }; t3.alignment = { vertical:'middle', horizontal:'left', indent:8 };
+    const imgId = wb.addImage({ base64:logo.base64, extension:'png' });
+    ws.addImage(imgId, { tl:{ nativeCol:0, nativeColOff:57150, nativeRow:0, nativeRowOff:38100 }, ext:{ width:Math.round(68*logo.ratio), height:68 } });
+    ws.getRow(4).height = 5; ws.mergeCells(4,1,4,n); for(let c=1;c<=n;c++) fill(ws.getCell(4,c), IKAI.naranja);
+    let fila = 5;
+    // Datos del encabezado (Institución, Profesor…)
+    ws.getRow(fila).height = 8; fila++;
+    // La etiqueta se extiende por las primeras columnas hasta tener ~26 caracteres de ancho (si la 1ª es angosta, como "N°")
+    let kEtiq = 1, anchoEtiq = spec.columnas[0].w;
+    while(anchoEtiq < 26 && kEtiq < n-1){ anchoEtiq += spec.columnas[kEtiq].w; kEtiq++; }
+    (spec.meta||[]).forEach(([k,v])=>{
+      const rr = ws.getRow(fila);
+      if(kEtiq>1) ws.mergeCells(fila,1,fila,kEtiq);
+      ws.mergeCells(fila,kEtiq+1,fila,n);
+      const a = ws.getCell(fila,1), b = ws.getCell(fila,kEtiq+1);
+      a.value = k+':'; a.font = { name:'Calibri', size:11, bold:true, color:{argb:argb(IKAI.marron)} }; a.alignment = { vertical:'middle' };
+      b.value = v; b.font = { name:'Calibri', size:11, color:{argb:'FF222222'} }; b.alignment = { vertical:'middle', horizontal:'left' };
+      rr.height = 18; fila++;
+    });
+    ws.getRow(fila).height = 8; fila++;
+    // Encabezado de la tabla
+    const hdr = ws.getRow(fila); hdr.height = 24;
+    spec.columnas.forEach((c,i)=>{ const cell = hdr.getCell(i+1); cell.value = c.t; fill(cell, IKAI.naranja);
+      cell.font = { name:'Calibri', size:11, bold:true, color:{argb:argb(IKAI.negro)} }; cell.alignment = { vertical:'middle', horizontal:c.a||(c.tipo==='money'?'right':'left'), wrapText:true }; cell.border = borde; });
+    const filaEncabezado = fila; fila++;
+    let z = 0;
+    spec.filas.forEach(f=>{
+      if(f.seccion){
+        ws.mergeCells(fila,1,fila,n); const cell = ws.getCell(fila,1); cell.value = f.seccion; fill(cell, IKAI.marron);
+        cell.font = { name:'Calibri', size:11, bold:true, color:{argb:'FFFFFFFF'} }; cell.alignment = { vertical:'middle', indent:1 };
+        for(let c=1;c<=n;c++) ws.getCell(fila,c).border = borde; ws.getRow(fila).height = 20; z = 0; fila++; return;
+      }
+      const valores = f.total || f; const row = ws.getRow(fila);
+      let lineas = 1;
+      spec.columnas.forEach((c,i)=>{
+        const cell = row.getCell(i+1); const v = valores[i];
+        cell.value = (v===undefined||v===null) ? '' : v;
+        cell.border = borde; cell.alignment = { vertical:'top', horizontal:c.a||(c.tipo==='money'?'right':'left'), wrapText:true };
+        cell.font = { name:'Calibri', size:11, bold:!!f.total, color:{argb:'FF222222'} };
+        if(c.tipo==='money' && typeof v==='number') cell.numFmt = '"$"#,##0';
+        if(f.total) fill(cell, 'FFE6D0'); else if(z%2===1) fill(cell, IKAI.zebra);
+        if(typeof v==='string') lineas = Math.max(lineas, v.split('\n').reduce((t,l)=>t+Math.max(1, Math.ceil(l.length/Math.max(4, c.w*1.05))), 0));
+      });
+      if(lineas>1) row.height = 15*lineas+3;
+      if(!f.total) z++; fila++;
+    });
+    (spec.notas||[]).forEach(txt=>{ fila++; ws.mergeCells(fila,1,fila,n); const c = ws.getCell(fila,1); c.value = txt; c.font = { name:'Calibri', size:10, italic:true, color:{argb:'FF555555'} }; c.alignment = { wrapText:true, vertical:'top' }; ws.getRow(fila).height = 18; });
+    fila += 2; ws.mergeCells(fila,1,fila,n);
+    const pie = ws.getCell(fila,1); pie.value = spec.pie; pie.font = { name:'Calibri', size:9, italic:true, color:{argb:argb(IKAI.dorado)} }; pie.alignment = { horizontal:'center' };
+    ws.views = [{ state:'frozen', ySplit:filaEncabezado, showGridLines:false }];
+    ws.pageSetup.printTitlesRow = `${filaEncabezado}:${filaEncabezado}`;
+    const buf = await wb.xlsx.writeBuffer();
+    descargarBlob(spec.archivo+'.xlsx', new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  }catch(err){ alert('No se pudo generar el Excel:\n'+err.message); }
+}
+function evtHtmlPDF(spec, logoUri){
+  const celda = (c,v)=>{ const txt = (c.tipo==='money' && typeof v==='number') ? money(v) : esc(v===undefined||v===null?'':v); return `<td style="text-align:${c.a||(c.tipo==='money'?'right':'left')};">${String(txt).replace(/\n/g,'<br>')}</td>`; };
+  const filas = spec.filas.map(f=>{
+    if(f.seccion) return `<tr class="sec"><td colspan="${spec.columnas.length}">${esc(f.seccion)}</td></tr>`;
+    const v = f.total || f; return `<tr class="${f.total?'tot':''}">${spec.columnas.map((c,i)=>celda(c,v[i])).join('')}</tr>`;
+  }).join('');
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${esc(spec.titulo)} — Ikai Dojo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    @page{ size:A4 ${spec.horizontal?'landscape':'portrait'}; margin:12mm 10mm 14mm; }
+    *{ box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body{ font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif; color:#222; margin:0; font-size:12.5px; }
+    .banda{ background:#${IKAI.negro}; color:#${IKAI.crema}; display:flex; align-items:center; gap:14px; padding:10px 16px; border-bottom:4px solid #${IKAI.naranja}; }
+    .banda img{ width:62px; height:62px; object-fit:contain; }
+    .banda h1{ font-family:'Bebas Neue','Arial Narrow',sans-serif; font-weight:400; letter-spacing:3px; font-size:26px; margin:0; color:#${IKAI.naranja}; }
+    .banda .sub{ font-size:14px; color:#${IKAI.crema}; letter-spacing:.5px; }
+    .banda .org{ font-size:10.5px; letter-spacing:2px; color:#${IKAI.dorado}; text-transform:uppercase; font-weight:700; margin-top:2px; }
+    .meta{ margin:10px 2px 8px; display:flex; gap:26px; flex-wrap:wrap; }
+    .meta div{ font-size:13px; } .meta b{ color:#${IKAI.marron}; letter-spacing:1px; text-transform:uppercase; font-size:11px; }
+    table{ width:100%; border-collapse:collapse; margin-top:4px; }
+    th{ background:#${IKAI.naranja}; color:#${IKAI.negro}; font-size:12px; letter-spacing:1px; text-transform:uppercase; text-align:left; padding:6px 7px; border:1px solid #${IKAI.borde}; }
+    td{ padding:5px 7px; border:1px solid #${IKAI.borde}; vertical-align:top; }
+    tr:nth-child(even) td{ background:#${IKAI.zebra}; }
+    tr.sec td{ background:#${IKAI.marron}; color:#fff; font-weight:700; letter-spacing:.5px; }
+    tr.tot td{ background:#FFE6D0; font-weight:700; }
+    thead{ display:table-header-group; } tr{ page-break-inside:avoid; }
+    .notas{ margin-top:10px; font-size:12px; font-style:italic; color:#555; }
+    .pie{ margin-top:14px; text-align:center; font-size:11px; color:#${IKAI.dorado}; font-style:italic; border-top:1px solid #${IKAI.borde}; padding-top:6px; }
+    .noprint{ position:fixed; top:8px; right:8px; } @media print{ .noprint{ display:none; } }
+  </style></head><body>
+  <button class="noprint" onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
+  <div class="banda"><img src="${logoUri}" alt="Ikai Dojo"><div><h1>${esc(spec.titulo)}</h1><div class="sub">${esc(spec.subtitulo||'')}</div><div class="org">Ikai Dojo · Inoue-Ha Calamuchita</div></div></div>
+  ${(spec.meta&&spec.meta.length)?`<div class="meta">${spec.meta.map(([k,v])=>`<div><b>${esc(k)}:</b> ${esc(v)}</div>`).join('')}</div>`:''}
+  <table><thead><tr>${spec.columnas.map(c=>`<th style="text-align:${c.a||(c.tipo==='money'?'right':'left')};">${esc(c.t)}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table>
+  ${(spec.notas||[]).map(n=>`<div class="notas">${esc(n)}</div>`).join('')}
+  <div class="pie">${esc(spec.pie)}</div>
+  <script>window.onload=function(){ setTimeout(function(){ window.print(); }, 700); };<\/script></body></html>`;
+}
+async function evtPDF(tipo){
+  try{
+    const e = evtEvento(), spec = evtSpec(tipo, e); if(!spec){ alert('Exportable no disponible.'); return; }
+    const logo = await evtLogo(); const html = evtHtmlPDF(spec, logo.dataUri);
+    if(window.__testHtml){ window.__testHtml(spec.archivo, html); return; }              // gancho de pruebas
+    const w = window.open('', '_blank');
+    if(!w){ alert('El navegador bloqueó la ventana. Permití las ventanas emergentes para este sitio e intentá de nuevo.'); return; }
+    w.document.write(html); w.document.close();
+  }catch(err){ alert('No se pudo generar el PDF:\n'+err.message); }
+}
+
+// ── Pestaña Exportar ──
+function evtBotonesDoc(tipo, extra){
+  return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+      ${extra||''}<button class="btn btn-ghost btn-sm" onclick="evtExcel('${tipo}')">📊 Excel</button>
+      <button class="btn btn-ghost btn-sm" onclick="evtPDF('${tipo}')">🖨 Imprimir / PDF</button></div>`;
+}
+function evtBotonesTexto(tipo, conMail){
+  return `<button class="btn btn-ghost btn-sm" onclick="evtCopiarTexto('${tipo}')">📋 Copiar texto</button>
+    <button class="btn btn-ghost btn-sm" onclick="evtWhatsApp('${tipo}')">💬 WhatsApp</button>${conMail?`
+    <button class="btn btn-ghost btn-sm" onclick="evtMail('${tipo}')">✉ Mail</button>`:''}`;
+}
+function evtHtmlExportar(e){
+  const r = evtRegistro(e), avisos = evtAvisosGenerales(e).length;
+  const bloque = (titulo, desc, botones)=>`<div class="ev-export"><div><div class="ev-export-t">${titulo}</div><div class="ev-muted">${desc}</div></div>${botones}</div>`;
+  return `
+    <div class="card"><div class="card-hdr"><span class="card-hdr-t">Resumen de inscripción</span>
+        <span class="card-hdr-s">${r.totalAlumnos} alumno${r.totalAlumnos===1?'':'s'} · ${r.nInsc} inscripción${r.nInsc===1?'':'es'}</span></div>
+      <div class="card-body">
+        ${avisos?`<div class="ev-aviso-fila" style="cursor:default;margin-bottom:10px;">▲ Hay ${avisos} aviso${avisos===1?'':'s'} para revisar antes de enviar (pestaña Resumen). Podés exportar igual.</div>`:''}
+        ${r.sinCategoria.length?`<div class="ev-aviso-fila" style="cursor:default;margin-bottom:10px;">▲ Sin categoría todavía: ${esc(r.sinCategoria.map(f=>f.nombre).join(', '))}. No figuran en el resumen ni en la planilla.</div>`:''}
+        ${bloque('Para la federación / organizador', 'Planilla oficial (columnas del formato UCKF, con identidad de Ikai Dojo) y mensaje con el total de alumnos que participan, sus categorías y la cantidad de alumnos por categoría.',
+          evtBotonesDoc('oficial', evtBotonesTexto('fed', true)))}
+        ${bloque('Control interno', 'Cada alumno con las categorías en las que participa (y los avisos de revisión), con el total de alumnos e inscripciones.',
+          evtBotonesDoc('interno', evtBotonesTexto('interno', false)))}
+      </div></div>
+    <div class="card"><div class="card-hdr"><span class="card-hdr-t">Otros documentos</span></div>
+      <div class="card-body">
+        ${bloque('Planilla por categorías', 'Cada categoría con los alumnos del dojo que participan, para el día del torneo (con espacio para el puesto).', evtBotonesDoc('categorias'))}
+        ${bloque('Estado de pagos', 'Por grupo: qué pagó, cuánto y el saldo si hay importe cargado.', evtBotonesDoc('pagos'))}
+        ${bloque('Listado general de participantes', 'Todos los participantes con rol, edad, grado, categorías y alojamiento. No incluye datos de salud.', evtBotonesDoc('listado'))}
+        ${bloque('Listado para el organizador / alojamiento', 'Apellido y nombre, DNI, edad, rol y alojamiento.', evtBotonesDoc('organizador'))}
+        ${bloque('Mensaje para las familias', 'Fecha, lugar, cierre de inscripción y recordatorios del evento, listo para enviar.', `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">${evtBotonesTexto('fam', false)}</div>`)}
+      </div></div>
+    <div class="ev-muted" style="font-size:13px;">Excel y PDF llevan el logo, los colores y el pie de Ikai Dojo. WhatsApp abre el mensaje listo para que elijas a quién enviarlo: nunca se manda solo.</div>`;
+}
+// ═══ FIN EVENTOS ═══
+// EVENTOS:JS:END
 
 // INIT
 initSupabase();

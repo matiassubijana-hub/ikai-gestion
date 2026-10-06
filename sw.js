@@ -8,7 +8,9 @@
 // Entrenamiento) al cascarón, así la herramienta de clase abre aunque la
 // conexión del dojo falle. Cada archivo se cachea por separado: si uno
 // falta en el servidor, los demás se guardan igual.
-const CACHE_NAME = 'ikai-gestion-shell-v2';
+// v3 (5 oct 2026): módulo Eventos / Torneos (sin archivos nuevos; solo fuerza
+// a los dispositivos a tomar el index.html actualizado).
+const CACHE_NAME = 'ikai-gestion-shell-v3';
 const SHELL_FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './ikai-dojo.html'];
 
 self.addEventListener('install', (event) => {
