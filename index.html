@@ -444,7 +444,10 @@ main a{color:var(--blue);}
       <div class="card">
         <div class="card-hdr">
           <span class="card-hdr-t">Alumnos</span>
-          <button class="btn btn-fill btn-sm" onclick="openAlumnoForm()">+ Nuevo Alumno</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="evtAbrirRevisionCategorias()" title="Compara la categoría de cada alumno con su edad">↻ Revisar categorías por edad</button>
+            <button class="btn btn-fill btn-sm" onclick="openAlumnoForm()">+ Nuevo Alumno</button>
+          </div>
         </div>
         <div class="card-body" style="padding:12px 18px;">
           <input type="text" id="alumno-search" placeholder="Buscar por nombre o DNI..."
@@ -464,7 +467,7 @@ main a{color:var(--blue);}
 
     <!-- ALUMNO DETAIL -->
     <div class="page" id="page-alumno-detail">
-      <div class="detail-back" onclick="showPage('alumnos')">← Volver a Alumnos</div>
+      <div class="detail-back" onclick="alumnosVolver()">← Volver</div>
       <div class="card">
         <div class="card-hdr">
           <span class="card-hdr-t" id="ad-name">—</span>
@@ -517,7 +520,7 @@ main a{color:var(--blue);}
       </div>
     </div>
     <div class="page" id="page-alumno-form">
-      <div class="detail-back" onclick="showPage('alumnos')">← Cancelar</div>
+      <div class="detail-back" onclick="alumnosVolver()">← Cancelar</div>
       <div class="card">
         <div class="card-hdr"><span class="card-hdr-t" id="af-title">Nuevo Alumno</span></div>
         <div class="card-body">
@@ -584,7 +587,7 @@ main a{color:var(--blue);}
 
           <div class="form-actions">
             <button class="btn btn-fill" onclick="saveAlumno()">Guardar</button>
-            <button class="btn btn-ghost" onclick="showPage('alumnos')">Cancelar</button>
+            <button class="btn btn-ghost" onclick="alumnosVolver()">Cancelar</button>
           </div>
         </div>
       </div>
@@ -1591,6 +1594,25 @@ main a{color:var(--blue);}
       <div class="section-hero"><h1 id="pp-titulo">—</h1></div>
       <div id="pp-contenido" style="display:flex;flex-direction:column;gap:18px;"></div>
     </div>
+
+    <!-- ALUMNOS: revisar categorías por edad -->
+    <div class="page" id="page-alumnos-categorias">
+      <div class="detail-back" onclick="showPage('alumnos')">← Volver a Alumnos</div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-hdr-t">Revisar categorías por edad</span><span class="card-hdr-s" id="ac-contador"></span></div>
+        <div class="card-body">
+          <div class="ev-muted" id="ac-reglas" style="margin-bottom:10px;"></div>
+          <label style="display:flex;gap:8px;align-items:center;font-size:15px;margin-bottom:12px;">
+            <input id="ac-inactivos" type="checkbox" style="width:auto;" onchange="evtRenderRevisionCategorias()"> Incluir alumnos inactivos</label>
+          <div id="ac-lista" style="overflow-x:auto;"></div>
+          <div class="form-actions" style="margin-top:12px;">
+            <button class="btn btn-ghost" onclick="evtMarcarTodasRevision()">Marcar todos</button>
+            <button class="btn btn-fill" onclick="evtAplicarRevision()">Aplicar a los marcados</button>
+          </div>
+          <div class="ev-muted" style="font-size:13px;margin-top:8px;">No se cambia nada hasta que marcás y confirmás. Si alguna categoría la elegiste vos a propósito (por turno o por un caso especial), simplemente no la marques.</div>
+        </div>
+      </div>
+    </div>
 <!-- EVENTOS:HTML:END -->
 
     <!-- CONFIG -->
@@ -1914,6 +1936,7 @@ function closeSidebar(){
 
 function showPage(id, btn){
   closeSidebar();
+  if(id!=='alumno-detail' && id!=='alumno-form') EV.volverDeAlumno = null; /* EVENTOS:HOOK2 */
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -2416,7 +2439,7 @@ function openAlumnoForm(){
   document.getElementById('f-estado').value='Activo';
   document.getElementById('f-condicion').value='No';
   document.getElementById('f-paga-completa').value='si';
-  evtCamposAlumnoVisibles(); document.getElementById('f-sexo').value=''; document.getElementById('f-grado').value='';
+  evtCamposAlumnoVisibles(); document.getElementById('f-sexo').value=''; document.getElementById('f-grado').value=''; evtHintCategoria();
   poblarDatalistGruposFamiliares();
   showPage('alumno-form');
 }
@@ -2445,6 +2468,7 @@ function editAlumno(){
   document.getElementById('f-grupo-familiar').value=a.grupoFamiliarNombre||'';
   document.getElementById('f-paga-completa').value = a.pagaCuotaCompleta ? 'si' : 'no';
   evtCamposAlumnoVisibles(); document.getElementById('f-sexo').value = a.sexo||''; document.getElementById('f-grado').value = gradoCanon(a.gradoActual)||'';
+  evtCategoriaAlEditar(a);
   document.getElementById('f-resp-nombre').value=a.responsable.nombre;
   document.getElementById('f-resp-dni').value=a.responsable.dni;
   document.getElementById('f-resp-telefono').value=a.responsable.telefono;
@@ -2597,7 +2621,7 @@ async function saveAlumno(){
     if(btn){ btn.disabled = false; btn.textContent = 'Guardar'; }
     alert('El alumno se guardó, pero hubo un problema con algunos datos adicionales:\n'+e.message+'\n\nRevisá su ficha y volvé a guardar si hace falta.');
     await cargarDatos(); refreshAll();
-    showPage('alumnos');
+    alumnosVolver();
     return;
   }
 
@@ -2608,7 +2632,7 @@ async function saveAlumno(){
   // por medio, es más seguro traer el estado real que reconstruirlo acá.
   await cargarDatos(); refreshAll();
   document.getElementById('home-banner').style.display = DB.alumnos.length ? 'none' : 'flex';
-  showPage('alumnos');
+  alumnosVolver();
 }
 
 function viewAlumno(id){
@@ -5891,7 +5915,7 @@ const GRADOS = ['Blanco','Celeste','Amarillo','Naranja','Verde','Azul','Marrón'
 const CONCEPTOS_PAGO_EVENTO = ['Inscripción','Seminario','Albergue','Comida','Otro'];
 const ROLES_EVENTO = ['Atleta','Acompañante','Instructor','Otro'];
 
-const EV = { eventoId:null, tab:'resumen', partId:null, volverAExpediente:false,
+const EV = { eventoId:null, tab:'resumen', partId:null, volverAExpediente:false, volverDeAlumno:null, revisionSel:new Set(),
   filtroCat:{ txt:'', mod:'' }, agregar:{ txt:'', inactivos:false, sel:new Set() } };
 const DBE = { migrado:false, error:'', categorias:[], participantes:[], inscripciones:[] };
 
@@ -5987,7 +6011,27 @@ function evtDatosPersona(p){
   return { esAlumno:false, nombre:p.nombre, apellido:p.apellido, dni:p.dni, fnac:p.fnac, sexo:p.sexo, telefono:p.telefono, gradoFicha:'' };
 }
 function evtNombre(p){ const d = evtDatosPersona(p); return (`${d.apellido} ${d.nombre}`).trim() || '(sin nombre)'; }
-function evtGradoDe(p){ return gradoCanon(p.grado || evtDatosPersona(p).gradoFicha); }
+// Grado del participante. Un ALUMNO usa SIEMPRE el grado de su ficha mientras el evento no haya pasado (así un
+// cambio de cinturón en la ficha se refleja solo, también en el nivel Kyu A/B de las categorías). Recién pasado el
+// evento queda el último grado guardado (historial). Una persona externa usa el grado cargado en el evento.
+function evtGradoDe(p){
+  if(!p.alumnoId) return gradoCanon(p.grado);
+  const d = evtDatosPersona(p), e = DB.eventosCalendario.find(x=>x.id===p.eventoId);
+  const vigente = !e || (e.fechaFin||e.fecha) >= HOY;
+  return gradoCanon(vigente ? (d.gradoFicha || p.grado) : (p.grado || d.gradoFicha));
+}
+// Mientras el evento no pasó, deja guardado en cada participante el grado actual de la ficha: cuando el evento pase,
+// ese valor queda como historial aunque después el alumno cambie de cinturón.
+async function evtSincronizarGrados(e){
+  if(!e || (e.fechaFin||e.fecha) < HOY) return;
+  for(const p of evtParticipantesDe(e.id).filter(x=>x.alumnoId)){
+    const g = evtGradoDe(p);
+    if(g && gradoCanon(p.grado)!==g){
+      const { error } = await supa.from('evento_participantes').update({ grado:g }).eq('id', p.id);
+      if(!error) p.grado = g;
+    }
+  }
+}
 function evtEsAtleta(p){ return p.rol==='Atleta' || p.rol==='Instructor'; }
 
 // ── grupos (atleta + sus acompañantes) y cobros ──
@@ -6135,6 +6179,88 @@ function evtFaltantes(p, evento){
   return f;
 }
 
+// ═══════════════════════════════════════
+// CATEGORÍA DEL ALUMNO POR EDAD (Infantil / Cadetes / Juveniles / Adultos)
+// ═══════════════════════════════════════
+// Rangos por defecto (edad en años cumplidos). Para cambiarlos, se edita SOLO esta lista.
+const RANGOS_CATEGORIA_ALUMNO = [
+  { nombre:'Infantil',  hasta:11  },
+  { nombre:'Cadetes',   hasta:15  },
+  { nombre:'Juveniles', hasta:17  },
+  { nombre:'Adultos',   hasta:200 },
+];
+function categoriaAlumnoPorEdad(fnac, fechaISO){
+  const e = edadAl(fnac, fechaISO || HOY);
+  if(e==null || e<0) return '';
+  const r = RANGOS_CATEGORIA_ALUMNO.find(x=>e<=x.hasta);
+  return r ? r.nombre : '';
+}
+// Valores viejos de AppSheet ("Infantil (hasta 11 años)", "Juvenil (12 a 17 años)", "Adulto") → las 4 categorías de hoy
+function normCategoriaAlumno(c){
+  const n = normTxt(c); if(!n) return '';
+  if(n.startsWith('infantil')) return 'Infantil';
+  if(n.startsWith('cadete')) return 'Cadetes';
+  if(n.startsWith('juvenil')) return 'Juveniles';
+  if(n.startsWith('adult')) return 'Adultos';
+  return '';
+}
+function textoRangosCategoria(){
+  let desde = 0;
+  return RANGOS_CATEGORIA_ALUMNO.map(r=>{
+    const t = r.hasta>=200 ? `${r.nombre} desde ${desde} años` : (desde===0 ? `${r.nombre} hasta ${r.hasta} años` : `${r.nombre} ${desde} a ${r.hasta} años`);
+    desde = r.hasta+1; return t;
+  }).join(' · ');
+}
+
+// ═══════════════════════════════════════
+// NAVEGACIÓN: volver de la ficha del alumno al lugar de donde se vino
+// ═══════════════════════════════════════
+function alumnosVolver(){
+  const f = EV.volverDeAlumno; EV.volverDeAlumno = null;
+  if(f) f(); else showPage('alumnos');
+}
+function evtVerFicha(alumnoId, retorno){ EV.volverDeAlumno = retorno; viewAlumno(alumnoId); }
+function evtEditarFicha(alumnoId, retorno){ EV.volverDeAlumno = retorno; editingAlumnoId = alumnoId; editAlumno(); }
+function evtVerFichaDesdeParticipante(alumnoId, partId){ evtVerFicha(alumnoId, ()=>evtAbrirParticipante(partId)); }
+function evtEditarFichaDesdeParticipante(alumnoId, partId){ evtEditarFicha(alumnoId, ()=>evtAbrirParticipante(partId)); }
+function evtEditarFichaDesdeAgregar(alumnoId){ evtEditarFicha(alumnoId, ()=>{ showPage('evento-agregar'); evtRenderAgregar(); }); }
+
+// ═══════════════════════════════════════
+// FICHA DEL ALUMNO: la categoría se elige sola según la edad
+// ═══════════════════════════════════════
+function evtHintCategoria(){
+  const sel = document.getElementById('f-categoria'), fn = document.getElementById('f-fnac');
+  if(!sel || !fn) return;
+  let h = document.getElementById('f-cat-hint');
+  if(!h){ h = document.createElement('div'); h.id = 'f-cat-hint'; h.className = 'ev-falta'; h.style.marginTop = '5px'; sel.parentNode.appendChild(h); }
+  const calc = categoriaAlumnoPorEdad(fn.value), edad = edadAl(fn.value, HOY);
+  if(!fn.value || !calc){ h.innerHTML = 'Cargá la fecha de nacimiento y la categoría se elige sola según la edad.'; return; }
+  h.innerHTML = sel.value===calc
+    ? `<span style="color:var(--green);">✔ Según la edad (${edad} años) corresponde ${calc}.</span>`
+    : `▲ Por la edad (${edad} años) corresponde <b>${calc}</b>. <a href="#" onclick="evtUsarCategoriaCalculada();return false;">Usar ${calc}</a>`;
+}
+function evtUsarCategoriaCalculada(){
+  const c = categoriaAlumnoPorEdad(document.getElementById('f-fnac').value);
+  if(c) document.getElementById('f-categoria').value = c;
+  evtHintCategoria();
+}
+function evtAutoCategoriaAlumno(){        // al cargar o cambiar la fecha de nacimiento
+  const c = categoriaAlumnoPorEdad(document.getElementById('f-fnac').value);
+  if(c) document.getElementById('f-categoria').value = c;
+  evtHintCategoria();
+}
+// Al editar un alumno existente: se respeta la categoría guardada (puede ser una decisión tuya); si el valor es de AppSheet
+// o está vacío, se normaliza o se calcula. Si no coincide con la edad, se avisa con un enlace para usar la calculada.
+function evtCategoriaAlEditar(a){
+  const sel = document.getElementById('f-categoria');
+  sel.value = normCategoriaAlumno(a.categoria) || categoriaAlumnoPorEdad(a.fnac) || 'Infantil';
+  evtHintCategoria();
+}
+try{
+  document.getElementById('f-fnac').addEventListener('change', evtAutoCategoriaAlumno);
+  document.getElementById('f-categoria').addEventListener('change', evtHintCategoria);
+}catch(e){}
+
 
 // ═══════════════════════════════════════
 // PANTALLAS
@@ -6244,6 +6370,7 @@ function abrirExpediente(id){
   if(!DBE.migrado){ alert(AVISO_MIGRACION); return; }
   EV.eventoId = id; EV.tab = 'resumen'; EV.filtroCat = { txt:'', mod:'' };
   showPage('evento'); renderEvento();
+  evtSincronizarGrados(evtEvento(id)).then(()=>{ if(EV.eventoId===id && evg('page-evento').classList.contains('active')) renderEvento(); });
 }
 function evtVolver(){ showPage('calendario-detail'); viewCalendarioEvento(EV.eventoId); }
 function evtEditarEvento(){ editingCalendarioId = EV.eventoId; EV.volverAExpediente = true; editCalendarioEvento(); }
@@ -6347,7 +6474,7 @@ function evtFilaParticipante(p, e, hijo){
     <td onclick="evtAbrirParticipante(${p.id})" style="cursor:pointer;">${hijo?'↳ ':''}${esc(evtNombre(p))}${p.estado==='Baja'?' <span class="pill pill-ghost">Baja</span>':''}${p.estado==='Preinscripto'?' <span class="pill pill-warn">Preinscripto</span>':''}
       ${falt.length?`<div class="ev-falta">▲ falta ${esc(falt.join(', '))}</div>`:''}</td>
     <td>${esc(p.rol)}${p.relacion?` <span class="ev-muted">(${esc(p.relacion)})</span>`:''}</td>
-    <td>${edad==null?'—':edad}</td>
+    <td>${edad==null?'—':edad}${categoriaAlumnoPorEdad(d.fnac, e.fecha)?`<div class="ev-muted" style="font-size:13px;">${categoriaAlumnoPorEdad(d.fnac, e.fecha)}</div>`:''}</td>
     <td>${atl?(esc(grado)||'—')+(nivel?` <span class="ev-muted">${nivel}</span>`:''):'—'}</td>
     <td>${atl?`<input class="ev-num" type="number" step="0.1" min="0" value="${p.peso==null?'':p.peso}" onchange="evtGuardarNum(${p.id},'peso',this.value)">`:'—'}</td>
     <td>${atl?`<input class="ev-num" type="number" step="1" min="0" value="${p.estatura==null?'':p.estatura}" onchange="evtGuardarNum(${p.id},'estatura',this.value)">`:'—'}</td>
@@ -6392,15 +6519,18 @@ function evtRenderAgregar(){
   const lista = DB.alumnos.filter(a=>!ya.has(a.id) && (EV.agregar.inactivos || a.estado==='Activo'))
     .filter(a=>!t || normTxt(a.nombre+' '+a.apellido+' '+a.dni).includes(t))
     .sort((a,b)=>(a.apellido+a.nombre).localeCompare(b.apellido+b.nombre,'es'));
-  evg('ea-lista').innerHTML = lista.length ? `<table class="tbl"><thead><tr><th style="width:36px;"></th><th>Alumno</th><th>Edad al evento</th><th>Grado</th><th>Sexo</th><th>Datos</th></tr></thead><tbody>${
+  evg('ea-lista').innerHTML = lista.length ? `<table class="tbl"><thead><tr><th style="width:36px;"></th><th>Alumno</th><th>Edad al evento</th><th>Categoría</th><th>Grado</th><th>Sexo</th><th>Datos</th></tr></thead><tbody>${
     lista.map(a=>{
-      const edad = edadAl(a.fnac, e.fecha), falta = [];
+      const edad = edadAl(a.fnac, e.fecha), falta = [], catReal = categoriaAlumnoPorEdad(a.fnac, e.fecha);
       if(!a.sexo) falta.push('sexo'); if(!a.gradoActual) falta.push('grado'); if(!a.fnac) falta.push('fecha de nac.');
+      const catGuardada = normCategoriaAlumno(a.categoria);
       return `<tr onclick="evtToggleSel(${a.id})" style="cursor:pointer;">
         <td><input type="checkbox" ${EV.agregar.sel.has(a.id)?'checked':''} onclick="event.stopPropagation();evtToggleSel(${a.id})"></td>
         <td>${esc(a.apellido+' '+a.nombre)}${a.estado!=='Activo'?` <span class="pill pill-ghost">${esc(a.estado)}</span>`:''}</td>
-        <td>${edad==null?'—':edad}</td><td>${esc(a.gradoActual||'—')}</td><td>${a.sexo==='F'?'F':(a.sexo==='M'?'M':'—')}</td>
-        <td>${falta.length?`<span class="ev-falta">▲ falta ${falta.join(', ')}</span>`:'<span class="ev-ok-fila" style="padding:0;border:0;">✔</span>'}</td></tr>`;
+        <td>${edad==null?'—':edad}</td>
+        <td title="${catGuardada&&catReal&&catGuardada!==catReal?'En la ficha figura '+esc(catGuardada):''}">${catReal?esc(catReal):'—'}${catGuardada&&catReal&&catGuardada!==catReal?' <span class="ev-falta">▲</span>':''}</td>
+        <td>${esc(a.gradoActual?gradoCanon(a.gradoActual):'—')}</td><td>${a.sexo==='F'?'F':(a.sexo==='M'?'M':'—')}</td>
+        <td>${falta.length?`<span class="ev-falta">▲ falta ${falta.join(', ')}</span> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();evtEditarFichaDesdeAgregar(${a.id})">Editar ficha</button>`:'<span class="ev-ok-fila" style="padding:0;border:0;">✔</span>'}</td></tr>`;
     }).join('')}</tbody></table>` : '<div class="empty-state">No hay alumnos para agregar con ese filtro.</div>';
   evg('ea-contador').textContent = EV.agregar.sel.size + ' seleccionado' + (EV.agregar.sel.size===1?'':'s');
 }
@@ -6433,18 +6563,22 @@ function evtRenderParticipante(){
   evg('pp-titulo').textContent = nuevo ? 'Nueva persona (acompañante / externa)' : evtNombre(p);
   const d = nuevo ? { esAlumno:false } : evtDatosPersona(p);
   const atl = nuevo ? false : evtEsAtleta(p);
-  const grado = nuevo ? '' : evtGradoDe(p);
+  const grado = nuevo ? '' : evtGradoDe(p), nivel = nuevo ? '' : nivelDeGrado(grado);
   const edad = nuevo ? null : edadAl(d.fnac, e.fecha);
   const val = (x)=>x==null?'':esc(x);
   // — Datos —
   let datos = `<div class="card"><div class="card-hdr"><span class="card-hdr-t">Datos</span>
-      ${!nuevo&&d.esAlumno?`<button class="btn btn-ghost btn-sm" onclick="viewAlumno(${p.alumnoId})">Ver ficha del alumno</button>`:''}</div><div class="card-body">`;
+      ${!nuevo&&d.esAlumno?`<div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-ghost btn-sm" onclick="evtEditarFichaDesdeParticipante(${p.alumnoId},${p.id})">✏ Editar ficha</button>
+        <button class="btn btn-ghost btn-sm" onclick="evtVerFichaDesdeParticipante(${p.alumnoId},${p.id})">Ver ficha del alumno</button></div>`:''}</div><div class="card-body">`;
   if(!nuevo && d.esAlumno){
+    const catReal = categoriaAlumnoPorEdad(d.fnac, e.fecha), catGuard = normCategoriaAlumno((DB.alumnos.find(x=>x.id===p.alumnoId)||{}).categoria);
+    const btnFicha = `<button class="btn btn-ghost btn-sm" type="button" onclick="evtEditarFichaDesdeParticipante(${p.alumnoId},${p.id})">Editar ficha</button>`;
     datos += `<div class="detail-grid" style="margin-bottom:12px;">
       <div class="detail-item"><label>DNI</label><span>${esc(d.dni||'—')}</span></div>
-      <div class="detail-item"><label>Edad el día del evento</label><span>${edad==null?'<span class="ev-falta">▲ falta fecha de nacimiento</span>':edad+' años'}</span></div>
-      <div class="detail-item"><label>Sexo (ficha)</label><span>${d.sexo?(d.sexo==='F'?'Femenino':'Masculino'):'<span class="ev-falta">▲ falta — cargalo en la ficha del alumno</span>'}</span></div>
-      <div class="detail-item"><label>Grado en la ficha</label><span>${esc(d.gradoFicha||'—')}</span></div></div>`;
+      <div class="detail-item"><label>Edad el día del evento</label><span>${edad==null?'<span class="ev-falta">▲ falta fecha de nacimiento</span> '+btnFicha:edad+' años'+(catReal?` · <b>${catReal}</b>`:'')}${catReal&&catGuard&&catGuard!==catReal?` <span class="ev-falta" title="En la ficha figura ${esc(catGuard)}">▲ en la ficha: ${esc(catGuard)}</span>`:''}</span></div>
+      <div class="detail-item"><label>Sexo (de la ficha)</label><span>${d.sexo?(d.sexo==='F'?'Femenino':'Masculino'):'<span class="ev-falta">▲ falta</span> '+btnFicha}</span></div>
+      <div class="detail-item"><label>Grado (de la ficha)</label><span>${grado?esc(grado)+(nivel?` <span class="ev-muted">${nivel}</span>`:''):'<span class="ev-falta">▲ falta</span> '+btnFicha}</span></div></div>
+      <div class="ev-muted" style="margin:-4px 0 12px;font-size:13px;">El grado y el sexo se toman siempre de la ficha del alumno: si los cambiás ahí, se actualizan acá solos.</div>`;
   }
   datos += `<div class="form-grid">`;
   if(nuevo || !d.esAlumno){
@@ -6459,7 +6593,7 @@ function evtRenderParticipante(){
       <div class="form-item"><label>Acompaña a (cobra con su grupo)</label><select id="pp-acompana">${evtOpcionesAcompana(nuevo?null:p.acompanaAId, nuevo?0:p.id)}</select></div>
       <div class="form-item"><label>Relación (mamá, papá, hermano…)</label><input id="pp-relacion" type="text" value="${val(nuevo?'':p.relacion)}"></div>
       <div class="form-item"><label>Alojamiento</label><input id="pp-aloj" type="text" list="dl-aloj" placeholder="Ej: Albergue, Hotel (vacío si no aplica)" value="${val(nuevo?'':p.alojamiento)}"><datalist id="dl-aloj"><option value="Albergue"><option value="Hotel"></datalist></div>
-      <div class="form-item"><label>Grado en este evento</label><select id="pp-grado"><option value="">—</option>${GRADOS.map(g=>`<option ${grado===g?'selected':''}>${g}</option>`).join('')}</select></div>
+      ${(nuevo||!d.esAlumno)?`<div class="form-item"><label>Grado</label><select id="pp-grado"><option value="">—</option>${GRADOS.map(g=>`<option ${grado===g?'selected':''}>${g}</option>`).join('')}</select></div>`:''}
       <div class="form-item"><label>Peso (kg)</label><input id="pp-peso" type="number" step="0.1" min="0" value="${val(nuevo?'':p.peso)}"></div>
       <div class="form-item"><label>Estatura (cm)</label><input id="pp-est" type="number" step="1" min="0" value="${val(nuevo?'':p.estatura)}"></div>
       <div class="form-item"><label>Importe a cobrar (opcional)</label><div style="display:flex;gap:6px;"><input id="pp-importe" type="number" min="0" value="${val(nuevo?'':p.importe)}" placeholder="Vacío = solo se registra lo que pagó">${(e.tarifa1!=null&&!nuevo)?`<button class="btn btn-ghost btn-sm" type="button" onclick="evtProponerImporte()" title="Según las tarifas del evento y las modalidades en las que compite">Proponer</button>`:''}</div></div>
@@ -6490,11 +6624,12 @@ async function evtGuardarParticipante(){
   }
   const payload = {
     rol, acompana_a_id:acompanaA, relacion:evg('pp-relacion').value.trim()||null, alojamiento:evg('pp-aloj').value.trim()||null,
-    grado:evg('pp-grado').value||null, peso:numOrNull(evg('pp-peso').value), estatura_cm:numOrNull(evg('pp-est').value),
+    peso:numOrNull(evg('pp-peso').value), estatura_cm:numOrNull(evg('pp-est').value),
     importe_a_cobrar:numOrNull(evg('pp-importe').value), estado:evg('pp-estado').value, cubre_dojo:evg('pp-cubre').value==='si',
     observaciones:evg('pp-obs').value.trim()||null,
   };
   if(nuevo || !p.alumnoId){
+    payload.grado = evg('pp-grado').value||null;        // personas externas: el grado se carga acá; el de un alumno viene de su ficha
     payload.nombre = evg('pp-nombre').value.trim()||null; payload.apellido = evg('pp-apellido').value.trim()||null;
     payload.dni = evg('pp-dni').value.trim()||null; payload.fecha_nacimiento = evg('pp-fnac').value||null;
     payload.sexo = evg('pp-sexo').value||null; payload.telefono = evg('pp-tel').value.trim()||null;
@@ -6804,6 +6939,50 @@ function evtPuedeEliminarEvento(e){
   return confirm(`"${e.evento}" tiene ${parts.length} participante(s) cargados. Si lo eliminás se borran también sus participantes y categorías. ¿Seguir?`);
 }
 
+// ═══════════════════════════════════════
+// ALUMNOS: revisar las categorías (Infantil / Cadetes / Juveniles / Adultos) contra la edad
+// ═══════════════════════════════════════
+// Muestra a quién no le coincide la categoría guardada con su edad de hoy. NO cambia nada solo: marcás los que querés
+// actualizar y confirmás (hay categorías que pueden ser decisión tuya, por ejemplo por turno o por un caso especial).
+function evtDifCategorias(incluirInactivos){
+  const base = DB.alumnos.filter(a=>incluirInactivos || a.estado==='Activo')
+    .map(a=>({ a, edad:edadAl(a.fnac, HOY), calc:categoriaAlumnoPorEdad(a.fnac), norm:normCategoriaAlumno(a.categoria) }));
+  return { base,
+    sinFecha: base.filter(x=>!x.calc),
+    dif: base.filter(x=>x.calc && x.norm!==x.calc).sort((x,y)=>(x.a.apellido+x.a.nombre).localeCompare(y.a.apellido+y.a.nombre,'es')) };
+}
+function evtAbrirRevisionCategorias(){ EV.revisionSel = new Set(); evg('ac-inactivos').checked = false; showPage('alumnos-categorias'); evtRenderRevisionCategorias(); }
+function evtRenderRevisionCategorias(){
+  const r = evtDifCategorias(evg('ac-inactivos').checked);
+  evg('ac-reglas').textContent = 'Rangos usados: ' + textoRangosCategoria() + '. La edad se cuenta a hoy.';
+  evg('ac-contador').textContent = r.dif.length + ' para revisar';
+  const coinciden = r.base.length - r.sinFecha.length - r.dif.length;
+  evg('ac-lista').innerHTML = (r.dif.length
+    ? `<table class="tbl"><thead><tr><th style="width:36px;"></th><th>Alumno</th><th>Edad</th><th>En la ficha</th><th>Según la edad</th></tr></thead><tbody>${
+        r.dif.map(x=>`<tr style="cursor:default;"><td><input type="checkbox" ${EV.revisionSel.has(x.a.id)?'checked':''} onchange="evtToggleRevision(${x.a.id})"></td>
+          <td>${esc(x.a.apellido+' '+x.a.nombre)}${x.a.estado!=='Activo'?' <span class="pill pill-ghost">'+esc(x.a.estado)+'</span>':''}</td>
+          <td>${x.edad}</td><td>${esc(x.a.categoria||'—')}</td><td><b>${x.calc}</b></td></tr>`).join('')}</tbody></table>`
+    : '<div class="ev-ok-fila">✔ Todas las categorías coinciden con la edad.</div>')
+    + `<div class="ev-muted" style="margin-top:10px;">${coinciden} alumno${coinciden===1?'':'s'} ya coincide${coinciden===1?'':'n'} con su edad.${
+        r.sinFecha.length ? ` ${r.sinFecha.length} no tiene${r.sinFecha.length===1?'':'n'} fecha de nacimiento cargada, por eso no se pueden calcular: ${esc(r.sinFecha.slice(0,12).map(x=>x.a.apellido+' '+x.a.nombre).join(', '))}${r.sinFecha.length>12?'…':''}.` : ''}</div>`;
+}
+function evtToggleRevision(id){ if(EV.revisionSel.has(id)) EV.revisionSel.delete(id); else EV.revisionSel.add(id); }
+function evtMarcarTodasRevision(){ evtDifCategorias(evg('ac-inactivos').checked).dif.forEach(x=>EV.revisionSel.add(x.a.id)); evtRenderRevisionCategorias(); }
+async function evtAplicarRevision(){
+  const r = evtDifCategorias(evg('ac-inactivos').checked);
+  const marcados = r.dif.filter(x=>EV.revisionSel.has(x.a.id));
+  if(!marcados.length){ alert('Marcá al menos un alumno de la lista.'); return; }
+  if(!confirm(`Se va a cambiar la categoría de ${marcados.length} alumno${marcados.length===1?'':'s'} a la que corresponde por su edad. ¿Seguir?`)) return;
+  let fallos = 0;
+  for(const x of marcados){
+    const { error } = await supa.from('alumnos').update({ categoria:x.calc }).eq('id', x.a.id);
+    if(error){ fallos++; continue; }
+    x.a.categoria = x.calc; EV.revisionSel.delete(x.a.id);
+  }
+  if(fallos) alert(`${fallos} alumno${fallos===1?'':'s'} no se pudo actualizar. Probá de nuevo.`);
+  renderAlumnosList(); evtRenderRevisionCategorias();
+}
+
 
 // ═══════════════════════════════════════
 // EXPORTABLES (Excel + PDF con identidad Ikai Dojo, texto y WhatsApp)
@@ -6956,10 +7135,10 @@ function evtSpec(tipo, e){
   if(tipo==='listado'){
     const s = evtSpecBase(e, 'Listado general de participantes', e.evento+' — '+fechaAR(e.fecha));
     s.archivo = evtNombreArchivo(e, 'Listado_participantes'); s.hoja = 'Participantes';
-    s.columnas = [{t:'Apellido y Nombre',w:32},{t:'Rol',w:13},{t:'DNI',w:13},{t:'Edad',w:7,a:'center'},{t:'Sexo',w:6,a:'center'},{t:'Grado',w:12},{t:'Nivel',w:9},{t:'Peso',w:8,a:'center'},{t:'Categorías',w:36},{t:'Alojamiento',w:14},{t:'Observaciones',w:30}];
+    s.columnas = [{t:'Apellido y Nombre',w:32},{t:'Rol',w:13},{t:'DNI',w:13},{t:'Edad',w:7,a:'center'},{t:'Categ. edad',w:11},{t:'Sexo',w:6,a:'center'},{t:'Grado',w:12},{t:'Nivel',w:9},{t:'Peso',w:8,a:'center'},{t:'Categorías',w:36},{t:'Alojamiento',w:14},{t:'Observaciones',w:30}];
     evtParticipantesDe(e.id).filter(p=>p.estado!=='Baja').sort((a,b)=>evtNombre(a).localeCompare(evtNombre(b),'es')).forEach(p=>{
       const d = evtDatosPersona(p), atl = evtEsAtleta(p);
-      s.filas.push([evtNombre(p), p.rol+(p.relacion?' ('+p.relacion+')':''), d.dni||'', edadAl(d.fnac,e.fecha)==null?'':edadAl(d.fnac,e.fecha), d.sexo||'', atl?evtGradoDe(p):'', atl?nivelDeGrado(evtGradoDe(p)):'',
+      s.filas.push([evtNombre(p), p.rol+(p.relacion?' ('+p.relacion+')':''), d.dni||'', edadAl(d.fnac,e.fecha)==null?'':edadAl(d.fnac,e.fecha), categoriaAlumnoPorEdad(d.fnac,e.fecha), d.sexo||'', atl?evtGradoDe(p):'', atl?nivelDeGrado(evtGradoDe(p)):'',
         atl&&p.peso!=null?p.peso:'', evtInscripcionesDe(p).map(x=>evtCatCorta(x.cat)).join(', '), p.alojamiento||'', p.obs||'']);
     });
     s.notas = ['Este listado no incluye datos de salud.'];

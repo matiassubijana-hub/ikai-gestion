@@ -10,7 +10,8 @@
 // falta en el servidor, los demás se guardan igual.
 // v3 (5 oct 2026): módulo Eventos / Torneos (sin archivos nuevos; solo fuerza
 // a los dispositivos a tomar el index.html actualizado).
-const CACHE_NAME = 'ikai-gestion-shell-v3';
+// v4 (6 oct 2026): ajustes de Eventos (grado desde la ficha, categoría por edad, volver desde la ficha).
+const CACHE_NAME = 'ikai-gestion-shell-v4';
 const SHELL_FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './ikai-dojo.html'];
 
 self.addEventListener('install', (event) => {
